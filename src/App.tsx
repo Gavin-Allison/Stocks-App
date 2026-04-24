@@ -1,31 +1,25 @@
-import './index.css'
-
 export default function App() {
-
   return (
     <div className="flex h-screen w-full flex-col">
-      
-      {/* Bar at top: fixed height with bottom border */}
       <header className="h-16 w-full flex-none border-b border-black">
         <h1>Top Bar</h1>
       </header>
 
-      <div className="flex flex-1 overflow-hidden">
-        {/* Bar at side: fixed width with right border */}
-        <aside className="w-64 flex-none border-r border-black">
-          <h1>Sidebar</h1>
-        </aside>
+      <div className="flex flex-1 justify-center overflow-hidden @container">
+        <main className="flex flex-1 max-w-7xl">
 
-        {/* Main Content Area */}
-        <main className="flex flex-1">
+          {/* Sidebar */}
+          <aside className="w-16 @6xl:w-64 flex-none border-l border-r border-black ease-in-out duration-300">
+            <h1>Sidebar</h1>
+          </aside>
           
-          {/* Left Column */}
-          <section className="w-256 flex-none overflow-auto border-r border-black">
+          {/* Left Column*/}
+          <section className="max-w-256 flex-1 border-r border-black">
             <h1>Left Column</h1>
           </section>
 
-          {/* Right Column*/}
-          <section className="flex-1 overflow-auto">
+          {/* Right Column */}
+          <section className="w-0 @4xl:w-64 flex-none border-r border-black ease-in-out duration-300">
             <h1>Right Column</h1>
           </section>
 
