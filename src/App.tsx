@@ -1,32 +1,36 @@
 import { useEffect, useState } from "react";
-import { fetch_stock_data } from "./components/stock_chart";
+import { FetchStockData, ChartComponent } from "./components/stock_chart";
 
 export default function App() {
   const layout: React.CSSProperties & { [key: string]: any } = {
     "--layout-width": "1600px",
   }
 
-  const [temp_list, setTempList] = useState<any[]>([]);
+  const [tempList, setTempList] = useState<any[]>([]);
 
   useEffect(() => {
-    const test_fetch = async () => {
-      const data = await fetch_stock_data("AAPL");
-      const list = data.slice(0, 5).map((item: any, index: number) => ({
-        id: index,
-        stock: item.time,
-      }));
+    const testFetch = async () => {
+      const data = await FetchStockData("AAPL");
+      const list = [{
+        id: 0,
+        stock: "AAPL Chart",
+        chartData: data
+      }];
       setTempList(list);
     };
 
-    test_fetch();
+    testFetch();
   }, []);
 
-  const temp_list_items = temp_list.map((item) => (
-    <div key={item.id} className="h-100 p-2 border-b border-gray-300">
-      {item.stock}
+  const tempListItems = tempList.map((item) => (
+    <div key={item.id} className="p-4 border-b border-gray-300">
+      <div className="mb-2 font-bold">{item.stock}</div>
+      <div className="h-[300px] w-full bg-white [&_a]:hidden">
+        <ChartComponent data={item.chartData} />
+      </div>
     </div>
   ))
-   
+    
   return (
     <div className="flex h-screen w-full flex-col" style={layout}>
 
@@ -48,7 +52,7 @@ export default function App() {
           <section className="flex-1 overflow-y-scroll bg-gray-200 border-r border-black">
             <h1>Left Column</h1>
             <div>
-              {temp_list_items}
+              {tempListItems}
             </div>
           </section>
 
