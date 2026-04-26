@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { Header } from "./components/header";
 import { Monitor } from "./components/monitor";
 import { Report } from "./components/report";
@@ -7,12 +9,13 @@ export default function App() {
     const layout: React.CSSProperties & { [key: string]: any } = {
         "--layout-width": "1600px",
     }
+    const [reportTab, setReportTab] = useState<string>("Tutorial")
 
     return (
         <div className="flex h-screen w-full flex-col" style={layout}>
 
             <div className="h-16 w-full flex-none border-b border-black">
-                <Header />
+                <Header setReportTab={setReportTab}/>
             </div>
 
             <div className="flex flex-1 justify-center overflow-y-hidden @container">
@@ -25,7 +28,7 @@ export default function App() {
 
                     {/* Right Column */}
                     <section className="w-0 @2xl:w-64 @5xl:w-128 flex-none bg-gray-300 border-r border-black">
-                        <Report />
+                        <Report tab={reportTab} />
                     </section>
 
                 </main>

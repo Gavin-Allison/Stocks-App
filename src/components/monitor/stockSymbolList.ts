@@ -31,6 +31,7 @@ export const addStockToList = async (ticker: string) => {
 
     try {
         // Dont do this, need better way to validate later
+        // Also this is bugged and just doesnt work for some reason, needs to be fixed before this can be used
         await FetchStockData(symbol); 
         StockList.push(symbol);
         saveStockList();

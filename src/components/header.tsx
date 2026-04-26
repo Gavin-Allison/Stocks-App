@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { addStockToList } from "./monitor/stockSymbolList"
 
-export const Header = () => {
+export const Header = ({setReportTab}: {setReportTab: (tab: string) => void}) => {
     const [addableStock, setAddableStock] = useState<string>("");
 
     return (
@@ -19,6 +19,20 @@ export const Header = () => {
             <button onClick={() => addStockToList(addableStock)}>
                 Add Stock
             </button>
+
+            {/* empty space filler div remove later */}
+            <div className="flex-grow"></div>
+
+            <button onClick={() => setReportTab("Tutorial")}>
+                Tutorial
+            </button>
+            <button onClick={() => setReportTab("Overview")}>
+                Overview
+            </button>
+            <button onClick={() => setReportTab("Results")}>
+                Results
+            </button>
+
         </div>
     )
 }
