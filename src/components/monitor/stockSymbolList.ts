@@ -34,6 +34,11 @@ export const addStockToList = async (symbol: string) => {
 
 // Remove a stock from the list
 export const removeStockFromList = (symbol: string) => {
+    if (!StockList.includes(symbol)) {
+        console.log("Stock not in list");
+        return;
+    }
+
     const index = StockList.indexOf(symbol);
     StockList.splice(index, 1);
     notifyChange();

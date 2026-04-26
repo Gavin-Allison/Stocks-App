@@ -1,6 +1,6 @@
 import { useState, useEffect, memo } from "react";
 import { FetchStockData, ChartComponent } from "./stockChart";
-import { getStockList } from "./stockSymbolList";
+import { getStockList, removeStockFromList} from "./stockSymbolList";
 
 // Takes a stock item and renders a chart for it
 const StockChart = memo(({ symbol }: { symbol: string }) => {
@@ -21,9 +21,16 @@ const StockChart = memo(({ symbol }: { symbol: string }) => {
 
     return (
         <div className="p-4 border-b border-gray-300">
+            <div className="flex">
             <div className="mb-2 font-bold">
-                {symbol} Chart
+                {symbol} Chart____
             </div>
+
+            <button onClick={() => removeStockFromList(symbol)}>
+                Remove Stock
+            </button>
+            </div>
+
             <div className="h-[300px] w-full bg-white [&_a]:hidden">
                 {chartData.length > 0 ? (
                      <ChartComponent data={chartData} />
