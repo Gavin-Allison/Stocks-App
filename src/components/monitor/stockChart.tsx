@@ -18,15 +18,13 @@ export const ChartComponent = props => {
         } = {},
     } = props;
 
-    const ChartContainerRef = useRef<HTMLDivElement>(null);
+    const chartContainerRef = useRef<HTMLDivElement>(null);
 
     // Set up the chart when the component mounts and clean up when it unmounts
     useEffect(() => {
-        if (!ChartContainerRef.current) return;
-        
-        ChartContainerRef.current.innerHTML = ''; 
+        if (!chartContainerRef.current) return;
 
-        const Chart = createChart(ChartContainerRef.current, {
+        const chart = createChart(chartContainerRef.current, {
             layout: {
                 background: { type: ColorType.Solid, color: backgroundColor },
                 textColor,
@@ -40,37 +38,37 @@ export const ChartComponent = props => {
                 pinch: true,
                 axisPressedMouseMove: true,
             },
-            width: ChartContainerRef.current.clientWidth,
+            width: chartContainerRef.current.clientWidth,
             height: 300,
         });
         
-        Chart.timeScale().fitContent();
+        chart.timeScale().fitContent();
 
-        const NewSeries = Chart.addSeries(AreaSeries, {
+        const series = chart.addSeries(AreaSeries, {
             lineColor
         });
-        
-        const handleResize = () => {
-            if (ChartContainerRef.current) {
-                Chart.applyOptions({ width: ChartContainerRef.current.clientWidth });
+    
+        const resizeObserver = new ResizeObserver(entries => {
+            if (entries[0].contentRect) {
+                chart.applyOptions({ width: entries[0].contentRect.width });
             }
-        };
+        });
+        resizeObserver.observe(chartContainerRef.current);
 
         const handleResetZoom = () => {
-            Chart.timeScale().fitContent();
+            chart.timeScale().fitContent();
         };
 
-
-        NewSeries.setData(data);
+        series.setData(data);
+        resizeObserver.observe(chartContainerRef.current);
         window.addEventListener('dblclick', handleResetZoom);
-        window.addEventListener('resize', handleResize);
 
         return () => {
-            window.removeEventListener('resize', handleResize);
+            resizeObserver.disconnect();
             window.removeEventListener('dblclick', handleResetZoom);
-            Chart.remove();
+            chart.remove();
         };
-    }, [data, backgroundColor, lineColor, textColor]);
+    }, []);
 
-    return <div ref={ChartContainerRef} />;
+    return <div ref={chartContainerRef} />;
 }

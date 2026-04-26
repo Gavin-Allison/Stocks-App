@@ -1,64 +1,36 @@
 import { useState, useEffect, memo } from "react";
 import { FetchStockData, ChartComponent } from "./stockChart";
-
-// This is a hardcoded list of stocks to display in the chart list
-const StockList: string[] = [
-    "RY.TO",
-    "BNS.TO",
-    "CM.TO"
-];
-
-export const removeStockFromList = (symbol: string) => {
-    const index = StockList.indexOf(symbol);
-    StockList.splice(index, 1);
-};
-    
-// Interface for a stock item for the chart list
-interface StockItem {
-    id: number;
-    symbol: string;
-    chartData: any[];
-};
-
-// Convert current stocks to a list of chart items with data fetched from the backend
-const useCurrentStocks = () => {
-  const [chartList, setChartList] = useState<StockItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const loadData = async () => {
-        try {
-            // Fetch data for all stocks in parallel and put into results
-            const results: StockItem[] = await Promise.all(
-                StockList.map(async (symbol, index) => ({
-                    id: index,
-                    symbol: symbol,
-                    chartData: await FetchStockData(symbol),
-                }))
-            );
-            
-            setChartList(results);
-            setLoading(false);
-        } catch (error) {
-            console.error("Error fetching stock data:", error);
-        }
-    };
-
-    loadData();
-  }, []);
-
-  return { chartList, loading };
-};
+import { getStockList } from "./stockSymbolList";
 
 // Takes a stock item and renders a chart for it
-const StockItemChart = memo(({ item }: { item: StockItem }) => {
+const StockChart = memo(({ symbol }: { symbol: string }) => {
+    const [chartData, setChartData] = useState<any[]>([]);
+
+    // Fetch stock data when the symbol changes
+    useEffect(() => {
+        const getDataFromSymbol = async () => {
+            try {
+                const data = await FetchStockData(symbol);
+                setChartData(data);
+            } catch (error) {
+                console.error("Error fetching stock data:", error);
+            }
+        };
+    getDataFromSymbol();
+    }, [symbol]);
+
     return (
         <div className="p-4 border-b border-gray-300">
             <div className="mb-2 font-bold">
-                {item.symbol} Chart
+                {symbol} Chart
             </div>
             <div className="h-[300px] w-full bg-white [&_a]:hidden">
-                <ChartComponent data={item.chartData} />
+                {chartData.length > 0 ? (
+                     <ChartComponent data={chartData} />
+                ) : (
+                    <div className="text-gray-500">No data available</div>
+                )}
+
             </div>
         </div>
     )
@@ -66,17 +38,24 @@ const StockItemChart = memo(({ item }: { item: StockItem }) => {
 
 // Main component that renders the list of stock charts
 export const StockChartList = () => {
-    const { chartList, loading } = useCurrentStocks();
+    const [symbols, setSymbols] = useState<string[]>(getStockList());
+    useEffect(() => {
+        // Listen for stock list updates and refresh the symbols state when it changes
+        const handleStockListUpdate = () => {
+            setSymbols(getStockList());
+        };
 
-    if (loading) {
-        return <div className="text-center">Loading...</div>;
-    }
+        window.addEventListener("stockListUpdate", handleStockListUpdate);
+        return () => {
+            window.removeEventListener("stockListUpdate", handleStockListUpdate);
+        };
+    }, []);
 
     return (
-        <div>
-            {chartList.map((item) => (
-                <StockItemChart key={item.id} item={item} />
-            ))}
-        </div>
+        <>
+        {symbols.map((symbol) => (
+            <StockChart key={symbol} symbol={symbol} />
+        ))}
+        </>
     );
 };
