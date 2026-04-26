@@ -32,12 +32,7 @@ const StockChart = memo(({ symbol }: { symbol: string }) => {
             </div>
 
             <div className="h-[300px] w-full bg-white [&_a]:hidden">
-                {chartData.length > 0 ? (
-                     <ChartComponent data={chartData} />
-                ) : (
-                    <div className="text-gray-500">No data available</div>
-                )}
-
+                {chartData.length > 0 && <ChartComponent data={chartData} />}
             </div>
         </div>
     )
