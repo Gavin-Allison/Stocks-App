@@ -1,22 +1,27 @@
 import { useState, useEffect, memo } from "react";
 import { FetchStockData, ChartComponent } from "./stockChart";
 
-// This is a hardcoded list of stocks to display in the chart list, with empty data to be filled in later
+// This is a hardcoded list of stocks to display in the chart list
 const StockList: string[] = [
     "RY.TO",
     "BNS.TO",
     "CM.TO"
 ];
 
+export const removeStockFromList = (symbol: string) => {
+    const index = StockList.indexOf(symbol);
+    StockList.splice(index, 1);
+};
+    
 // Interface for a stock item for the chart list
 interface StockItem {
     id: number;
     symbol: string;
     chartData: any[];
-}
+};
 
 // Convert current stocks to a list of chart items with data fetched from the backend
-export const useCurrentStocks = () => {
+const useCurrentStocks = () => {
   const [chartList, setChartList] = useState<StockItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -46,7 +51,7 @@ export const useCurrentStocks = () => {
 };
 
 // Takes a stock item and renders a chart for it
-export const StockItemChart = memo(({ item }: { item: StockItem }) => {
+const StockItemChart = memo(({ item }: { item: StockItem }) => {
     return (
         <div className="p-4 border-b border-gray-300">
             <div className="mb-2 font-bold">
