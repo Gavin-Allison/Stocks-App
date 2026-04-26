@@ -19,8 +19,10 @@ export const ChartComponent = props => {
     } = props;
 
     const chartContainerRef = useRef<HTMLDivElement>(null);
+    const chartRef = useRef<any>(null);
+    const seriesRef = useRef<any>(null);
 
-    // Set up the chart when the component mounts and clean up when it unmounts
+    // Initial Setup
     useEffect(() => {
         if (!chartContainerRef.current) return;
 
@@ -47,13 +49,15 @@ export const ChartComponent = props => {
         const series = chart.addSeries(AreaSeries, {
             lineColor
         });
+
+        chartRef.current = chart;
+        seriesRef.current = series;
     
         const resizeObserver = new ResizeObserver(entries => {
             if (entries[0].contentRect) {
                 chart.applyOptions({ width: entries[0].contentRect.width });
             }
         });
-        resizeObserver.observe(chartContainerRef.current);
 
         const handleResetZoom = () => {
             chart.timeScale().fitContent();
@@ -70,5 +74,13 @@ export const ChartComponent = props => {
         };
     }, []);
 
-    return <div ref={chartContainerRef} />;
+    // Update chart data
+    useEffect(() => {
+        if (seriesRef.current && data) {
+            seriesRef.current.setData(data);
+            chartRef.current.timeScale().fitContent();
+        }
+    }, [data]);
+
+    return <div ref={chartContainerRef} className="w-full h-full" />;
 }
