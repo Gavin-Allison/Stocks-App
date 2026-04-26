@@ -1,10 +1,19 @@
 import { FetchStockData } from "./stockChart";
 
-// This is a hardcoded list of stocks to display in the chart list
-export const StockList: string[] = ["RY.TO", "BNS.TO", "CM.TO"];
+const tempList = ["RY.TO", "BNS.TO", "CM.TO"];
 
 // Get stock list. Change to external stocklist when implemented
-export const getStockList = () => [...StockList]
+export const getStockList = () => {
+    const savedList = localStorage.getItem("stockList");
+    return savedList ? JSON.parse(savedList) : tempList;
+}
+
+const StockList: string[] = getStockList();
+
+// Save stock list to local storage whenever it changes
+const saveStockList = () => {
+    localStorage.setItem("stockList", JSON.stringify(StockList));
+}
 
 // Helper to notify React components stock list that updated
 const notifyChange = () => {
@@ -23,6 +32,7 @@ export const addStockToList = async (symbol: string) => {
         // Dont do this, need better way to validate later
         await FetchStockData(symbol); 
         StockList.push(symbol);
+        saveStockList();
         notifyChange();
     } catch (error) {
         // Needs output on UI instead of console log
@@ -41,6 +51,7 @@ export const removeStockFromList = (symbol: string) => {
 
     const index = StockList.indexOf(symbol);
     StockList.splice(index, 1);
+    saveStockList();
     notifyChange();
 };
     
