@@ -21,7 +21,8 @@ const notifyChange = () => {
 };
 
 // Add a stock to the list after validating it exists in the backend
-export const addStockToList = async (symbol: string) => {
+export const addStockToList = async (ticker: string) => {
+    const symbol = ticker.toUpperCase().trim();
     if (StockList.includes(symbol)) {
         // Needs output on UI instead of console log
         console.log("Stock already in list");
