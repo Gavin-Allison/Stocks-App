@@ -1,4 +1,4 @@
-import { AreaSeries, createChart } from 'lightweight-charts';
+import { AreaSeries, createChart, ColorType } from 'lightweight-charts';
 import { useEffect, useRef } from 'react';
 
 // Fetches stock data from the backend server for a given symbol
@@ -12,11 +12,9 @@ export const ChartComponent = props => {
     const {
         data,
         colors: {
-            backgroundColor = 'white',
-            lineColor = '#2962FF',
+            backgroundColor = '#e5e7eb',
+            lineColor = 'green',
             textColor = 'black',
-            areaTopColor = '#2962FF',
-            areaBottomColor = 'rgba(41, 98, 255, 0.28)',
         } = {},
     } = props;
 
@@ -29,6 +27,10 @@ export const ChartComponent = props => {
         ChartContainerRef.current.innerHTML = ''; 
 
         const Chart = createChart(ChartContainerRef.current, {
+            layout: {
+                background: { type: ColorType.Solid, color: backgroundColor },
+                textColor,
+            },
             width: ChartContainerRef.current.clientWidth,
             height: 300,
         });
@@ -43,9 +45,7 @@ export const ChartComponent = props => {
         };
 
         const NewSeries = Chart.addSeries(AreaSeries, {
-            lineColor,
-            topColor: areaTopColor,
-            bottomColor: areaBottomColor,
+            lineColor
         });
         
         NewSeries.setData(data);
@@ -56,7 +56,7 @@ export const ChartComponent = props => {
             window.removeEventListener('resize', HandleResize);
             Chart.remove();
         };
-    }, [data, backgroundColor, lineColor, textColor, areaTopColor, areaBottomColor]);
+    }, [data, backgroundColor, lineColor, textColor]);
 
     return <div ref={ChartContainerRef} />;
 }

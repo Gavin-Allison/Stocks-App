@@ -57,11 +57,6 @@ export default function App() {
 
       <div className="flex flex-1 justify-center overflow-y-hidden @container">
         <main className="max-w-[var(--layout-width)] w-full flex mx-auto">
-
-          {/* Sidebar */}
-          <aside className="w-16 @7xl:w-64 flex-none bg-gray-300 border-x border-black">
-            <h1>Sidebar</h1>
-          </aside>
           
           {/* Left Column*/}
           <section className="flex-1 overflow-y-scroll bg-gray-200 border-r border-black">
