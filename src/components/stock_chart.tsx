@@ -1,11 +1,13 @@
 import { AreaSeries, createChart } from 'lightweight-charts';
 import { useEffect, useRef } from 'react';
 
+// Fetches stock data from the backend server for a given symbol
 export const FetchStockData = async (symbol: string) => {
   const response = await fetch(`http://localhost:3001/stock_history?symbol=${symbol}`);
   return await response.json();
 };
 
+// React component that renders a stock chart using the Lightweight Charts library
 export const ChartComponent = props => {
     const {
         data,
@@ -20,6 +22,7 @@ export const ChartComponent = props => {
 
     const ChartContainerRef = useRef<HTMLDivElement>(null);
 
+    // Set up the chart when the component mounts and clean up when it unmounts
     useEffect(() => {
         if (!ChartContainerRef.current) return;
         
@@ -32,6 +35,7 @@ export const ChartComponent = props => {
         
         Chart.timeScale().fitContent();
 
+        // Handle window resize to make the chart responsive
         const HandleResize = () => {
             if (ChartContainerRef.current) {
                 Chart.applyOptions({ width: ChartContainerRef.current.clientWidth });

@@ -10,11 +10,26 @@ export default function App() {
 
   useEffect(() => {
     const testFetch = async () => {
-      const data = await FetchStockData("AAPL");
       const list = [{
         id: 0,
-        stock: "AAPL Chart",
-        chartData: data
+        stock: "RY.TO Chart",
+        chartData: await FetchStockData("RY.TO")
+      }, {
+        id: 1,
+        stock: "BMO.TO Chart",
+        chartData: await FetchStockData("BMO.TO")
+      }, {
+        id: 2,
+        stock: "BNS.TO Chart",
+        chartData: await FetchStockData("BNS.TO")
+      }, {
+        id: 3,
+        stock: "CM.TO Chart",
+        chartData: await FetchStockData("CM.TO")
+      }, {
+        id: 4,
+        stock: "TD.TO Chart",
+        chartData: await FetchStockData("TD.TO")
       }];
       setTempList(list);
     };

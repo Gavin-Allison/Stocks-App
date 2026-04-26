@@ -3,15 +3,16 @@ import cors from "cors";
 
 import YahooFinance from "yahoo-finance2";
 
-const YahooFinanceInstance = new YahooFinance();
-
 const App = express();
 App.use(cors());
+
+const YahooFinanceInstance = new YahooFinance();
 
 App.get('/stock_history', async (Req, Res) => {
   const { symbol } = Req.query;
   
   try {
+    // Fetch 5 years of daily data
     const FiveYears = Math.floor(Date.now() / 1000) - (5 * 365 * 24 * 60 * 60);
     const Result = await YahooFinanceInstance.chart(symbol as string, { 
       period1: FiveYears, 
@@ -22,6 +23,7 @@ App.get('/stock_history', async (Req, Res) => {
       return Res.status(404).json({ error: "No data found" });
     }
 
+    // Format data for the chart
     const FormattedData = Result.quotes.map(Quote => ({
       time: Quote.date.toISOString().split('T')[0],
       value: Quote.adjClose || Quote.close
