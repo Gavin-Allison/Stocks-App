@@ -31,29 +31,43 @@ export const ChartComponent = props => {
                 background: { type: ColorType.Solid, color: backgroundColor },
                 textColor,
             },
+            handleScroll: {
+                mouseWheel: true,
+                pressedMouseMove: true,
+            },
+            handleScale: {
+                mouseWheel: false,
+                pinch: true,
+                axisPressedMouseMove: true,
+            },
             width: ChartContainerRef.current.clientWidth,
             height: 300,
         });
         
         Chart.timeScale().fitContent();
 
-        // Handle window resize to make the chart responsive
-        const HandleResize = () => {
+        const NewSeries = Chart.addSeries(AreaSeries, {
+            lineColor
+        });
+        
+        const handleResize = () => {
             if (ChartContainerRef.current) {
                 Chart.applyOptions({ width: ChartContainerRef.current.clientWidth });
             }
         };
 
-        const NewSeries = Chart.addSeries(AreaSeries, {
-            lineColor
-        });
-        
-        NewSeries.setData(data);
+        const handleResetZoom = () => {
+            Chart.timeScale().fitContent();
+        };
 
-        window.addEventListener('resize', HandleResize);
+
+        NewSeries.setData(data);
+        window.addEventListener('dblclick', handleResetZoom);
+        window.addEventListener('resize', handleResize);
 
         return () => {
-            window.removeEventListener('resize', HandleResize);
+            window.removeEventListener('resize', handleResize);
+            window.removeEventListener('dblclick', handleResetZoom);
             Chart.remove();
         };
     }, [data, backgroundColor, lineColor, textColor]);
