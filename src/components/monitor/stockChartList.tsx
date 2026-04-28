@@ -1,6 +1,7 @@
 import { useState, useEffect, memo } from "react";
-import { FetchStockData, ChartComponent } from "./stockChart";
+import { ChartComponent } from "./stockChart";
 import { getStockList, removeStockFromList} from "./stockSymbolList";
+import { FetchStockData } from "../../services/stockData";
 
 // Takes a stock item and renders a chart for it
 const StockChart = memo(({ symbol }: { symbol: string }) => {

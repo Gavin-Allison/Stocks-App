@@ -1,8 +1,8 @@
 import { useState } from "react";
 
-import { Header } from "./components/header";
-import { Monitor } from "./components/monitor";
-import { Report } from "./components/report";
+import { Header } from "./layouts/header";
+import { Monitor } from "./layouts/monitor";
+import { Report } from "./layouts/report";
 
 
 export default function App() {

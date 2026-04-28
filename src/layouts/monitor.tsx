@@ -1,4 +1,4 @@
-import { StockChartList } from "./monitor/stockChartList"
+import { StockChartList } from "../components/monitor/stockChartList"
 
 export const Monitor = () => {
     return (

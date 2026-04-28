@@ -1,6 +1,6 @@
-import { Tutorial } from "./report/tutorial"
-import { Overview } from "./report/overview"
-import { Results } from "./report/results"
+import { Tutorial } from "../components/report/tutorial"
+import { Overview } from "../components/report/overview"
+import { Results } from "../components/report/results"
 
 export const Report = ({ tab }: { tab: string }) => {
     if (tab === 'Tutorial') {

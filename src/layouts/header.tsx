@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { addStockToList } from "./monitor/stockSymbolList"
+import { addStockToList } from "../components/monitor/stockSymbolList"
 
 export const Header = ({setReportTab}: {setReportTab: (tab: string) => void}) => {
     const [addableStock, setAddableStock] = useState<string>("");

@@ -1,4 +1,4 @@
-import { FetchStockData } from "./stockChart";
+import { FetchStockData } from "../../services/stockData";
 
 const tempList = ["RY.TO", "BNS.TO", "CM.TO"];
 

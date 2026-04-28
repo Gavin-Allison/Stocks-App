@@ -8,7 +8,7 @@ App.use(cors());
 
 const YahooFinanceInstance = new YahooFinance();
 
-App.get('/stock_history', async (Req, Res) => {
+App.get('/api/stock_history', async (Req, Res) => {
     const { symbol } = Req.query;
 
 try {
