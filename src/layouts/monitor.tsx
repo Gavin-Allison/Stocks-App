@@ -1,7 +1,13 @@
-import { StockChartList } from "../components/monitor/stockChartList"
+import { StockChartList } from "../components/monitor/stockChartList";
 
-export const Monitor = () => {
+export const Monitor = ({ 
+    symbols, 
+    onRemoveStock 
+}: { 
+    symbols: string[], 
+    onRemoveStock: (s: string) => void 
+}) => {
     return (
-        <StockChartList />
-    )
-}
+        <StockChartList symbols={symbols} onRemoveStock={onRemoveStock} />
+    );
+};

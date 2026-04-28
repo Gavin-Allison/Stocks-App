@@ -57,7 +57,9 @@ export const ChartComponent = props => {
             chart.timeScale().fitContent();
         };
 
-        series.setData(data);
+        if (data && data.length > 0) {
+            series.setData(data);
+        }
         resizeObserver.observe(chartContainerRef.current);
         window.addEventListener('dblclick', handleResetZoom);
 
@@ -70,7 +72,7 @@ export const ChartComponent = props => {
 
     // Update chart data
     useEffect(() => {
-        if (seriesRef.current && data) {
+        if (seriesRef.current && data && data.length > 0) {
             seriesRef.current.setData(data);
             chartRef.current.timeScale().fitContent();
         }

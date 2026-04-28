@@ -1,64 +1,74 @@
 import { useState, useEffect, memo } from "react";
 import { ChartComponent } from "./stockChart";
-import { getStockList, removeStockFromList} from "./stockSymbolList";
 import { FetchStockData } from "../../services/stockData";
 
-// Takes a stock item and renders a chart for it
-const StockChart = memo(({ symbol }: { symbol: string }) => {
+// Stock chart item using fetched data
+const StockChart = memo(({ symbol, onRemove }: { symbol: string, onRemove: (s: string) => void }) => {
     const [chartData, setChartData] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    // Fetch stock data when the symbol changes
+    // Fetch Data, load until fetched
     useEffect(() => {
-        const getDataFromSymbol = async () => {
+        let isMounted = true;
+        const loadData = async () => {
+            setLoading(true);
             try {
                 const data = await FetchStockData(symbol);
-                setChartData(data);
-            } catch (error) {
-                console.error("Error fetching stock data:", error);
+                if (isMounted) setChartData(data);
+            } catch (e) {
+                console.error("Failed to load", symbol);
+            } finally {
+                if (isMounted) setLoading(false);
             }
         };
-    getDataFromSymbol();
+        loadData();
+        return () => { isMounted = false; };
     }, [symbol]);
 
     return (
-        <div className="p-4 border-b border-gray-300">
-            <div className="flex">
-            <div className="mb-2 font-bold">
-                {symbol} Chart____
+        <div className="p-4 border-b border-gray-300 bg-white shadow-sm mb-4">
+            <div className="flex justify-between items-center mb-4">
+                <h3 className="font-bold text-lg text-gray-800">{symbol} Analysis</h3>
+                <button 
+                    onClick={() => onRemove(symbol)}
+                    className="px-3 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-colors text-sm font-medium"
+                >
+                    Remove
+                </button>
             </div>
 
-            <button onClick={() => removeStockFromList(symbol)}>
-                Remove Stock
-            </button>
-            </div>
-
-            <div className="h-[300px] w-full bg-white [&_a]:hidden">
-                {chartData.length > 0 && <ChartComponent data={chartData} />}
+            <div className="h-[300px] w-full bg-gray-50 rounded border relative [&_a]:hidden">
+                {loading ? (
+                    <div className="absolute inset-0 flex items-center justify-center">Loading...</div>
+                ) : (
+                    <ChartComponent data={chartData} />
+                )}
             </div>
         </div>
-    )
+    );
 });
 
-// Main component that renders the list of stock charts
-export const StockChartList = () => {
-    const [symbols, setSymbols] = useState<string[]>(getStockList());
-    useEffect(() => {
-        // Listen for stock list updates and refresh the symbols state when it changes
-        const handleStockListUpdate = () => {
-            setSymbols(getStockList());
-        };
-
-        window.addEventListener("stockListUpdate", handleStockListUpdate);
-        return () => {
-            window.removeEventListener("stockListUpdate", handleStockListUpdate);
-        };
-    }, []);
+// List of stock charts
+export const StockChartList = ({ 
+    symbols, 
+    onRemoveStock
+}: { 
+    symbols: string[], 
+    onRemoveStock: (s: string) => void 
+}) => {
 
     return (
-        <>
-        {symbols.map((symbol) => (
-            <StockChart key={symbol} symbol={symbol} />
-        ))}
-        </>
+        <div className="flex flex-col gap-2">
+            {symbols.length === 0 && (
+                <p className="text-gray-500 text-center py-10">No stocks monitored. Add one to get started.</p>
+            )}
+            {symbols.map((symbol) => (
+                <StockChart 
+                    key={symbol} 
+                    symbol={symbol} 
+                    onRemove={onRemoveStock} 
+                />
+            ))}
+        </div>
     );
 };
