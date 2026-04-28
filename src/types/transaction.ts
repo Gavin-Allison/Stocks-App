@@ -3,10 +3,6 @@ interface BaseTransaction {
     id: string;
     date: Date;
     batchId?: string;
-    status?: {
-        isError: boolean;
-        message?: string;
-    };
 }
 
 /**
