@@ -1,6 +1,8 @@
 import { useState } from "react";
 
-import { useStockSymbolList } from './hooks/useStockSymbolList';
+import { useStockSymbolList } from "./hooks/useStockSymbolList";
+import { useLedgerList } from "./hooks/useLedgerList";
+
 import { Header } from "./layouts/header";
 import { Monitor } from "./layouts/monitor";
 import { Report } from "./layouts/report";
@@ -11,7 +13,8 @@ export default function App() {
         "--layout-width": "1600px",
     }
     const { symbols, addStock, removeStock } = useStockSymbolList();
-    const [reportTab, setReportTab] = useState<string>("Tutorial")
+    const {} = useLedgerList();
+    const [ reportTab, setReportTab ] = useState<string>("Tutorial")
 
     return (
         <div className="flex h-screen w-full flex-col" style={layout}>
