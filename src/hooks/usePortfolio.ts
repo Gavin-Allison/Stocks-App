@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 
 import { FetchStockData } from '../services/stockData';
 import type { Transaction } from '../types/transaction';
-import { Transactions } from '../components/report/transactions';
 
 const defaultList = ["RY.TO", "BNS.TO", "CM.TO"];
 
