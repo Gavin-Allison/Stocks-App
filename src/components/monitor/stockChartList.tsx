@@ -8,7 +8,7 @@ const StockChart = memo(({
     onRemove 
 }: { 
     symbol: string,
-    priceData: any[]
+    priceData: any[],
     onRemove: (s: string) => void 
 }) => {
     return (

@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 import { usePortfolio } from "./hooks/usePortfolio";
-import { useLedger } from "./hooks/useLedger";
 
 import { Header } from "./layouts/header";
 import { Monitor } from "./layouts/monitor";
@@ -12,8 +11,7 @@ export default function App() {
     const layout: React.CSSProperties & { [key: string]: any } = {
         "--layout-width": "1600px",
     }
-    const { symbols, priceData, addStock, removeStock } = usePortfolio();
-    const {} = useLedger();
+    const { symbols, priceData, addStock, removeStock, transactions, addTransaction, removeTransaction } = usePortfolio();
     const [ reportTab, setReportTab ] = useState<string>("Tutorial")
 
     return (
@@ -44,6 +42,9 @@ export default function App() {
                     <section className="w-0 @2xl:w-64 @5xl:w-128 flex-none bg-gray-300 border-r border-black">
                         <Report 
                             tab={reportTab} 
+                            transactions={transactions}
+                            addTransaction={addTransaction}
+                            removeTransaction={removeTransaction}
                         />
                     </section>
 

@@ -1,9 +1,12 @@
 import { useState } from "react";
 
 // Bar at top
-export const Header = ({ setReportTab, onAddStock }: { 
-  setReportTab: (tab: string) => void,
-  onAddStock: (symbol: string) => void 
+export const Header = ({ 
+    setReportTab, 
+    onAddStock 
+}: { 
+    setReportTab: (tab: string) => void,
+    onAddStock: (symbol: string) => void 
 }) => {
     const [addableStock, setAddableStock] = useState("");
 
@@ -37,6 +40,7 @@ export const Header = ({ setReportTab, onAddStock }: {
             <div className="flex gap-2">
                 <button onClick={() => setReportTab("Tutorial")}>Tutorial</button>
                 <button onClick={() => setReportTab("Overview")}>Overview</button>
+                <button onClick={() => setReportTab("Transactions")}>Transactions</button>
                 <button onClick={() => setReportTab("Results")}>Results</button>
             </div>
         </div>

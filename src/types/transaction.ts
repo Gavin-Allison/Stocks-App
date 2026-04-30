@@ -5,11 +5,7 @@ interface BaseTransaction {
     batchId?: string;
 }
 
-/**
- * Fixed Transactions
- */
 interface FixedTrade extends BaseTransaction {
-    category: 'FIXED';
     type: 'BUY' | 'SELL';
     ticker: string;
     amount: number;       // Exact number of shares
@@ -18,17 +14,12 @@ interface FixedTrade extends BaseTransaction {
 }
 
 interface FixedCash extends BaseTransaction {
-  category: 'FIXED';
-  type: 'DEPOSIT' | 'WITHDRAWAL';
-  amount: number;       // Exact dollar amount
-  fees: number;
+    type: 'DEPOSIT' | 'WITHDRAWAL';
+    amount: number;       // Exact dollar amount
+    fees: number;
 }
 
-/**
- * Dynamic Transactions
- */
 interface DynamicTrade extends BaseTransaction {
-    category: 'DYNAMIC';
     type: 'BUY' | 'SELL';
     ticker: string;
     value: number; // e.g., 0.20 for 20%
@@ -38,11 +29,10 @@ interface DynamicTrade extends BaseTransaction {
 }
 
 interface DividendAction extends BaseTransaction {
-  category: 'FIXED';
-  type: 'DIVIDEND';
-  ticker: string;
-  amount: number; // Cash received
-  isReinvested: boolean; // If true, triggers a secondary Fixed Buy
+    type: 'DIVIDEND';
+    ticker: string;
+    amount: number; // Cash received
+    isReinvested: boolean; // If true, triggers a secondary Fixed Buy
 }
 
 // Master Type
