@@ -1,30 +1,16 @@
-import { useState, useEffect, memo } from "react";
+import { memo } from "react";
 import { ChartComponent } from "./stockChart";
-import { FetchStockData } from "../../services/stockData";
 
 // Stock chart item using fetched data
-const StockChart = memo(({ symbol, onRemove }: { symbol: string, onRemove: (s: string) => void }) => {
-    const [chartData, setChartData] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    // Fetch Data, load until fetched
-    useEffect(() => {
-        let isMounted = true;
-        const loadData = async () => {
-            setLoading(true);
-            try {
-                const data = await FetchStockData(symbol);
-                if (isMounted) setChartData(data);
-            } catch (e) {
-                console.error("Failed to load", symbol);
-            } finally {
-                if (isMounted) setLoading(false);
-            }
-        };
-        loadData();
-        return () => { isMounted = false; };
-    }, [symbol]);
-
+const StockChart = memo(({ 
+    symbol, 
+    priceData,
+    onRemove 
+}: { 
+    symbol: string,
+    priceData: any[]
+    onRemove: (s: string) => void 
+}) => {
     return (
         <div className="p-4 border-b border-gray-300 bg-white shadow-sm mb-4">
             <div className="flex justify-between items-center mb-4">
@@ -38,11 +24,7 @@ const StockChart = memo(({ symbol, onRemove }: { symbol: string, onRemove: (s: s
             </div>
 
             <div className="h-[300px] w-full bg-gray-50 rounded border relative [&_a]:hidden">
-                {loading ? (
-                    <div className="absolute inset-0 flex items-center justify-center">Loading...</div>
-                ) : (
-                    <ChartComponent data={chartData} />
-                )}
+                <ChartComponent data={priceData} />
             </div>
         </div>
     );
@@ -51,9 +33,11 @@ const StockChart = memo(({ symbol, onRemove }: { symbol: string, onRemove: (s: s
 // List of stock charts
 export const StockChartList = ({ 
     symbols, 
+    priceData, 
     onRemoveStock
 }: { 
-    symbols: string[], 
+    symbols: string[],
+    priceData: Record<string, any[]>,
     onRemoveStock: (s: string) => void 
 }) => {
 
@@ -65,7 +49,8 @@ export const StockChartList = ({
             {symbols.map((symbol) => (
                 <StockChart 
                     key={symbol} 
-                    symbol={symbol} 
+                    symbol={symbol}
+                    priceData={priceData[symbol]} 
                     onRemove={onRemoveStock} 
                 />
             ))}

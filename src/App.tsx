@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-import { useStockSymbolList } from "./hooks/useStockSymbolList";
-import { useLedgerList } from "./hooks/useLedgerList";
+import { usePortfolio } from "./hooks/usePortfolio";
+import { useLedger } from "./hooks/useLedger";
 
 import { Header } from "./layouts/header";
 import { Monitor } from "./layouts/monitor";
@@ -12,8 +12,8 @@ export default function App() {
     const layout: React.CSSProperties & { [key: string]: any } = {
         "--layout-width": "1600px",
     }
-    const { symbols, addStock, removeStock } = useStockSymbolList();
-    const {} = useLedgerList();
+    const { symbols, priceData, addStock, removeStock } = usePortfolio();
+    const {} = useLedger();
     const [ reportTab, setReportTab ] = useState<string>("Tutorial")
 
     return (
@@ -21,7 +21,10 @@ export default function App() {
 
             {/* Header */}
             <div className="h-16 w-full flex-none border-b border-black">
-                <Header setReportTab={setReportTab} onAddStock={addStock}/>
+                <Header 
+                    setReportTab={setReportTab} 
+                    onAddStock={addStock}
+                />
             </div>
 
             {/* Main (two columns) */}
@@ -30,12 +33,18 @@ export default function App() {
                 
                     {/* Left Column*/}
                     <section className="flex-1 overflow-y-scroll bg-gray-200 border-r border-black">
-                        <Monitor symbols={symbols} onRemoveStock={removeStock} />
+                        <Monitor 
+                            symbols={symbols} 
+                            priceData={priceData}
+                            onRemoveStock={removeStock} 
+                        />
                     </section>
 
                     {/* Right Column */}
                     <section className="w-0 @2xl:w-64 @5xl:w-128 flex-none bg-gray-300 border-r border-black">
-                        <Report tab={reportTab} />
+                        <Report 
+                            tab={reportTab} 
+                        />
                     </section>
 
                 </main>

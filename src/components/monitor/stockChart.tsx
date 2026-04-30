@@ -2,15 +2,21 @@ import { AreaSeries, createChart, ColorType } from 'lightweight-charts';
 import { useEffect, useRef } from 'react';
 
 // React component that renders a stock chart using the Lightweight Charts library
-export const ChartComponent = props => {
-    const {
-        data,
-        colors: {
-            backgroundColor = '#e5e7eb',
-            lineColor = 'green',
-            textColor = 'black',
-        } = {},
-    } = props;
+export const ChartComponent = ({
+    data,
+    colors: {
+        backgroundColor = '#e5e7eb',
+        lineColor = 'green',
+        textColor = 'black',
+    } = {},
+}: {
+    data: any[];
+    colors?: {
+        backgroundColor?: string;
+        lineColor?: string;
+        textColor?: string;
+    };
+}) => {
 
     const chartContainerRef = useRef<HTMLDivElement>(null);
     const chartRef = useRef<any>(null);
