@@ -43,6 +43,12 @@ export const usePortfolio = () => {
     // Remove stock from list
     const removeStock = (symbol: string) => {
         setSymbols(prev => prev.filter(s => s !== symbol));
+
+        setPriceData(prev => {
+        const newData = { ...prev };
+        delete newData[symbol];
+        return newData;
+    });
     };
 
     return { symbols, priceData, addStock, removeStock };
