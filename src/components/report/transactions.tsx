@@ -21,25 +21,19 @@ export const Transactions = ({
         </li>
     ));
 
-    const handleManualBuy = () => {
+    const handleAddTransaction = (details: any) => {
         const transaction: Transaction = {
+            ...details,
             id: crypto.randomUUID(),
             date: new Date(),
-
-            type: "BUY",
-            ticker: "CM.TO",
-            amount: 1,
-            pricePerUnit: 100,
-            fees: 10
         }
         addTransaction(transaction)
     }
 
-
     return (
         <>  
         <h1>Transactions</h1>
-        <button onClick={() => handleManualBuy()}>add </button>
+        <button onClick={() => handleAddTransaction({ type: "BUY", ticker: "CM.TO", amount: 1, pricePerUnit: 100, fees: 10 })}>add </button>
         <button onClick={() => removeTransaction()}>remove</button>
         <ul>{transactionsItems}</ul>
         </>

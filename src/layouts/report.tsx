@@ -13,7 +13,7 @@ export const Report = ({
 }: { 
     tab: string,
     transactions: Transaction[],
-    addTransaction: () => void,
+    addTransaction: (transaction: Transaction) => void,
     removeTransaction: () => void,
 }) => {
     if (tab === "Tutorial") {
