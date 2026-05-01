@@ -6,10 +6,10 @@ export const Transactions = ({
     removeTransaction
 }: {
     transactions: Transaction[]
-    addTransaction: () => void
+    addTransaction: (transaction: Transaction) => void
     removeTransaction: () => void
 }) => {
-    
+
     const transactionsItems = transactions.map((transaction: any) => (
         <li key={transaction.id}>
             {transaction.id},
@@ -21,10 +21,25 @@ export const Transactions = ({
         </li>
     ));
 
+    const handleManualBuy = () => {
+        const transaction: Transaction = {
+            id: crypto.randomUUID(),
+            date: new Date(),
+
+            type: "BUY",
+            ticker: "CM.TO",
+            amount: 1,
+            pricePerUnit: 100,
+            fees: 10
+        }
+        addTransaction(transaction)
+    }
+
+
     return (
         <>  
         <h1>Transactions</h1>
-        <button onClick={() => addTransaction()}>add </button>
+        <button onClick={() => handleManualBuy()}>add </button>
         <button onClick={() => removeTransaction()}>remove</button>
         <ul>{transactionsItems}</ul>
         </>

@@ -58,18 +58,8 @@ export const usePortfolio = () => {
     };
 
     // Add transaction to list
-    const addTransaction = () => {
-        const temp: Transaction = {
-            id: crypto.randomUUID(),
-            date: new Date(),
-
-            type: "BUY",
-            ticker: "CM.TO",
-            amount: 1,
-            pricePerUnit: 100,
-            fees: 10
-        }
-        setTransactions(prev => [...prev, temp]);
+    const addTransaction = (transaction: Transaction) => {
+        setTransactions(prev => [...prev, transaction]);
     }
 
     // Remove transaction from list
