@@ -33,7 +33,12 @@ export const Transactions = ({
     return (
         <>  
         <h1>Transactions</h1>
-        <button onClick={() => handleAddTransaction({ type: "BUY", ticker: "CM.TO", amount: 1, pricePerUnit: 100, fees: 10 })}>add </button>
+        <button onClick={() => handleAddTransaction({ type: "BUY", ticker: "CM.TO", amount: 1, pricePerUnit: 100, fees: 10 })}>buy flat</button>
+        <button onClick={() => handleAddTransaction({ type: "SELL", ticker: "CM.TO", amount: 1, pricePerUnit: 100, fees: 10 })}>sell </button>
+        <button onClick={() => handleAddTransaction({ type: "DEPOSIT", amount: 100, fees: 10 })}>deposit </button>
+        <button onClick={() => handleAddTransaction({ type: "WITHDRAWL", ticker: "CM.TO", amount: 1, pricePerUnit: 100, fees: 10 })}>withdraw </button>
+        <button onClick={() => handleAddTransaction({ type: "BUY", ticker: "CM.TO", value: 0.2, fees: 10 })}>buy % </button>
+        <button onClick={() => handleAddTransaction({ type: "SELL", ticker: "CM.TO", value: 0.2, fees: 10 })}>sell % </button>
         <button onClick={() => removeTransaction()}>remove</button>
         <ul>{transactionsItems}</ul>
         </>
