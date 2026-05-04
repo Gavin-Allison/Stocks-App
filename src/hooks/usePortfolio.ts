@@ -63,8 +63,8 @@ export const usePortfolio = () => {
     }
 
     // Remove transaction from list
-    const removeTransaction = () => {
-        setTransactions(prev => prev.slice(0, -1));
+    const removeTransaction = (transaction: Transaction) => {
+        setTransactions(prev => prev.filter(t => t.id !== transaction.id));
     }
 
     return { symbols, priceData, addStock, removeStock, transactions, addTransaction, removeTransaction };

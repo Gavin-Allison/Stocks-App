@@ -14,7 +14,7 @@ export const Report = ({
     tab: string,
     transactions: Transaction[],
     addTransaction: (transaction: Transaction) => void,
-    removeTransaction: () => void,
+    removeTransaction: (transaction: Transaction) => void,
 }) => {
     if (tab === "Tutorial") {
         return <Tutorial />;
