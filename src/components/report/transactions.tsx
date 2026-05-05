@@ -28,7 +28,7 @@ export const Transactions = ({
         }
     }
 
-    const transactionsItems = transactions.map((transaction: any) => (
+    const transactionsItems = transactions.map((transaction: Transaction) => (
         <li key={transaction.id}>
             {formatTransaction(transaction)}
             <button onClick={() => removeTransaction(transaction)}>, Remove</button>
