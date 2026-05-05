@@ -59,8 +59,20 @@ export const usePortfolio = () => {
 
     // Add transaction to list
     const addTransaction = (transaction: Transaction) => {
-        setTransactions(prev => [...prev, transaction]);
-    }
+        setTransactions(prev => {
+            const index = prev.findIndex(t => t.date > transaction.date);
+
+            if (index === -1) {
+                return [...prev, transaction];
+            }
+
+            return [
+                ...prev.slice(0, index),
+                transaction,
+                ...prev.slice(index)
+            ];
+        });
+    };
 
     // Remove transaction from list
     const removeTransaction = (transaction: Transaction) => {
