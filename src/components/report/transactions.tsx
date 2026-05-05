@@ -1,3 +1,5 @@
+import { StockDatePicker } from "../common/datepicker"
+
 import type { Transaction } from "../../types/transaction"
 
 export const Transactions = ({
@@ -45,8 +47,9 @@ export const Transactions = ({
     }
 
     return (
-        <>  
+        <div className="flex-column">  
         <h1>Transactions</h1>
+        <div><StockDatePicker></StockDatePicker></div>
         <button onClick={() => handleAddTransaction({ type: "BUY", ticker: "CM.TO", amount: 1, pricePerUnit: 100, fees: 10 })}>buy flat</button>
         <button onClick={() => handleAddTransaction({ type: "SELL", ticker: "CM.TO", amount: 1, pricePerUnit: 100, fees: 10 })}>sell </button>
         <button onClick={() => handleAddTransaction({ type: "DEPOSIT", amount: 100, fees: 10 })}>deposit </button>
@@ -54,7 +57,7 @@ export const Transactions = ({
         <button onClick={() => handleAddTransaction({ type: "BUY", ticker: "CM.TO", value: 0.2, fees: 10 })}>buy % </button>
         <button onClick={() => handleAddTransaction({ type: "SELL", ticker: "CM.TO", value: 0.2, fees: 10 })}>sell % </button>
         <ul>{transactionsItems}</ul>
-        </>
+        </div>
         
         
     )
