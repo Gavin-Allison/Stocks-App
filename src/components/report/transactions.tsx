@@ -1,4 +1,7 @@
+import { useMemo } from "react"
+
 import { StockDatePicker } from "../common/datepicker"
+import { validateLedger } from "../../stores/ledger"
 
 import type { Transaction } from "../../types/transaction"
 
@@ -11,6 +14,8 @@ export const Transactions = ({
     addTransaction: (transaction: Transaction) => void
     removeTransaction: (transaction: Transaction) => void
 }) => {
+
+    const ledger = useMemo(() => validateLedger(transactions), [transactions]);
 
     function formatTransaction(transaction: Transaction): string {
         switch (transaction.type) {
@@ -30,10 +35,10 @@ export const Transactions = ({
         }
     }
 
-    const transactionsItems = transactions.map((transaction: Transaction) => (
-        <li key={transaction.id}>
-            {formatTransaction(transaction)}
-            <button onClick={() => removeTransaction(transaction)}>, Remove</button>
+    const transactionsItems = ledger.map((entry) => (
+        <li key={entry.transaction.id}>
+            {formatTransaction(entry.transaction)}
+            <button onClick={() => removeTransaction(entry.transaction)}>, Remove</button>
         </li>
     ));
 
