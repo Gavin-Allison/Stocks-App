@@ -6,4 +6,5 @@ export interface LedgerEntry {
     currentAssets: Record<string, number>;
     error: boolean;
     errorMessage?: string;
+    ignore: boolean;
 }

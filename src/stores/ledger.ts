@@ -8,6 +8,7 @@ export const validateLedger = (transactions: Transaction[]): LedgerEntry[] => {
     const assets: Record<string, number> = {};
     let error = false;
     let errorMessage: string | undefined;
+    let ignore = false;
 
     return transactions.map((t) => {
         // When a transaction errors do not worry about transactions that come after
@@ -23,9 +24,9 @@ export const validateLedger = (transactions: Transaction[]): LedgerEntry[] => {
                         errorMessage = "Withdrawing cash that you don't have"
                     }
                     break;
-            }
-
-            
+            }   
+        } else {
+            ignore = true;
         }
 
         return {
@@ -33,7 +34,8 @@ export const validateLedger = (transactions: Transaction[]): LedgerEntry[] => {
             currentCash: cash,
             currentAssets: assets,
             error: error,
-            errorMessage: errorMessage
+            errorMessage: errorMessage,
+            ignore: ignore
         };
     });
 }
