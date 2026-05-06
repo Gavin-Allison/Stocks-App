@@ -4,5 +4,6 @@ export interface LedgerEntry {
     transaction: Transaction;
     currentCash: number;
     currentAssets: Record<string, number>;
-    error?: string
+    error: boolean;
+    errorMessage?: string;
 }
