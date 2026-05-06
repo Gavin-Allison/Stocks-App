@@ -35,8 +35,9 @@ export const Transactions = ({
         }
     }
 
-    const transactionsItems = ledger.map((entry) => (
+    const ledgerItems = ledger.map((entry) => (
         <li key={entry.transaction.id}>
+            {`$${entry.currentCash}, `}
             {formatTransaction(entry.transaction)}
             <button onClick={() => removeTransaction(entry.transaction)}>, Remove</button>
         </li>
@@ -61,7 +62,7 @@ export const Transactions = ({
         <button onClick={() => handleAddTransaction({ type: "WITHDRAWAL", amount: 100, fees: 10 })}>withdraw </button>
         <button onClick={() => handleAddTransaction({ type: "BUY", ticker: "CM.TO", value: 0.2, fees: 10 })}>buy % </button>
         <button onClick={() => handleAddTransaction({ type: "SELL", ticker: "CM.TO", value: 0.2, fees: 10 })}>sell % </button>
-        <ul>{transactionsItems}</ul>
+        <ul>{ledgerItems}</ul>
         </div>
         
         
