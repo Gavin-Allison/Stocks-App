@@ -6,7 +6,7 @@ interface BaseTransaction {
 }
 
 interface FixedTrade extends BaseTransaction {
-    type: 'BUY' | 'SELL';
+    type: 'FBUY' | 'FSELL';
     ticker: string;
     amount: number;       // Exact number of shares
     pricePerUnit: number; // Exact price paid
@@ -20,7 +20,7 @@ interface FixedCash extends BaseTransaction {
 }
 
 interface DynamicTrade extends BaseTransaction {
-    type: 'BUY' | 'SELL';
+    type: 'DBUY' | 'DSELL';
     ticker: string;
     value: number; // e.g., 0.20 for 20%
     fees: number;

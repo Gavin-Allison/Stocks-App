@@ -19,11 +19,12 @@ export const Transactions = ({
 
     function formatTransaction(transaction: Transaction): string {
         switch (transaction.type) {
-            case 'BUY':
-            case 'SELL':
-            if ('amount' in transaction) {
-                return `${transaction.type}, ${transaction.ticker}, ${transaction.amount} shares at ${transaction.pricePerUnit}`;
-            }
+            case 'FBUY':
+            case 'FSELL':
+            return `${transaction.type}, ${transaction.ticker}, ${transaction.amount} shares at ${transaction.pricePerUnit}`;
+            
+            case 'DBUY':
+            case 'DSELL':
             return `${transaction.type}, ${transaction.ticker}, ${transaction.value * 100}%`;
 
             case 'DEPOSIT':
