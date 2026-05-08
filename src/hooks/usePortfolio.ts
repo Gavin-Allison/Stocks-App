@@ -1,20 +1,21 @@
-import { useState, useEffect, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 
-import { FetchStockData } from "../services/stockData";
 import { transactionStore } from "../stores/transactionStore";
+import { stockStore } from "../stores/stocksStore";
 import type { Transaction } from "../types/transaction";
-
-const defaultList = ["RY.TO", "BNS.TO", "CM.TO"];
 
 export const usePortfolio = () => {
     // Saved symbols, tells system what stocks to use
-    const [symbols, setSymbols] = useState<string[]>(() => {
-        const saved = localStorage.getItem("stockList");
-        return saved ? JSON.parse(saved) : defaultList;
-    });
+    const symbols = useSyncExternalStore(
+        stockStore.subscribe,
+        stockStore.getSymbols
+    );
 
     // Saved data for each symbol
-    const [priceData, setPriceData] = useState<Record<string, any[]>>({});
+    const priceData = useSyncExternalStore(
+        stockStore.subscribe,
+        stockStore.getPriceData
+    );
 
     // Shared list of transactions for the user
     const transactions = useSyncExternalStore(
@@ -22,42 +23,14 @@ export const usePortfolio = () => {
         transactionStore.getTransactions
     );
 
-    // Initial loading of saved symbols
-    useEffect(() => {
-        const getData = async () => {
-            const data: Record<string, any[]> = {};
-            for (const s of symbols) {
-                data[s] = await FetchStockData(s);
-            }
-            setPriceData(data);
-        };
-        getData();
-    }, []);
-
-    // Save list in local storage
-    useEffect(() => {
-        localStorage.setItem("stockList", JSON.stringify(symbols));
-    }, [symbols]);
-
     // Add stock to list
     const addStock = async (ticker: string) => {
-        const symbol = ticker.toUpperCase().trim();
-        if (symbols.includes(symbol)) return;
-
-        const data = await FetchStockData(symbol);
-        setPriceData(prev => ({ ...prev, [symbol]: data }));
-        setSymbols(prev => [...prev, symbol]);
+        await stockStore.addStock(ticker);
     };
 
     // Remove stock from list
     const removeStock = (symbol: string) => {
-        setSymbols(prev => prev.filter(s => s !== symbol));
-
-        setPriceData(prev => {
-            const newData = { ...prev };
-            delete newData[symbol];
-            return newData;
-        });
+        stockStore.removeStock(symbol);
     };
 
     // Add transaction to list
