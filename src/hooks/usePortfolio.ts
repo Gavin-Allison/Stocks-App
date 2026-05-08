@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useSyncExternalStore } from "react";
 
 import { FetchStockData } from "../services/stockData";
+import { transactionStore } from "../stores/transactionStore";
 import type { Transaction } from "../types/transaction";
 
 const defaultList = ["RY.TO", "BNS.TO", "CM.TO"];
@@ -15,8 +16,11 @@ export const usePortfolio = () => {
     // Saved data for each symbol
     const [priceData, setPriceData] = useState<Record<string, any[]>>({});
 
-    // Saved list of transactions for the user
-    const [transactions, setTransactions] = useState<Transaction[]>(() => JSON.parse(localStorage.getItem("transactions") || "[]"));
+    // Shared list of transactions for the user
+    const transactions = useSyncExternalStore(
+        transactionStore.subscribe,
+        transactionStore.getTransactions
+    );
 
     // Initial loading of saved symbols
     useEffect(() => {
@@ -33,15 +37,14 @@ export const usePortfolio = () => {
     // Save list in local storage
     useEffect(() => {
         localStorage.setItem("stockList", JSON.stringify(symbols));
-        localStorage.setItem("transactions", JSON.stringify(transactions));
-    })
+    }, [symbols]);
 
     // Add stock to list
     const addStock = async (ticker: string) => {
         const symbol = ticker.toUpperCase().trim();
         if (symbols.includes(symbol)) return;
 
-        const data = await FetchStockData(symbol)
+        const data = await FetchStockData(symbol);
         setPriceData(prev => ({ ...prev, [symbol]: data }));
         setSymbols(prev => [...prev, symbol]);
     };
@@ -51,34 +54,29 @@ export const usePortfolio = () => {
         setSymbols(prev => prev.filter(s => s !== symbol));
 
         setPriceData(prev => {
-        const newData = { ...prev };
-        delete newData[symbol];
-        return newData;
+            const newData = { ...prev };
+            delete newData[symbol];
+            return newData;
         });
     };
 
     // Add transaction to list
     const addTransaction = (transaction: Transaction) => {
-        setTransactions(prev => {
-            const index = prev.findIndex(t => t.date > transaction.date);
-
-            if (index === -1) {
-                return [...prev, transaction];
-            }
-
-            return [
-                ...prev.slice(0, index),
-                transaction,
-                ...prev.slice(index)
-            ];
-        });
+        transactionStore.addTransaction(transaction);
     };
 
     // Remove transaction from list
     const removeTransaction = (transaction: Transaction) => {
-        setTransactions(prev => prev.filter(t => t.id !== transaction.id));
-    }
+        transactionStore.removeTransaction(transaction);
+    };
 
-    return { symbols, priceData, addStock, removeStock, transactions, addTransaction, removeTransaction };
-}
-
+    return { 
+        symbols, 
+        priceData, 
+        addStock, 
+        removeStock, 
+        transactions, 
+        addTransaction, 
+        removeTransaction 
+    };
+};
