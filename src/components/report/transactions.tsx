@@ -10,17 +10,23 @@ export const Transactions = ({
     transactions,
     priceData,
     addTransaction,
-    removeTransaction
+    removeTransaction,
+    date,
+    setDate,
+    selectedStock,
+    setSelectedStock
 }: {
     symbols: string[],
     transactions: Transaction[]
     priceData: {symbol: string, data: Record<string, number>}[],
     addTransaction: (transaction: Transaction) => void
-    removeTransaction: (transaction: Transaction) => void
+    removeTransaction: (transaction: Transaction) => void,
+    date: string,
+    setDate: (date: string) => void,
+    selectedStock: string,
+    setSelectedStock: (stock: string) => void
 }) => {
 
-    const [date, setDate] = useState<string>(new Date().toISOString().split('T')[0]);
-    const [selected, setSelected] = useState<string>(symbols[0] || "");
     const [tradeFee, setTradeFee] = useState<number>(10);
     const [cashFee, setCashFee] = useState<number>(10);
 
@@ -78,7 +84,7 @@ export const Transactions = ({
                 <StockDatePicker className="w-36 border border-gray-300 rounded" date={date} onDateChange={setDate} />
 
                 {/* Dropdown to select stock for transaction */}
-                <select value={selected} onChange={(e) => setSelected(e.target.value)} className="border border-gray-300 rounded">
+                <select value={selectedStock} onChange={(e) => setSelectedStock(e.target.value)} className="border border-gray-300 rounded">
                     {symbols.map((symbol) => (
                         <option key={symbol} value={symbol}>
                             {symbol}

@@ -5,11 +5,15 @@ import { ChartComponent } from "./stockChart";
 const StockChart = memo(({ 
     symbol, 
     priceData,
-    onRemove 
+    onRemove,
+    onDateChange,
+    onStockChange
 }: { 
     symbol: string,
     priceData: any[],
-    onRemove: (s: string) => void 
+    onRemove: (s: string) => void,
+    onDateChange: (date: string) => void,
+    onStockChange: (stock: string) => void
 }) => {
     return (
         <div className="p-4 border-b border-gray-300 bg-white shadow-sm mb-4">
@@ -24,7 +28,7 @@ const StockChart = memo(({
             </div>
 
             <div className="h-[300px] w-full bg-gray-50 rounded border relative [&_a]:hidden">
-                <ChartComponent data={priceData} />
+                <ChartComponent data={priceData} onDateChange={onDateChange} onStockChange={onStockChange} symbol={symbol} />
             </div>
         </div>
     );
@@ -34,11 +38,19 @@ const StockChart = memo(({
 export const StockChartList = ({ 
     symbols, 
     priceData, 
-    onRemoveStock
+    onRemoveStock,
+    date,
+    setDate,
+    selectedStock,
+    setSelectedStock
 }: { 
-    symbols: string[],
+    symbols: string[], 
     priceData: {symbol: string, data: Record<string, number>}[],
-    onRemoveStock: (s: string) => void 
+    onRemoveStock: (s: string) => void,
+    date: string,
+    setDate: (date: string) => void,
+    selectedStock: string,
+    setSelectedStock: (stock: string) => void
 }) => {
 
     return (
@@ -54,7 +66,9 @@ export const StockChartList = ({
                         key={symbol} 
                         symbol={symbol}
                         priceData={dataArray} 
-                        onRemove={onRemoveStock} 
+                        onRemove={onRemoveStock}
+                        onDateChange={setDate}
+                        onStockChange={setSelectedStock}
                     />
                 );
             })}

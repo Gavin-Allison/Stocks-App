@@ -11,7 +11,11 @@ export const Report = ({
     transactions,
     priceData,
     addTransaction,
-    removeTransaction
+    removeTransaction,
+    date,
+    setDate,
+    selectedStock,
+    setSelectedStock
 }: { 
     tab: string,
     symbols: string[],
@@ -19,6 +23,10 @@ export const Report = ({
     priceData: {symbol: string, data: Record<string, number>}[],
     addTransaction: (transaction: Transaction) => void,
     removeTransaction: (transaction: Transaction) => void,
+    date: string,
+    setDate: (date: string) => void,
+    selectedStock: string,
+    setSelectedStock: (stock: string) => void,
 }) => {
     if (tab === "Tutorial") {
         return <Tutorial />;
@@ -31,6 +39,10 @@ export const Report = ({
             addTransaction={addTransaction}
             removeTransaction={removeTransaction}
             symbols={symbols}
+            date={date}
+            setDate={setDate}
+            selectedStock={selectedStock}
+            setSelectedStock={setSelectedStock}
         />
     } else {
         return <Results />;

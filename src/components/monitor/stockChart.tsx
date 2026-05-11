@@ -4,6 +4,9 @@ import { useEffect, useRef } from 'react';
 // React component that renders a stock chart using the Lightweight Charts library
 export const ChartComponent = ({
     data,
+    onDateChange,
+    onStockChange,
+    symbol,
     colors: {
         backgroundColor = '#e5e7eb',
         lineColor = 'green',
@@ -11,6 +14,9 @@ export const ChartComponent = ({
     } = {},
 }: {
     data: any[];
+    onDateChange: (date: string) => void;
+    onStockChange: (stock: string) => void;
+    symbol: string;
     colors?: {
         backgroundColor?: string;
         lineColor?: string;
@@ -52,6 +58,20 @@ export const ChartComponent = ({
 
         chartRef.current = chart;
         seriesRef.current = series;
+
+        chart.subscribeClick((param) => {
+            if (param.time) {
+                let timestamp;
+                if (typeof param.time === 'string') {
+                    timestamp = Date.parse(param.time);
+                } else {
+                    timestamp = Number(param.time) * 1000;
+                }
+                const dateStr = new Date(timestamp).toISOString().split('T')[0];
+                onDateChange(dateStr);
+                onStockChange(symbol);
+            }
+        });
     
         const resizeObserver = new ResizeObserver(entries => {
             if (entries[0].contentRect) {
@@ -74,7 +94,7 @@ export const ChartComponent = ({
             window.removeEventListener('dblclick', handleResetZoom);
             chart.remove();
         };
-    }, []);
+    }, [onDateChange]);
 
     // Update chart data
     useEffect(() => {

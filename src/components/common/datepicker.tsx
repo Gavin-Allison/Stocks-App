@@ -7,6 +7,7 @@ export const StockDatePicker = ({ className, date, onDateChange }: { className?:
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
+                key={date}
                 value={date ? dayjs(date) : null}
                 onChange={(newValue) => onDateChange(newValue ? newValue.format('YYYY-MM-DD') : '')}
                 slotProps={{

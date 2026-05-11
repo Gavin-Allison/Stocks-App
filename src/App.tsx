@@ -13,6 +13,8 @@ export default function App() {
     }
     const { symbols, priceData, addStock, removeStock, transactions, addTransaction, removeTransaction } = usePortfolio();
     const [ reportTab, setReportTab ] = useState<string>("Tutorial")
+    const [ date, setDate ] = useState<string>(new Date().toISOString().split('T')[0])
+    const [ selectedStock, setSelectedStock ] = useState<string>(symbols[0] || "")
 
     return (
         <div className="flex h-screen w-full flex-col" style={layout}>
@@ -34,7 +36,11 @@ export default function App() {
                         <Monitor 
                             symbols={symbols} 
                             priceData={priceData}
-                            onRemoveStock={removeStock} 
+                            onRemoveStock={removeStock}
+                            date={date}
+                            setDate={setDate}
+                            selectedStock={selectedStock}
+                            setSelectedStock={setSelectedStock}
                         />
                     </section>
 
@@ -47,6 +53,10 @@ export default function App() {
                             transactions={transactions}
                             addTransaction={addTransaction}
                             removeTransaction={removeTransaction}
+                            date={date}
+                            setDate={setDate}
+                            selectedStock={selectedStock}
+                            setSelectedStock={setSelectedStock}
                         />
                     </section>
 
