@@ -42,10 +42,12 @@ export const Transactions = ({
     }
 
     const ledgerItems = ledger.map((entry) => (
-        <li key={entry.transaction.id}>
-            {`$${entry.currentCash}, `}
-            {formatTransaction(entry.transaction)}
-            <button onClick={() => removeTransaction(entry.transaction)}>, Remove</button>
+        <li key={entry.transaction.id} className="flex justify-between items-center py-1">
+            <span>
+                {`$${entry.currentCash}, `}
+                {formatTransaction(entry.transaction)}
+            </span>
+            <button onClick={() => removeTransaction(entry.transaction)} className="text-red-600 hover:text-red-800 ml-2">Remove</button>
         </li>
     ));
 
@@ -61,19 +63,21 @@ export const Transactions = ({
     }
 
     return (
-        <div className="flex-column">  
-        <h1>Transactions</h1>
-        <div><StockDatePicker></StockDatePicker></div>
-        <button onClick={() => handleAddTransaction({ type: "FBUY", ticker: "CM.TO", amount: 1, pricePerUnit: 100, fees: 10 })}>buy flat</button>
-        <button onClick={() => handleAddTransaction({ type: "FSELL", ticker: "CM.TO", amount: 1, pricePerUnit: 100, fees: 10 })}>sell </button>
-        <button onClick={() => handleAddTransaction({ type: "DEPOSIT", amount: 100, fees: 10 })}>deposit </button>
-        <button onClick={() => handleAddTransaction({ type: "WITHDRAWAL", amount: 100, fees: 10 })}>withdraw </button>
-        <button onClick={() => handleAddTransaction({ type: "DBUY", ticker: "CM.TO", value: 0.2, fees: 10 })}>buy % </button>
-        <button onClick={() => handleAddTransaction({ type: "DSELL", ticker: "CM.TO", value: 0.2, fees: 10 })}>sell % </button>
-        <ul>{ledgerItems}</ul>
-        <h1>{errorOutput}</h1>
+        <div className="p-4">
+            <h1 className="text-xl font-bold mb-4">Transactions</h1>
+            <div><StockDatePicker /></div>
+            <div className="flex flex-wrap gap-2 mb-4">
+                <button onClick={() => handleAddTransaction({ type: "FBUY", ticker: "CM.TO", amount: 1, pricePerUnit: 100, fees: 10 })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Buy Flat</button>
+                <button onClick={() => handleAddTransaction({ type: "FSELL", ticker: "CM.TO", amount: 1, pricePerUnit: 100, fees: 10 })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Sell</button>
+                <button onClick={() => handleAddTransaction({ type: "DEPOSIT", amount: 100, fees: 10 })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Deposit</button>
+                <button onClick={() => handleAddTransaction({ type: "WITHDRAWAL", amount: 100, fees: 10 })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Withdraw</button>
+                <button onClick={() => handleAddTransaction({ type: "DBUY", ticker: "CM.TO", value: 0.2, fees: 10 })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Buy %</button>
+                <button onClick={() => handleAddTransaction({ type: "DSELL", ticker: "CM.TO", value: 0.2, fees: 10 })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Sell %</button>
+            </div>
+            <ul className="space-y-1">
+                {ledgerItems}
+            </ul>
+            <div className="mt-4 text-red-600">{errorOutput}</div>
         </div>
-        
-        
     )
 }

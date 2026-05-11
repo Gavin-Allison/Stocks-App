@@ -1,5 +1,8 @@
 export const Results = () => {
     return (
-        <h1>Results</h1>
+        <div className="p-4">
+            <h1 className="text-xl font-bold mb-4">Results</h1>
+            <p>Performance results and analytics will be shown here.</p>
+        </div>
     )
 }

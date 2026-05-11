@@ -18,7 +18,7 @@ export default function App() {
         <div className="flex h-screen w-full flex-col" style={layout}>
 
             {/* Header */}
-            <div className="h-16 w-full flex-none border-b border-black">
+            <div className="h-16 w-full flex-none border-b border-gray-400">
                 <Header 
                     setReportTab={setReportTab} 
                     onAddStock={addStock}
@@ -30,7 +30,7 @@ export default function App() {
                 <main className="max-w-[var(--layout-width)] w-full flex mx-auto">
                 
                     {/* Left Column*/}
-                    <section className="flex-1 overflow-y-scroll bg-gray-200 border-r border-black">
+                    <section className="flex-1 overflow-y-scroll bg-gray-100 border-r border-gray-400">
                         <Monitor 
                             symbols={symbols} 
                             priceData={priceData}
@@ -39,7 +39,7 @@ export default function App() {
                     </section>
 
                     {/* Right Column */}
-                    <section className="w-0 @2xl:w-64 @5xl:w-128 flex-none bg-gray-300 border-r border-black">
+                    <section className="w-0 @2xl:w-64 @5xl:w-128 flex-none bg-gray-200 border-r border-gray-400">
                         <Report 
                             tab={reportTab}
                             priceData={priceData}
