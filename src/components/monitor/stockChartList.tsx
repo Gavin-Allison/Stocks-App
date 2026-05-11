@@ -37,7 +37,7 @@ export const StockChartList = ({
     onRemoveStock
 }: { 
     symbols: string[],
-    priceData: Record<string, any[]>,
+    priceData: {symbol: string, data: Record<string, number>}[],
     onRemoveStock: (s: string) => void 
 }) => {
 
@@ -46,14 +46,18 @@ export const StockChartList = ({
             {symbols.length === 0 && (
                 <p className="text-gray-500 text-center py-10">No stocks monitored. Add one to get started.</p>
             )}
-            {symbols.map((symbol) => (
-                <StockChart 
-                    key={symbol} 
-                    symbol={symbol}
-                    priceData={priceData[symbol]} 
-                    onRemove={onRemoveStock} 
-                />
-            ))}
+            {symbols.map((symbol) => {
+                const stockData = priceData.find(p => p.symbol === symbol)?.data || {};
+                const dataArray = Object.entries(stockData).map(([time, value]) => ({time, value}));
+                return (
+                    <StockChart 
+                        key={symbol} 
+                        symbol={symbol}
+                        priceData={dataArray} 
+                        onRemove={onRemoveStock} 
+                    />
+                );
+            })}
         </div>
     );
 };

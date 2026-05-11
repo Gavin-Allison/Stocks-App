@@ -7,7 +7,7 @@ let symbols: string[] = (() => {
     return saved ? JSON.parse(saved) : defaultList;
 })();
 
-let priceData: Record<string, any[]> = {};
+let priceData: {symbol: string, data: Record<string, number>}[] = [];
 const listeners = new Set<() => void>();
 
 export const stockStore = {
@@ -28,9 +28,10 @@ export const stockStore = {
 
     // Initial loading of saved symbols
     async initialize() {
-        const data: Record<string, any[]> = {};
+        const data: {symbol: string, data: Record<string, number>}[] = [];
         for (const s of symbols) {
-            data[s] = await FetchStockData(s);
+            const fetchedData = await FetchStockData(s);
+            data.push({symbol: s, data: fetchedData});
         }
         priceData = data;
         this.emitChange();
@@ -42,7 +43,7 @@ export const stockStore = {
         if (symbols.includes(symbol)) return;
 
         const data = await FetchStockData(symbol);
-        priceData = { ...priceData, [symbol]: data };
+        priceData = [...priceData, {symbol, data}];
         symbols = [...symbols, symbol];
         this.emitChange();
     },
@@ -50,9 +51,7 @@ export const stockStore = {
     // Remove stock from list
     removeStock(symbol: string) {
         symbols = symbols.filter(s => s !== symbol);
-        const newData = { ...priceData };
-        delete newData[symbol];
-        priceData = newData;
+        priceData = priceData.filter(p => p.symbol !== symbol);
         this.emitChange();
     },
 

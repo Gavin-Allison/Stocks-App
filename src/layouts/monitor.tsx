@@ -6,7 +6,7 @@ export const Monitor = ({
     onRemoveStock 
 }: { 
     symbols: string[], 
-    priceData: Record<string, any[]>
+    priceData: {symbol: string, data: Record<string, number>}[],
     onRemoveStock: (s: string) => void 
 }) => {
     return (

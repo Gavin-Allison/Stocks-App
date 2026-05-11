@@ -44,6 +44,8 @@ export const Transactions = ({
         </li>
     ));
 
+    const errorOutput = ledger.find(e => e.error)?.errorMessage || "No errors";
+
     const handleAddTransaction = (details: any) => {
         const transaction: Transaction = {
             ...details,
@@ -64,6 +66,7 @@ export const Transactions = ({
         <button onClick={() => handleAddTransaction({ type: "BUY", ticker: "CM.TO", value: 0.2, fees: 10 })}>buy % </button>
         <button onClick={() => handleAddTransaction({ type: "SELL", ticker: "CM.TO", value: 0.2, fees: 10 })}>sell % </button>
         <ul>{ledgerItems}</ul>
+        <h1>{errorOutput}</h1>
         </div>
         
         

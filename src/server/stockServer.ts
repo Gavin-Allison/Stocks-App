@@ -24,10 +24,13 @@ try {
     }
 
     // Format data for the chart
-    const FormattedData = Result.quotes.map(Quote => ({
-    time: Quote.date.toISOString().split('T')[0],
-    value: Quote.adjClose || Quote.close
-    }));
+    const FormattedData: Record<string, number> = {};
+    Result.quotes.forEach(Quote => {
+        const price = Quote.adjClose || Quote.close;
+        if (typeof price === 'number') {
+            FormattedData[Quote.date.toISOString().split('T')[0]] = price;
+        }
+    });
 
     Res.json(FormattedData);
 } catch (Error) {
