@@ -20,6 +20,8 @@ export const Transactions = ({
 }) => {
 
     const [selected, setSelected] = useState<string>(symbols[0] || "");
+    const [tradeFee, setTradeFee] = useState<number>(10);
+    const [cashFee, setCashFee] = useState<number>(10);
 
     const ledger = useMemo(() => validateLedger(transactions, priceData), [transactions, priceData]);
 
@@ -69,26 +71,41 @@ export const Transactions = ({
     return (
         <div className="p-4">
             <h1 className="text-xl font-bold mb-4">Transactions</h1>
-            <div>
-                <StockDatePicker />
+            <div className="flex flex-nowrap gap-2 mb-4">
+                <StockDatePicker className="w-24 border border-gray-300 rounded" />
 
                 {/* Dropdown to select stock for transaction */}
-                <select value={selected} onChange={(e) => setSelected(e.target.value)} className="border border-gray-300 rounded p-2">
+                <select value={selected} onChange={(e) => setSelected(e.target.value)} className="border border-gray-300 rounded">
                     {symbols.map((symbol) => (
                         <option key={symbol} value={symbol}>
                             {symbol}
                         </option>
                     ))}
                 </select>
+
+                <input
+                    type="number"
+                    value={tradeFee}
+                    onChange={(e) => setTradeFee(Number(e.target.value))}
+                    placeholder="Trade Fee"
+                    className="w-24 border border-gray-300 rounded"
+                />
+                <input
+                    type="number"
+                    value={cashFee}
+                    onChange={(e) => setCashFee(Number(e.target.value))}
+                    placeholder="Cash Fee"
+                    className="w-24 border border-gray-300 rounded"
+                />
             </div>
 
             <div className="flex flex-wrap gap-2 mb-4">
-                <button onClick={() => handleAddTransaction({ type: "FBUY", ticker: selected, amount: 1, pricePerUnit: 100, fees: 10 })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Buy Flat</button>
-                <button onClick={() => handleAddTransaction({ type: "FSELL", ticker: selected, amount: 1, pricePerUnit: 100, fees: 10 })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Sell</button>
-                <button onClick={() => handleAddTransaction({ type: "DEPOSIT", amount: 100, fees: 10 })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Deposit</button>
-                <button onClick={() => handleAddTransaction({ type: "WITHDRAWAL", amount: 100, fees: 10 })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Withdraw</button>
-                <button onClick={() => handleAddTransaction({ type: "DBUY", ticker: selected, value: 0.2, fees: 10 })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Buy %</button>
-                <button onClick={() => handleAddTransaction({ type: "DSELL", ticker: selected, value: 0.2, fees: 10 })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Sell %</button>
+                <button onClick={() => handleAddTransaction({ type: "FBUY", ticker: selected, amount: 1, pricePerUnit: 100, fees: tradeFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Buy Flat</button>
+                <button onClick={() => handleAddTransaction({ type: "FSELL", ticker: selected, amount: 1, pricePerUnit: 100, fees: tradeFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Sell</button>
+                <button onClick={() => handleAddTransaction({ type: "DEPOSIT", amount: 100, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Deposit</button>
+                <button onClick={() => handleAddTransaction({ type: "WITHDRAWAL", amount: 100, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Withdraw</button>
+                <button onClick={() => handleAddTransaction({ type: "DBUY", ticker: selected, value: 0.2, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Buy %</button>
+                <button onClick={() => handleAddTransaction({ type: "DSELL", ticker: selected, value: 0.2, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Sell %</button>
             </div>
             <ul className="space-y-1">
                 {ledgerItems}
