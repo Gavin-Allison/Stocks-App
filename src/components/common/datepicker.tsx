@@ -1,14 +1,21 @@
-import { useState } from "react"
-import DatePicker from "react-datepicker"
-import "react-datepicker/dist/react-datepicker.css";
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs from 'dayjs';
 
 export const StockDatePicker = ({ className, date, onDateChange }: { className?: string; date: string; onDateChange: (date: string) => void }) => {
-    const [selectedDate, setSelectedDate] = useState<string>(date);
-
-    const handleChange = (date: Date | null) => {
-        setSelectedDate(date ? date.toISOString().split('T')[0] : "");
-        onDateChange(date ? date.toISOString().split('T')[0] : "");
-    };
-
-    return <DatePicker selected={selectedDate ? new Date(selectedDate) : null} onChange={handleChange} className={className} />;
+    return (
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+                value={date ? dayjs(date) : null}
+                onChange={(newValue) => onDateChange(newValue ? newValue.format('YYYY-MM-DD') : '')}
+                slotProps={{
+                    textField: {
+                        className: className,
+                        size: "small",
+                    },
+                }}
+            />
+        </LocalizationProvider>
+    );
 };

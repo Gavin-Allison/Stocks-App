@@ -75,7 +75,7 @@ export const Transactions = ({
         <div className="p-4">
             <h1 className="text-xl font-bold mb-4">Transactions</h1>
             <div className="flex flex-nowrap gap-2 mb-4">
-                <StockDatePicker className="w-24 border border-gray-300 rounded" date={date} onDateChange={setDate} />
+                <StockDatePicker className="w-36 border border-gray-300 rounded" date={date} onDateChange={setDate} />
 
                 {/* Dropdown to select stock for transaction */}
                 <select value={selected} onChange={(e) => setSelected(e.target.value)} className="border border-gray-300 rounded">
