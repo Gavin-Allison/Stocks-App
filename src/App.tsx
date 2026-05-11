@@ -42,6 +42,7 @@ export default function App() {
                     <section className="w-0 @2xl:w-64 @5xl:w-128 flex-none bg-gray-200 border-r border-gray-400">
                         <Report 
                             tab={reportTab}
+                            symbols={symbols}
                             priceData={priceData}
                             transactions={transactions}
                             addTransaction={addTransaction}

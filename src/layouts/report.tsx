@@ -7,12 +7,14 @@ import { Results } from "../components/report/results"
 
 export const Report = ({ 
     tab,
+    symbols,
     transactions,
     priceData,
     addTransaction,
     removeTransaction
 }: { 
     tab: string,
+    symbols: string[],
     transactions: Transaction[],
     priceData: {symbol: string, data: Record<string, number>}[],
     addTransaction: (transaction: Transaction) => void,
@@ -28,6 +30,7 @@ export const Report = ({
             priceData={priceData}
             addTransaction={addTransaction}
             removeTransaction={removeTransaction}
+            symbols={symbols}
         />
     } else {
         return <Results />;
