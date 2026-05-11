@@ -103,12 +103,12 @@ export const Transactions = ({
             </div>
 
             <div className="flex flex-wrap gap-2 mb-4">
-                <button onClick={() => handleAddTransaction({ type: "FBUY", ticker: selected, amount: 1, pricePerUnit: 100, fees: tradeFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Buy Flat</button>
-                <button onClick={() => handleAddTransaction({ type: "FSELL", ticker: selected, amount: 1, pricePerUnit: 100, fees: tradeFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Sell</button>
-                <button onClick={() => handleAddTransaction({ type: "DEPOSIT", amount: 100, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Deposit</button>
-                <button onClick={() => handleAddTransaction({ type: "WITHDRAWAL", amount: 100, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Withdraw</button>
+                <button onClick={() => handleAddTransaction({ type: "FBUY", ticker: selected, amount: 1, pricePerUnit: 100, fees: tradeFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Buy #</button>
+                <button onClick={() => handleAddTransaction({ type: "FSELL", ticker: selected, amount: 1, pricePerUnit: 100, fees: tradeFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Sell #</button>
                 <button onClick={() => handleAddTransaction({ type: "DBUY", ticker: selected, value: 0.2, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Buy %</button>
                 <button onClick={() => handleAddTransaction({ type: "DSELL", ticker: selected, value: 0.2, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Sell %</button>
+                <button onClick={() => handleAddTransaction({ type: "DEPOSIT", amount: 100, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Deposit</button>
+                <button onClick={() => handleAddTransaction({ type: "WITHDRAWAL", amount: 100, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Withdraw</button>
             </div>
             <ul className="space-y-1">
                 {ledgerItems}
