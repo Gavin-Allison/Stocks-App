@@ -24,9 +24,6 @@ interface DynamicTrade extends BaseTransaction {
     ticker: string;
     value: number; // e.g., 0.20 for 20%
     fees: number;
-
-    resolvedAmount?: number; 
-    resolvedPrice?: number;
 }
 
 interface DividendAction extends BaseTransaction {
