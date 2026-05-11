@@ -19,6 +19,7 @@ export const Transactions = ({
     removeTransaction: (transaction: Transaction) => void
 }) => {
 
+    const [date, setDate] = useState<string>(new Date().toISOString().split('T')[0]);
     const [selected, setSelected] = useState<string>(symbols[0] || "");
     const [tradeFee, setTradeFee] = useState<number>(10);
     const [cashFee, setCashFee] = useState<number>(10);
@@ -29,18 +30,18 @@ export const Transactions = ({
         switch (transaction.type) {
             case 'FBUY':
             case 'FSELL':
-            return `${transaction.type}, ${transaction.ticker}, ${transaction.amount} shares at ${transaction.pricePerUnit}`;
+            return `${transaction.ticker}, ${transaction.amount} shares at ${transaction.pricePerUnit}`;
             
             case 'DBUY':
             case 'DSELL':
-            return `${transaction.type}, ${transaction.ticker}, ${transaction.value * 100}%`;
+            return `${transaction.ticker}, ${transaction.value * 100}%`;
 
             case 'DEPOSIT':
             case 'WITHDRAWAL':
-            return `${transaction.type}, $${transaction.amount}`;
+            return `$${transaction.amount}`;
 
             case 'DIVIDEND':
-            return `${transaction.type}, ${transaction.ticker}, $${transaction.amount}, (${transaction.isReinvested ? 'reinvested' : 'cash'})`;
+            return `${transaction.ticker}, $${transaction.amount}, (${transaction.isReinvested ? 'reinvested' : 'cash'})`;
 
             default:
             return `Unknown transaction type`;
@@ -50,6 +51,8 @@ export const Transactions = ({
     const ledgerItems = ledger.map((entry) => (
         <li key={entry.transaction.id} className="flex justify-between items-center py-1">
             <span>
+                {`${entry.transaction.date}, `}
+                {`${entry.transaction.type}, `}
                 {`$${entry.currentCash}, `}
                 {formatTransaction(entry.transaction)}
             </span>
@@ -63,7 +66,7 @@ export const Transactions = ({
         const transaction: Transaction = {
             ...details,
             id: crypto.randomUUID(),
-            date: "2024-10-25",
+            date: date,
         }
         addTransaction(transaction)
     }
@@ -72,7 +75,7 @@ export const Transactions = ({
         <div className="p-4">
             <h1 className="text-xl font-bold mb-4">Transactions</h1>
             <div className="flex flex-nowrap gap-2 mb-4">
-                <StockDatePicker className="w-24 border border-gray-300 rounded" />
+                <StockDatePicker className="w-24 border border-gray-300 rounded" date={date} onDateChange={setDate} />
 
                 {/* Dropdown to select stock for transaction */}
                 <select value={selected} onChange={(e) => setSelected(e.target.value)} className="border border-gray-300 rounded">
