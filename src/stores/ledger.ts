@@ -1,7 +1,7 @@
 import { type LedgerEntry } from "../types/ledgerEntry";
 import { type Transaction } from "../types/transaction"
 
-export const validateLedger = (transactions: Transaction[]): LedgerEntry[] => {
+export const validateLedger = (transactions: Transaction[], priceData: {symbol: string, data: Record<string, number>}[]): LedgerEntry[] => {
     // Perform and validate all transactions
 
     let cash = 0;
@@ -13,7 +13,7 @@ export const validateLedger = (transactions: Transaction[]): LedgerEntry[] => {
     return transactions.map((t) => {
         // When a transaction errors do not worry about transactions that come after
         if (!error) {
-            // Here is logic for validating each transaction type
+            // Logic for validating each transaction type
             switch(t.type) {
                 case "DEPOSIT":
                     cash += t.amount - t.fees
@@ -45,6 +45,53 @@ export const validateLedger = (transactions: Transaction[]): LedgerEntry[] => {
                         error = true;
                         errorMessage = "Sold shares you do not have";
                     };
+                    break;
+
+                case "DBUY":
+                    const dateBuy = t.date;
+                    const priceDataEntryBuy = priceData.find(p => p.symbol.toLowerCase() === t.ticker.toLowerCase());
+                    const pricePerShareBuy = priceDataEntryBuy ? priceDataEntryBuy.data[dateBuy] : undefined;
+
+                    if (pricePerShareBuy === undefined) {
+                        error = true;
+                        errorMessage = "Current price data not found for ticker: " + t.ticker;
+                    } else {
+                        const moneyToSpend = cash * t.value;
+                        const shares = Math.trunc(moneyToSpend / pricePerShareBuy);
+                        const leftover = moneyToSpend % pricePerShareBuy;
+
+                        cash -= (moneyToSpend - leftover);
+                        assets[t.ticker] = (assets[t.ticker] ?? 0) + shares;
+                        cash -= t.fees;
+
+                        if (cash < 0) {
+                            error = true;
+                            errorMessage = "Bought shares with cash you do not have";
+                        }
+                    }
+                    break;
+                
+                case "DSELL":
+                    const dateSell = t.date;
+                    const priceDataEntrySell = priceData.find(p => p.symbol.toLowerCase() === t.ticker.toLowerCase());
+                    const pricePerShareSell= priceDataEntrySell ? priceDataEntrySell.data[dateSell] : undefined;
+                    
+                    if (pricePerShareSell === undefined) {
+                        error = true;
+                        errorMessage = "Current price data not found for ticker: " + t.ticker;
+                    } else {
+                        const sharesToSell = Math.ceil((assets[t.ticker] ?? 0) * t.value);
+                        const moneyGained = sharesToSell * pricePerShareSell;
+                        
+                        cash += moneyGained;
+                        assets[t.ticker] = (assets[t.ticker] ?? 0) - sharesToSell;
+                        cash -= t.fees;
+                        
+                        if (assets[t.ticker] < 0) {
+                            error = true;
+                            errorMessage = "Sold shares you do not have";
+                        }
+                    }
                     break;
             }   
         } else {

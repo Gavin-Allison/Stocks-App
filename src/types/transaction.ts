@@ -1,7 +1,7 @@
 // Shared properties for every single entry in the ledger
 interface BaseTransaction {
     id: string;
-    date: Date;
+    date: string;
     batchId?: string;
 }
 

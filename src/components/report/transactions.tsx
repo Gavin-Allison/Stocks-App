@@ -7,15 +7,17 @@ import type { Transaction } from "../../types/transaction"
 
 export const Transactions = ({
     transactions,
+    priceData,
     addTransaction,
     removeTransaction
 }: {
     transactions: Transaction[]
+    priceData: {symbol: string, data: Record<string, number>}[],
     addTransaction: (transaction: Transaction) => void
     removeTransaction: (transaction: Transaction) => void
 }) => {
 
-    const ledger = useMemo(() => validateLedger(transactions), [transactions]);
+    const ledger = useMemo(() => validateLedger(transactions, priceData), [transactions, priceData]);
 
     function formatTransaction(transaction: Transaction): string {
         switch (transaction.type) {
@@ -35,7 +37,7 @@ export const Transactions = ({
             return `${transaction.type}, ${transaction.ticker}, $${transaction.amount}, (${transaction.isReinvested ? 'reinvested' : 'cash'})`;
 
             default:
-            return `Unknown transaction type: ${transaction.type}`;
+            return `Unknown transaction type`;
         }
     }
 
@@ -53,7 +55,7 @@ export const Transactions = ({
         const transaction: Transaction = {
             ...details,
             id: crypto.randomUUID(),
-            date: new Date(),
+            date: "2024-10-25",
         }
         addTransaction(transaction)
     }

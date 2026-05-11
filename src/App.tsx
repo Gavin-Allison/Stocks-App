@@ -41,7 +41,8 @@ export default function App() {
                     {/* Right Column */}
                     <section className="w-0 @2xl:w-64 @5xl:w-128 flex-none bg-gray-300 border-r border-black">
                         <Report 
-                            tab={reportTab} 
+                            tab={reportTab}
+                            priceData={priceData}
                             transactions={transactions}
                             addTransaction={addTransaction}
                             removeTransaction={removeTransaction}

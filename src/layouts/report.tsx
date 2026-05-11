@@ -8,11 +8,13 @@ import { Results } from "../components/report/results"
 export const Report = ({ 
     tab,
     transactions,
+    priceData,
     addTransaction,
     removeTransaction
 }: { 
     tab: string,
     transactions: Transaction[],
+    priceData: {symbol: string, data: Record<string, number>}[],
     addTransaction: (transaction: Transaction) => void,
     removeTransaction: (transaction: Transaction) => void,
 }) => {
@@ -23,6 +25,7 @@ export const Report = ({
     } else if (tab === "Transactions") {
         return <Transactions 
             transactions={transactions}
+            priceData={priceData}
             addTransaction={addTransaction}
             removeTransaction={removeTransaction}
         />
