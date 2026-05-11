@@ -33,6 +33,9 @@ export const Transactions = ({
 
             case 'DIVIDEND':
             return `${transaction.type}, ${transaction.ticker}, $${transaction.amount}, (${transaction.isReinvested ? 'reinvested' : 'cash'})`;
+
+            default:
+            return `Unknown transaction type: ${transaction.type}`;
         }
     }
 
@@ -59,12 +62,12 @@ export const Transactions = ({
         <div className="flex-column">  
         <h1>Transactions</h1>
         <div><StockDatePicker></StockDatePicker></div>
-        <button onClick={() => handleAddTransaction({ type: "BUY", ticker: "CM.TO", amount: 1, pricePerUnit: 100, fees: 10 })}>buy flat</button>
-        <button onClick={() => handleAddTransaction({ type: "SELL", ticker: "CM.TO", amount: 1, pricePerUnit: 100, fees: 10 })}>sell </button>
+        <button onClick={() => handleAddTransaction({ type: "FBUY", ticker: "CM.TO", amount: 1, pricePerUnit: 100, fees: 10 })}>buy flat</button>
+        <button onClick={() => handleAddTransaction({ type: "FSELL", ticker: "CM.TO", amount: 1, pricePerUnit: 100, fees: 10 })}>sell </button>
         <button onClick={() => handleAddTransaction({ type: "DEPOSIT", amount: 100, fees: 10 })}>deposit </button>
         <button onClick={() => handleAddTransaction({ type: "WITHDRAWAL", amount: 100, fees: 10 })}>withdraw </button>
-        <button onClick={() => handleAddTransaction({ type: "BUY", ticker: "CM.TO", value: 0.2, fees: 10 })}>buy % </button>
-        <button onClick={() => handleAddTransaction({ type: "SELL", ticker: "CM.TO", value: 0.2, fees: 10 })}>sell % </button>
+        <button onClick={() => handleAddTransaction({ type: "DBUY", ticker: "CM.TO", value: 0.2, fees: 10 })}>buy % </button>
+        <button onClick={() => handleAddTransaction({ type: "DSELL", ticker: "CM.TO", value: 0.2, fees: 10 })}>sell % </button>
         <ul>{ledgerItems}</ul>
         <h1>{errorOutput}</h1>
         </div>
