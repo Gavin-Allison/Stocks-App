@@ -35,13 +35,16 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   // Initialize portfolio data
   initialize: async () => {
-    const { symbols } = get();
+    const { symbols, selectedStock } = get();
     const data: { symbol: string; data: Record<string, number> }[] = [];
     for (const symbol of symbols) {
       const fetchedData = await FetchStockData(symbol);
       data.push({ symbol, data: fetchedData });
     }
-    set({ priceData: data });
+    
+    // Set initial selected stock if not already set
+    const newSelectedStock = !selectedStock && symbols.length > 0 ? symbols[0] : selectedStock;
+    set({ priceData: data, selectedStock: newSelectedStock });
   },
 
   // Add stock

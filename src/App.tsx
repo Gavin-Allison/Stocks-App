@@ -11,19 +11,12 @@ export default function App() {
     const layout: React.CSSProperties & { [key: string]: any } = {
         "--layout-width": "1600px",
     }
-    const { symbols, selectedStock, setSelectedStock, initialize } = useAppStore();
+    const { initialize } = useAppStore();
 
     // Initialize portfolio data
     useEffect(() => {
         initialize();
     }, [initialize]);
-
-    // Set initial selected stock
-    useEffect(() => {
-        if (selectedStock === '' && symbols.length > 0) {
-            setSelectedStock(symbols[0]);
-        }
-    }, [symbols, selectedStock, setSelectedStock]);
 
     return (
         <div className="flex h-screen w-full flex-col" style={layout}>
