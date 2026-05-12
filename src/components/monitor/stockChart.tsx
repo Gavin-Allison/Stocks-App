@@ -1,11 +1,10 @@
 import { AreaSeries, createChart, ColorType } from 'lightweight-charts';
 import { useEffect, useRef } from 'react';
+import { useAppStore } from '../../stores/appStore';
 
 // React component that renders a stock chart using the Lightweight Charts library
 export const ChartComponent = ({
     data,
-    onDateChange,
-    onStockChange,
     symbol,
     colors: {
         backgroundColor = '#e5e7eb',
@@ -14,8 +13,6 @@ export const ChartComponent = ({
     } = {},
 }: {
     data: any[];
-    onDateChange: (date: string) => void;
-    onStockChange: (stock: string) => void;
     symbol: string;
     colors?: {
         backgroundColor?: string;
@@ -23,6 +20,7 @@ export const ChartComponent = ({
         textColor?: string;
     };
 }) => {
+    const { setDate, setSelectedStock } = useAppStore();
 
     const chartContainerRef = useRef<HTMLDivElement>(null);
     const chartRef = useRef<any>(null);
@@ -68,8 +66,8 @@ export const ChartComponent = ({
                     timestamp = Number(param.time) * 1000;
                 }
                 const dateStr = new Date(timestamp).toISOString().split('T')[0];
-                onDateChange(dateStr);
-                onStockChange(symbol);
+                setDate(dateStr);
+                setSelectedStock(symbol);
             }
         });
     
@@ -94,7 +92,7 @@ export const ChartComponent = ({
             window.removeEventListener('dblclick', handleResetZoom);
             chart.remove();
         };
-    }, [onDateChange]);
+    }, [setDate, setSelectedStock, symbol, data, backgroundColor, lineColor, textColor]);
 
     // Update chart data
     useEffect(() => {

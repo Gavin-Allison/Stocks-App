@@ -10,7 +10,7 @@ const StockChart = memo(({
     symbol: string,
     priceData: any[],
 }) => {
-    const { removeStock, setDate, setSelectedStock } = useAppStore();
+    const { removeStock } = useAppStore();
 
     return (
         <div className="p-4 border-b border-gray-300 bg-white shadow-sm mb-4">
@@ -25,7 +25,7 @@ const StockChart = memo(({
             </div>
 
             <div className="h-[300px] w-full bg-gray-50 rounded border relative [&_a]:hidden">
-                <ChartComponent data={priceData} onDateChange={setDate} onStockChange={setSelectedStock} symbol={symbol} />
+                <ChartComponent data={priceData} symbol={symbol} />
             </div>
         </div>
     );

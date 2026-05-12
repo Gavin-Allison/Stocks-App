@@ -4,7 +4,7 @@ import { useAppStore } from "../stores/appStore";
 // Bar at top
 export const Header = () => {
     const [addableStock, setAddableStock] = useState("");
-    const { addStock } = useAppStore();
+    const { addStock, setReportTab } = useAppStore();
 
     // When text inputted and button clicked at stock based on text
     const handleAdd = () => {
@@ -34,10 +34,10 @@ export const Header = () => {
             <div className="flex-grow"></div>
 
             <div className="flex gap-2">
-                <button onClick={() => useAppStore.getState().setReportTab("Tutorial")} className="px-2 py-1 hover:bg-gray-400 rounded">Tutorial</button>
-                <button onClick={() => useAppStore.getState().setReportTab("Overview")} className="px-2 py-1 hover:bg-gray-400 rounded">Overview</button>
-                <button onClick={() => useAppStore.getState().setReportTab("Transactions")} className="px-2 py-1 hover:bg-gray-400 rounded">Transactions</button>
-                <button onClick={() => useAppStore.getState().setReportTab("Results")} className="px-2 py-1 hover:bg-gray-400 rounded">Results</button>
+                <button onClick={() => setReportTab("Tutorial")} className="px-2 py-1 hover:bg-gray-400 rounded">Tutorial</button>
+                <button onClick={() => setReportTab("Overview")} className="px-2 py-1 hover:bg-gray-400 rounded">Overview</button>
+                <button onClick={() => setReportTab("Transactions")} className="px-2 py-1 hover:bg-gray-400 rounded">Transactions</button>
+                <button onClick={() => setReportTab("Results")} className="px-2 py-1 hover:bg-gray-400 rounded">Results</button>
             </div>
         </div>
     );
