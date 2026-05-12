@@ -1,26 +1,23 @@
 import { memo } from "react";
+import { useAppStore } from "../../stores/appStore";
 import { ChartComponent } from "./stockChart";
 
 // Stock chart item using fetched data
-const StockChart = memo(({ 
-    symbol, 
+const StockChart = memo(({
+    symbol,
     priceData,
-    onRemove,
-    onDateChange,
-    onStockChange
-}: { 
+}: {
     symbol: string,
     priceData: any[],
-    onRemove: (s: string) => void,
-    onDateChange: (date: string) => void,
-    onStockChange: (stock: string) => void
 }) => {
+    const { removeStock, setDate, setSelectedStock } = useAppStore();
+
     return (
         <div className="p-4 border-b border-gray-300 bg-white shadow-sm mb-4">
             <div className="flex justify-between items-center mb-4">
                 <h3 className="font-bold text-lg text-gray-800">{symbol} Analysis</h3>
                 <button 
-                    onClick={() => onRemove(symbol)}
+                    onClick={() => removeStock(symbol)}
                     className="px-3 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-colors text-sm font-medium"
                 >
                     Remove
@@ -28,30 +25,15 @@ const StockChart = memo(({
             </div>
 
             <div className="h-[300px] w-full bg-gray-50 rounded border relative [&_a]:hidden">
-                <ChartComponent data={priceData} onDateChange={onDateChange} onStockChange={onStockChange} symbol={symbol} />
+                <ChartComponent data={priceData} onDateChange={setDate} onStockChange={setSelectedStock} symbol={symbol} />
             </div>
         </div>
     );
 });
 
 // List of stock charts
-export const StockChartList = ({ 
-    symbols, 
-    priceData, 
-    onRemoveStock,
-    date,
-    setDate,
-    selectedStock,
-    setSelectedStock
-}: { 
-    symbols: string[], 
-    priceData: {symbol: string, data: Record<string, number>}[],
-    onRemoveStock: (s: string) => void,
-    date: string,
-    setDate: (date: string) => void,
-    selectedStock: string,
-    setSelectedStock: (stock: string) => void
-}) => {
+export const StockChartList = () => {
+    const { symbols, priceData } = useAppStore();
 
     return (
         <div className="flex flex-col gap-2">
@@ -65,10 +47,7 @@ export const StockChartList = ({
                     <StockChart 
                         key={symbol} 
                         symbol={symbol}
-                        priceData={dataArray} 
-                        onRemove={onRemoveStock}
-                        onDateChange={setDate}
-                        onStockChange={setSelectedStock}
+                        priceData={dataArray}
                     />
                 );
             })}

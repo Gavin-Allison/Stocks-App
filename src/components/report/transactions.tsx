@@ -1,31 +1,13 @@
 import { useMemo, useState } from "react"
+import { useAppStore } from "../../stores/appStore"
 
 import { StockDatePicker } from "../common/datepicker"
 import { validateLedger } from "../../stores/ledger"
 
 import type { Transaction } from "../../types/transaction"
 
-export const Transactions = ({
-    symbols,
-    transactions,
-    priceData,
-    addTransaction,
-    removeTransaction,
-    date,
-    setDate,
-    selectedStock,
-    setSelectedStock
-}: {
-    symbols: string[],
-    transactions: Transaction[]
-    priceData: {symbol: string, data: Record<string, number>}[],
-    addTransaction: (transaction: Transaction) => void
-    removeTransaction: (transaction: Transaction) => void,
-    date: string,
-    setDate: (date: string) => void,
-    selectedStock: string,
-    setSelectedStock: (stock: string) => void
-}) => {
+export const Transactions = () => {
+    const { symbols, transactions, priceData, date, selectedStock, setDate, setSelectedStock, addTransaction, removeTransaction } = useAppStore()
 
     const [tradeFee, setTradeFee] = useState<number>(10);
     const [cashFee, setCashFee] = useState<number>(10);
@@ -37,7 +19,7 @@ export const Transactions = ({
             case 'FBUY':
             case 'FSELL':
             return `${transaction.ticker}, ${transaction.amount} shares at ${transaction.pricePerUnit}`;
-            
+
             case 'DBUY':
             case 'DSELL':
             return `${transaction.ticker}, ${transaction.value * 100}%`;
@@ -109,10 +91,10 @@ export const Transactions = ({
             </div>
 
             <div className="flex flex-wrap gap-2 mb-4">
-                <button onClick={() => handleAddTransaction({ type: "FBUY", ticker: selected, amount: 1, pricePerUnit: 100, fees: tradeFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Buy #</button>
-                <button onClick={() => handleAddTransaction({ type: "FSELL", ticker: selected, amount: 1, pricePerUnit: 100, fees: tradeFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Sell #</button>
-                <button onClick={() => handleAddTransaction({ type: "DBUY", ticker: selected, value: 0.2, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Buy %</button>
-                <button onClick={() => handleAddTransaction({ type: "DSELL", ticker: selected, value: 0.2, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Sell %</button>
+                <button onClick={() => handleAddTransaction({ type: "FBUY", ticker: selectedStock, amount: 1, pricePerUnit: 100, fees: tradeFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Buy #</button>
+                <button onClick={() => handleAddTransaction({ type: "FSELL", ticker: selectedStock, amount: 1, pricePerUnit: 100, fees: tradeFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Sell #</button>
+                <button onClick={() => handleAddTransaction({ type: "DBUY", ticker: selectedStock, value: 0.2, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Buy %</button>
+                <button onClick={() => handleAddTransaction({ type: "DSELL", ticker: selectedStock, value: 0.2, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Sell %</button>
                 <button onClick={() => handleAddTransaction({ type: "DEPOSIT", amount: 100, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Deposit</button>
                 <button onClick={() => handleAddTransaction({ type: "WITHDRAWAL", amount: 100, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Withdraw</button>
             </div>
