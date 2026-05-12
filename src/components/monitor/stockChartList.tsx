@@ -10,7 +10,8 @@ const StockChart = memo(({
     symbol: string,
     priceData: any[],
 }) => {
-    const { removeStock } = useAppStore();
+    const { stocks, removeStock } = useAppStore();
+    const currentStock = stocks.find(s => s.ticker === symbol);
 
     return (
         <div className="p-4 border border-gray-400 bg-white mb-4">
@@ -25,7 +26,7 @@ const StockChart = memo(({
             </div>
 
             <div className="h-[300px] w-full bg-gray-100 rounded border border-gray-400 relative [&_a]:hidden">
-                <ChartComponent data={priceData} symbol={symbol} />
+                <ChartComponent data={priceData} symbol={symbol} lineColor={currentStock?.color} />
             </div>
         </div>
     );
@@ -33,20 +34,20 @@ const StockChart = memo(({
 
 // List of stock charts
 export const StockChartList = () => {
-    const { symbols, priceData } = useAppStore();
+    const { stocks, priceData } = useAppStore();
 
     return (
         <div className="flex flex-col gap-2">
-            {symbols.length === 0 && (
+            {stocks.length === 0 && (
                 <p className="text-gray-500 text-center py-10">No stocks monitored. Add one to get started.</p>
             )}
-            {symbols.map((symbol) => {
-                const stockData = priceData.find(p => p.symbol === symbol)?.data || {};
+            {stocks.map((stock) => {
+                const stockData = priceData.find(p => p.symbol === stock.ticker)?.data || {};
                 const dataArray = Object.entries(stockData).map(([time, value]) => ({time, value}));
                 return (
                     <StockChart 
-                        key={symbol} 
-                        symbol={symbol}
+                        key={stock.ticker} 
+                        symbol={stock.ticker}
                         priceData={dataArray}
                     />
                 );

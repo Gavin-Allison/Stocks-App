@@ -7,7 +7,7 @@ import { validateLedger } from "../../stores/ledger"
 import type { Transaction } from "../../types/transaction"
 
 export const Transactions = () => {
-    const { symbols, transactions, priceData, date, selectedStock, setDate, setSelectedStock, addTransaction, removeTransaction } = useAppStore()
+    const { stocks, transactions, priceData, date, selectedStock, setDate, setSelectedStock, addTransaction, removeTransaction } = useAppStore()
 
     const [tradeFee, setTradeFee] = useState<number>(10);
     const [cashFee, setCashFee] = useState<number>(10);
@@ -69,9 +69,9 @@ export const Transactions = () => {
 
                 {/* Dropdown to select stock for transaction */}
                 <select value={selectedStock} onChange={(e) => setSelectedStock(e.target.value)} className="border border-gray-400 rounded">
-                    {symbols.map((symbol) => (
-                        <option key={symbol} value={symbol}>
-                            {symbol}
+                    {stocks.map((stock) => (
+                        <option key={stock.ticker} value={stock.ticker}>
+                            {stock.ticker}
                         </option>
                     ))}
                 </select>

@@ -6,17 +6,17 @@ import { useAppStore } from '../../stores/appStore';
 export const ChartComponent = ({
     data,
     symbol,
+    lineColor,
     colors: {
         backgroundColor = '#e5e7eb',
-        lineColor = 'green',
         textColor = 'black',
     } = {},
 }: {
     data: any[];
     symbol: string;
+    lineColor?: string;
     colors?: {
         backgroundColor?: string;
-        lineColor?: string;
         textColor?: string;
     };
 }) => {
@@ -51,7 +51,9 @@ export const ChartComponent = ({
         chart.timeScale().fitContent();
 
         const series = chart.addSeries(AreaSeries, {
-            lineColor
+            lineColor,
+            topColor: lineColor?.replace('hsl', 'hsla').replace(')', ', 0.5)'),
+            bottomColor: "rgba(255, 255, 255, 0)",
         });
 
         chartRef.current = chart;
