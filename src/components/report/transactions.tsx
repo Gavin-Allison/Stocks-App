@@ -37,14 +37,16 @@ export const Transactions = () => {
     }
 
     const ledgerItems = ledger.map((entry) => (
-        <li key={entry.transaction.id} className="flex justify-between items-center py-1">
+        <li key={entry.transaction.id} className="m-1 flex justify-between items-center py-1 border-b border-gray-300">
             <span>
                 {`${entry.transaction.date}, `}
                 {`${entry.transaction.type}, `}
                 {`$${entry.currentCash}, `}
                 {formatTransaction(entry.transaction)}
             </span>
-            <button onClick={() => removeTransaction(entry.transaction)} className="text-red-600 hover:text-red-800 ml-2">Remove</button>
+            <button onClick={() => removeTransaction(entry.transaction)} className="px-3 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-colors text-sm font-medium">
+                Remove
+            </button>
         </li>
     ));
 
@@ -60,10 +62,10 @@ export const Transactions = () => {
     }
 
     return (
-        <div className="p-4">
+        <div className="flex flex-col w-full h-full p-4">
             <h1 className="text-xl font-bold mb-4">Transactions</h1>
             <div className="flex flex-nowrap gap-2 mb-4">
-                <StockDatePicker className="w-36 border border-gray-300 rounded" date={date} onDateChange={setDate} />
+                <StockDatePicker className="w-36" date={date} onDateChange={setDate} />
 
                 {/* Dropdown to select stock for transaction */}
                 <select value={selectedStock} onChange={(e) => setSelectedStock(e.target.value)} className="border border-gray-300 rounded">
@@ -79,14 +81,14 @@ export const Transactions = () => {
                     value={tradeFee}
                     onChange={(e) => setTradeFee(Number(e.target.value))}
                     placeholder="Trade Fee"
-                    className="w-24 border border-gray-300 rounded"
+                    className="w-24 border border-gray-400 rounded"
                 />
                 <input
                     type="number"
                     value={cashFee}
                     onChange={(e) => setCashFee(Number(e.target.value))}
                     placeholder="Cash Fee"
-                    className="w-24 border border-gray-300 rounded"
+                    className="w-24 border border-gray-400 rounded"
                 />
             </div>
 
@@ -98,9 +100,12 @@ export const Transactions = () => {
                 <button onClick={() => handleAddTransaction({ type: "DEPOSIT", amount: 100, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Deposit</button>
                 <button onClick={() => handleAddTransaction({ type: "WITHDRAWAL", amount: 100, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Withdraw</button>
             </div>
-            <ul className="space-y-1">
-                {ledgerItems}
-            </ul>
+            <div className="flex flex-col w-full h-full overflow-y-scroll border border-gray-400 rounded bg-gray-200">
+                <ul className="w-full " >
+                    {ledgerItems}
+                </ul>
+            </div>
+
             <div className="mt-4 text-red-600">{errorOutput}</div>
         </div>
     )

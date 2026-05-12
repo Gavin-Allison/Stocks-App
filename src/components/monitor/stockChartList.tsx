@@ -24,7 +24,7 @@ const StockChart = memo(({
                 </button>
             </div>
 
-            <div className="h-[300px] w-full bg-gray-50 rounded border relative [&_a]:hidden">
+            <div className="h-[300px] w-full bg-gray-100 rounded border relative [&_a]:hidden">
                 <ChartComponent data={priceData} symbol={symbol} />
             </div>
         </div>
