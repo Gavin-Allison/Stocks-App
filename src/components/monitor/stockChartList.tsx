@@ -13,7 +13,7 @@ const StockChart = memo(({
     const { removeStock } = useAppStore();
 
     return (
-        <div className="p-4 border-b border-gray-300 bg-white shadow-sm mb-4">
+        <div className="p-4 border border-gray-400 bg-white mb-4">
             <div className="flex justify-between items-center mb-4">
                 <h3 className="font-bold text-lg text-gray-800">{symbol} Analysis</h3>
                 <button 
@@ -24,7 +24,7 @@ const StockChart = memo(({
                 </button>
             </div>
 
-            <div className="h-[300px] w-full bg-gray-100 rounded border relative [&_a]:hidden">
+            <div className="h-[300px] w-full bg-gray-100 rounded border border-gray-400 relative [&_a]:hidden">
                 <ChartComponent data={priceData} symbol={symbol} />
             </div>
         </div>
