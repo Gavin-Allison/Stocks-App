@@ -16,7 +16,7 @@ const StockChart = memo(({
     return (
         <div className="p-4 border border-gray-400 bg-white mb-4">
             <div className="flex justify-between items-center mb-4">
-                <h3 className="font-bold text-lg text-gray-800">{symbol} Analysis</h3>
+                <h3 className="font-bold text-lg text-gray-800">{symbol}</h3>
                 <button 
                     onClick={() => removeStock(symbol)}
                     className="px-3 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-colors text-sm font-medium"
