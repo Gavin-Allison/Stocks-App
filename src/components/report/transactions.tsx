@@ -68,7 +68,7 @@ export const Transactions = () => {
                 <StockDatePicker className="w-36" date={date} onDateChange={setDate} />
 
                 {/* Dropdown to select stock for transaction */}
-                <select value={selectedStock} onChange={(e) => setSelectedStock(e.target.value)} className="border border-gray-300 rounded">
+                <select value={selectedStock} onChange={(e) => setSelectedStock(e.target.value)} className="border border-gray-400 rounded">
                     {symbols.map((symbol) => (
                         <option key={symbol} value={symbol}>
                             {symbol}
