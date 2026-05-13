@@ -63,35 +63,11 @@ export const Transactions = () => {
 
     return (
         <div className="flex flex-col w-full h-full p-4">
-            <h1 className="text-xl font-bold mb-4">Transactions</h1>
-            <div className="flex flex-nowrap gap-2 mb-4">
-                <StockDatePicker className="w-36" date={date} onDateChange={setDate} />
-
-                {/* Dropdown to select stock for transaction */}
-                <select value={selectedStock} onChange={(e) => setSelectedStock(e.target.value)} className="border border-gray-400 rounded">
-                    {stocks.map((stock) => (
-                        <option key={stock.ticker} value={stock.ticker}>
-                            {stock.ticker}
-                        </option>
-                    ))}
-                </select>
-
-                <input
-                    type="number"
-                    value={tradeFee}
-                    onChange={(e) => setTradeFee(Number(e.target.value))}
-                    placeholder="Trade Fee"
-                    className="w-24 border border-gray-400 rounded"
-                />
-                <input
-                    type="number"
-                    value={cashFee}
-                    onChange={(e) => setCashFee(Number(e.target.value))}
-                    placeholder="Cash Fee"
-                    className="w-24 border border-gray-400 rounded"
-                />
+            <div className="flex items-center justify-between mb-4"> 
+                <h1 className="text-xl font-bold mb-4">Transactions</h1>
+                <StockDatePicker className="w-38" date={date} onDateChange={setDate} />
             </div>
-
+            
             <div className="flex flex-wrap gap-2 mb-4">
                 <button onClick={() => handleAddTransaction({ type: "FBUY", ticker: selectedStock, amount: 1, pricePerUnit: 100, fees: tradeFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Buy #</button>
                 <button onClick={() => handleAddTransaction({ type: "FSELL", ticker: selectedStock, amount: 1, pricePerUnit: 100, fees: tradeFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Sell #</button>
@@ -99,6 +75,34 @@ export const Transactions = () => {
                 <button onClick={() => handleAddTransaction({ type: "DSELL", ticker: selectedStock, value: 0.2, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Sell %</button>
                 <button onClick={() => handleAddTransaction({ type: "DEPOSIT", amount: 100, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Deposit</button>
                 <button onClick={() => handleAddTransaction({ type: "WITHDRAWAL", amount: 100, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Withdraw</button>
+            </div>
+
+            <div className="mb-4 w-full h-1/2 gap-2 border border-gray-400 rounded bg-gray-200">
+                <div className="flex gap-2 p-2">
+                    {/* Dropdown to select stock for transaction */}
+                    <select value={selectedStock} onChange={(e) => setSelectedStock(e.target.value)} className="bg-white border border-gray-400 rounded">
+                        {stocks.map((stock) => (
+                            <option key={stock.ticker} value={stock.ticker}>
+                                {stock.ticker}
+                            </option>
+                        ))}
+                    </select>
+
+                    <input
+                        type="number"
+                        value={tradeFee}
+                        onChange={(e) => setTradeFee(Number(e.target.value))}
+                        placeholder="Trade Fee"
+                        className="w-24 bg-white border border-gray-400 rounded"
+                    />
+                    <input
+                        type="number"
+                        value={cashFee}
+                        onChange={(e) => setCashFee(Number(e.target.value))}
+                        placeholder="Cash Fee"
+                        className="w-24 bg-white border border-gray-400 rounded"
+                    />
+                </div>
             </div>
             <div className="flex flex-col w-full h-full overflow-y-scroll border border-gray-400 rounded bg-gray-200">
                 <ul className="w-full " >
