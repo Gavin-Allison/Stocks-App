@@ -44,7 +44,7 @@ export const Transactions = () => {
         switch (transaction.type) {
             case 'FBUY':
             case 'FSELL':
-            return `${transaction.ticker}, ${transaction.amount} shares at ${transaction.pricePerUnit}`;
+            return `${transaction.ticker}, ${transaction.amount} shares at ${transaction.pricePerUnit.toFixed(2)}`;
 
             case 'DBUY':
             case 'DSELL':
@@ -71,7 +71,7 @@ export const Transactions = () => {
                 <span>
                     {`${entry.transaction.date}, `}
                     {`${entry.transaction.type}, `}
-                    {`$${entry.currentCash}, `}
+                    {`$${entry.currentCash.toFixed(2)}, `}
                     {formatTransaction(entry.transaction)}
                 </span>
                 <button
