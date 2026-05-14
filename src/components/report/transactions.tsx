@@ -11,8 +11,12 @@ export const Transactions = () => {
 
     const [tradeFee, setTradeFee] = useState<number>(10);
     const [cashFee, setCashFee] = useState<number>(10);
+    const [draftTransactions, setDraftTransactions] = useState<Transaction[]>([]);
 
-    const ledger = useMemo(() => validateLedger(transactions, priceData), [transactions, priceData]);
+    const previewLedger = useMemo(() => {
+        const combinedTransactions = [...transactions, ...draftTransactions].sort((a, b) => a.date.localeCompare(b.date));
+        return validateLedger(combinedTransactions, priceData);
+    }, [transactions, draftTransactions, priceData]);
 
     function formatTransaction(transaction: Transaction): string {
         switch (transaction.type) {
@@ -36,21 +40,29 @@ export const Transactions = () => {
         }
     }
 
-    const ledgerItems = ledger.map((entry) => (
-        <li key={entry.transaction.id} className="m-1 flex justify-between items-center py-1 border-b border-gray-300">
-            <span>
-                {`${entry.transaction.date}, `}
-                {`${entry.transaction.type}, `}
-                {`$${entry.currentCash}, `}
-                {formatTransaction(entry.transaction)}
-            </span>
-            <button onClick={() => removeTransaction(entry.transaction)} className="px-3 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-colors text-sm font-medium">
-                Remove
-            </button>
-        </li>
-    ));
+    const draftTransactionIds = new Set(draftTransactions.map((t) => t.id));
 
-    const errorOutput = ledger.find(e => e.error)?.errorMessage || "No errors";
+    const ledgerItems = previewLedger.map((entry) => {
+        const isDraft = draftTransactionIds.has(entry.transaction.id);
+        return (
+            <li key={entry.transaction.id} className={`m-1 flex justify-between items-center py-1 border-b border-gray-300 ${isDraft ? 'text-red-700 bg-red-50' : ''}`}>
+                <span>
+                    {`${entry.transaction.date}, `}
+                    {`${entry.transaction.type}, `}
+                    {`$${entry.currentCash}, `}
+                    {formatTransaction(entry.transaction)}
+                </span>
+                <button
+                    onClick={() => isDraft ? setDraftTransactions(prev => prev.filter((t) => t.id !== entry.transaction.id)) : removeTransaction(entry.transaction)}
+                    className="px-3 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-colors text-sm font-medium"
+                >
+                    Remove
+                </button>
+            </li>
+        );
+    });
+
+    const errorOutput = previewLedger.find(e => e.error)?.errorMessage || "No errors";
 
     const handleAddTransaction = (details: any) => {
         const transaction: Transaction = {
@@ -58,7 +70,18 @@ export const Transactions = () => {
             id: crypto.randomUUID(),
             date: date,
         }
-        addTransaction(transaction)
+        setDraftTransactions((prev) => {
+            const insertionIndex = prev.findIndex((t) => t.date > transaction.date);
+            if (insertionIndex === -1) {
+                return [...prev, transaction];
+            }
+            return [...prev.slice(0, insertionIndex), transaction, ...prev.slice(insertionIndex)];
+        });
+    }
+
+    const handleSubmitTransactions = () => {
+        draftTransactions.forEach((transaction) => addTransaction(transaction));
+        setDraftTransactions([]);
     }
 
     return (
@@ -102,7 +125,16 @@ export const Transactions = () => {
                         placeholder="Cash Fee"
                         className="w-24 bg-white border border-gray-400 rounded"
                     />
+
                 </div>
+
+                <button
+                    onClick={handleSubmitTransactions}
+                    disabled={draftTransactions.length === 0}
+                    className="ml-2 bg-green-600 disabled:bg-gray-400 text-white px-3 py-1 rounded hover:bg-green-700"
+                >
+                    Submit Pending ({draftTransactions.length})
+                </button>
             </div>
             <div className="flex flex-col w-full h-full overflow-y-scroll border border-gray-400 rounded bg-gray-200">
                 <ul className="w-full " >
