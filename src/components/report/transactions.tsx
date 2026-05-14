@@ -13,8 +13,27 @@ export const Transactions = () => {
     const [cashFee, setCashFee] = useState<number>(10);
     const [draftTransactions, setDraftTransactions] = useState<Transaction[]>([]);
 
+    // Helper function to combine two sorted transaction lists into one sorted list
+    const combineSortedTransactions = (left: Transaction[], right: Transaction[]) => {
+        const combined: Transaction[] = [];
+        let i = 0;
+        let j = 0;
+
+        while (i < left.length && j < right.length) {
+            if (left[i].date <= right[j].date) {
+                combined.push(left[i]);
+                i += 1;
+            } else {
+                combined.push(right[j]);
+                j += 1;
+            }
+        }
+
+        return combined.concat(left.slice(i), right.slice(j));
+    };
+
     const previewLedger = useMemo(() => {
-        const combinedTransactions = [...transactions, ...draftTransactions].sort((a, b) => a.date.localeCompare(b.date));
+        const combinedTransactions = combineSortedTransactions(transactions, draftTransactions);
         return validateLedger(combinedTransactions, priceData);
     }, [transactions, draftTransactions, priceData]);
 
