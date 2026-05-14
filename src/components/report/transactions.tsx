@@ -126,10 +126,14 @@ export const Transactions = () => {
             </div>
 
             {/* Input fields for transaction details */}
-            <div className="mb-4 w-full h-1/2 gap-2 border border-gray-400 rounded bg-gray-200">
+            <div className="mb-4 w-full h-1/2 border border-gray-400 rounded bg-gray-200 flex flex-col justify-between">
                 <div className="flex gap-2 p-2">
                     {/* Dropdown to select stock for transaction */}
-                    <select value={selectedStock} onChange={(e) => setSelectedStock(e.target.value)} className="bg-white border border-gray-400 rounded">
+                    <select 
+                        value={selectedStock} 
+                        onChange={(e) => setSelectedStock(e.target.value)} 
+                        className="bg-white border border-gray-400 rounded"
+                    >
                         {stocks.map((stock) => (
                             <option key={stock.ticker} value={stock.ticker}>
                                 {stock.ticker}
@@ -163,18 +167,20 @@ export const Transactions = () => {
                     />
                 </div>
 
-                <div>
-                    <h1 className="ml-2 text-lg font-bold">Current Price: ${currentPrice.toFixed(2)}</h1>
-                </div>
+                <div className="flex items-center justify-between p-2">
+                    <h1 className="text-lg font-bold">
+                        Current Price: ${currentPrice.toFixed(2)}
+                    </h1>
 
-                {/* Button to submit pending transactions */}
-                <button 
-                    onClick={handleSubmitTransactions}
-                    disabled={draftTransactions.length === 0}
-                    className="ml-2 mr-2 bg-green-600 disabled:bg-gray-400 text-white px-3 py-1 rounded hover:bg-green-700"
-                >
-                    Submit Pending ({draftTransactions.length})
-                </button>
+                    {/* Button to submit pending transactions */}
+                    <button 
+                        onClick={handleSubmitTransactions}
+                        disabled={draftTransactions.length === 0}
+                        className="bg-green-600 disabled:bg-gray-400 text-white px-3 py-1 rounded hover:bg-green-700"
+                    >
+                        Submit Pending ({draftTransactions.length})
+                    </button>
+                </div>
             </div>
 
             {/* Ledger */}
