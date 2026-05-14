@@ -34,6 +34,7 @@ interface AppState {
     setReportTab: (tab: string) => void;
     setDate: (date: string) => void;
     setSelectedStock: (stock: string) => void;
+    getStockPriceAtDate: (ticker: string, date: string) => number | null;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -126,4 +127,10 @@ export const useAppStore = create<AppState>((set, get) => ({
     setReportTab: (tab) => set({ reportTab: tab }),
     setDate: (date) => set({ date }),
     setSelectedStock: (stock) => set({ selectedStock: stock }),
+    
+    getStockPriceAtDate: (ticker: string, date: string) => {
+        const { priceData } = get();
+        const stockData = priceData.find((p) => p.symbol === ticker);
+        return stockData ? stockData.data[date] : null;
+    },
 }));

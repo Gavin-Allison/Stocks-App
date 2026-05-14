@@ -7,11 +7,14 @@ import { validateLedger } from "../../stores/ledger"
 import type { Transaction } from "../../types/transaction"
 
 export const Transactions = () => {
-    const { stocks, transactions, priceData, date, selectedStock, setDate, setSelectedStock, addTransaction, removeTransaction } = useAppStore()
+    const { stocks, transactions, priceData, date, selectedStock, setDate, setSelectedStock, addTransaction, removeTransaction, getStockPriceAtDate } = useAppStore()
 
+    const [numStocks, setNumStocks] = useState<number>(1);
     const [tradeFee, setTradeFee] = useState<number>(10);
     const [cashFee, setCashFee] = useState<number>(10);
     const [draftTransactions, setDraftTransactions] = useState<Transaction[]>([]);
+
+    const currentPrice = getStockPriceAtDate(selectedStock, date) || 0;
 
     // Helper function to combine two sorted transaction lists into one sorted list
     const combineSortedTransactions = (left: Transaction[], right: Transaction[]) => {
@@ -114,8 +117,8 @@ export const Transactions = () => {
             
             {/* Transaction buttons and inputs */}
             <div className="flex flex-wrap gap-2 mb-4">
-                <button onClick={() => handleAddTransaction({ type: "FBUY", ticker: selectedStock, amount: 1, pricePerUnit: 100, fees: tradeFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Buy #</button>
-                <button onClick={() => handleAddTransaction({ type: "FSELL", ticker: selectedStock, amount: 1, pricePerUnit: 100, fees: tradeFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Sell #</button>
+                <button onClick={() => handleAddTransaction({ type: "FBUY", ticker: selectedStock, amount: numStocks, pricePerUnit: currentPrice, fees: tradeFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Buy #</button>
+                <button onClick={() => handleAddTransaction({ type: "FSELL", ticker: selectedStock, amount: numStocks, pricePerUnit: currentPrice, fees: tradeFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Sell #</button>
                 <button onClick={() => handleAddTransaction({ type: "DBUY", ticker: selectedStock, value: 0.2, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Buy %</button>
                 <button onClick={() => handleAddTransaction({ type: "DSELL", ticker: selectedStock, value: 0.2, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Sell %</button>
                 <button onClick={() => handleAddTransaction({ type: "DEPOSIT", amount: 100, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Deposit</button>
@@ -134,6 +137,15 @@ export const Transactions = () => {
                         ))}
                     </select>
 
+                    {/* Input field for number of stocks */}
+                    <input
+                        type="number"
+                        value={numStocks}
+                        onChange={(e) => setNumStocks(Number(e.target.value))}
+                        placeholder="Number of Stocks"
+                        className="w-24 bg-white border border-gray-400 rounded"
+                    />
+
                     {/* Input fields for trade fee and cash fee */}
                     <input
                         type="number"
@@ -151,11 +163,15 @@ export const Transactions = () => {
                     />
                 </div>
 
+                <div>
+                    <h1 className="ml-2 text-lg font-bold">Current Price: ${currentPrice.toFixed(2)}</h1>
+                </div>
+
                 {/* Button to submit pending transactions */}
-                <button
+                <button 
                     onClick={handleSubmitTransactions}
                     disabled={draftTransactions.length === 0}
-                    className="ml-2 bg-green-600 disabled:bg-gray-400 text-white px-3 py-1 rounded hover:bg-green-700"
+                    className="ml-2 mr-2 bg-green-600 disabled:bg-gray-400 text-white px-3 py-1 rounded hover:bg-green-700"
                 >
                     Submit Pending ({draftTransactions.length})
                 </button>
