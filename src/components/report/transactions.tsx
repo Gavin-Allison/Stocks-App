@@ -86,11 +86,14 @@ export const Transactions = () => {
 
     return (
         <div className="flex flex-col w-full h-full p-4">
+
+            {/* Header with date picker */}
             <div className="flex items-center justify-between mb-4"> 
                 <h1 className="text-xl font-bold mb-4">Transactions</h1>
                 <StockDatePicker className="w-38" date={date} onDateChange={setDate} />
             </div>
             
+            {/* Transaction buttons and inputs */}
             <div className="flex flex-wrap gap-2 mb-4">
                 <button onClick={() => handleAddTransaction({ type: "FBUY", ticker: selectedStock, amount: 1, pricePerUnit: 100, fees: tradeFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Buy #</button>
                 <button onClick={() => handleAddTransaction({ type: "FSELL", ticker: selectedStock, amount: 1, pricePerUnit: 100, fees: tradeFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Sell #</button>
@@ -100,6 +103,7 @@ export const Transactions = () => {
                 <button onClick={() => handleAddTransaction({ type: "WITHDRAWAL", amount: 100, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Withdraw</button>
             </div>
 
+            {/* Input fields for transaction details */}
             <div className="mb-4 w-full h-1/2 gap-2 border border-gray-400 rounded bg-gray-200">
                 <div className="flex gap-2 p-2">
                     {/* Dropdown to select stock for transaction */}
@@ -111,6 +115,7 @@ export const Transactions = () => {
                         ))}
                     </select>
 
+                    {/* Input fields for trade fee and cash fee */}
                     <input
                         type="number"
                         value={tradeFee}
@@ -125,9 +130,9 @@ export const Transactions = () => {
                         placeholder="Cash Fee"
                         className="w-24 bg-white border border-gray-400 rounded"
                     />
-
                 </div>
 
+                {/* Button to submit pending transactions */}
                 <button
                     onClick={handleSubmitTransactions}
                     disabled={draftTransactions.length === 0}
@@ -136,6 +141,8 @@ export const Transactions = () => {
                     Submit Pending ({draftTransactions.length})
                 </button>
             </div>
+
+            {/* Ledger */}
             <div className="flex flex-col w-full h-full overflow-y-scroll border border-gray-400 rounded bg-gray-200">
                 <ul className="w-full " >
                     {ledgerItems}
