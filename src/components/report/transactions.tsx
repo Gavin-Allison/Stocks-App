@@ -179,7 +179,7 @@ export const Transactions = () => {
 
             {/* Ledger */}
             <div className="flex flex-col w-full h-full overflow-y-scroll border border-gray-400 rounded bg-gray-200">
-                <ul className="w-full " >
+                <ul className="w-full pb-48" >
                     {ledgerItems}
                 </ul>
             </div>
