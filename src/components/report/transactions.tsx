@@ -78,7 +78,8 @@ export const Transactions = () => {
 
             case 'DEPOSIT':
             case 'WITHDRAWAL':
-                return `${transaction.type}, $${transaction.amount}`;
+                const cType = transaction.type === 'DEPOSIT' ? 'DEPOSIT,' : 'WITHDRAW,';
+                return `${cType} $${transaction.amount.toFixed(2)}`;
 
             case 'DIVIDEND':
                 return `${transaction.type}, ${transaction.ticker}, $${transaction.amount}, (${transaction.isReinvested ? 'reinvested' : 'cash'})`;
