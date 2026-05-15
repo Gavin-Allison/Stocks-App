@@ -68,21 +68,23 @@ export const Transactions = () => {
         switch (transaction.type) {
             case 'FBUY':
             case 'FSELL':
-            return `${transaction.ticker}, ${transaction.amount} shares at ${transaction.pricePerUnit.toFixed(2)}`;
+                const fType = transaction.type === 'FBUY' ? 'BUY,' : 'SELL,';
+            return `${fType} ${transaction.ticker}, ${transaction.amount} shares at $${transaction.pricePerUnit.toFixed(2)}`;
 
             case 'DBUY':
             case 'DSELL':
-            return `${transaction.ticker}, ${transaction.value * 100}%`;
+                const dType = transaction.type === 'DBUY' ? 'BUY,' : 'SELL,';
+                return `${dType} ${transaction.ticker}, ${transaction.value * 100}%`;
 
             case 'DEPOSIT':
             case 'WITHDRAWAL':
-            return `$${transaction.amount}`;
+                return `${transaction.type}, $${transaction.amount}`;
 
             case 'DIVIDEND':
-            return `${transaction.ticker}, $${transaction.amount}, (${transaction.isReinvested ? 'reinvested' : 'cash'})`;
+                return `${transaction.type}, ${transaction.ticker}, $${transaction.amount}, (${transaction.isReinvested ? 'reinvested' : 'cash'})`;
 
             default:
-            return `Unknown transaction type`;
+                return `Unknown transaction type`;
         }
     }
 
@@ -92,12 +94,11 @@ export const Transactions = () => {
         const isDraft = draftTransactionIds.has(entry.transaction.id);
         return (
             <li key={entry.transaction.id} className={`m-1 flex justify-between items-center py-1 border-b border-gray-300 ${isDraft ? 'text-red-700 bg-red-50' : ''}`}>
-                {/* highlight date if matches current date */}
+                {/* Highlight date if matches current date */}
                 <span className={entry.transaction.date === date ? "text-blue-600" : ""}>
                     {`${entry.transaction.date}, `}
                 </span>
                 <span>
-                    {`${entry.transaction.type}, `}
                     {`$${entry.currentCash.toFixed(2)}, `}
                     {formatTransaction(entry.transaction)}
                 </span>
