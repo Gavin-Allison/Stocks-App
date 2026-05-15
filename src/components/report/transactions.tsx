@@ -238,12 +238,15 @@ export const Transactions = () => {
             <div className="flex flex-col mb-4 w-full h-1/2 border border-gray-400 rounded bg-gray-200 justify-between">
                 {tradeInputs && cashInputs && (
                     <div className="flex w-full h-full">
-                        <div className= {`w-full ${tradeOrCash === "TRADE" ? "" : "hidden"}`}>
-                            {tradeInputs}
-                        </div>
-                        <div className={`w-full ${tradeOrCash === "CASH" ? "" : "hidden"}`}>
-                            {cashInputs}
-                        </div>
+                        {tradeOrCash === "TRADE" ? (
+                            <div className="w-full">
+                                {tradeInputs}
+                            </div>
+                        ) : (
+                            <div className="w-full">
+                                {cashInputs}
+                            </div>
+                        )}
                     </div>
                 )}
 
