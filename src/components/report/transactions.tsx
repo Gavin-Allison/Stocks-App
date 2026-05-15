@@ -12,6 +12,7 @@ export const Transactions = () => {
     const [numStocks, setNumStocks] = useState<number>(1);
     const [percentOfCash, setPercentOfCash] = useState<number>(20);
     const [tradeFee, setTradeFee] = useState<number>(10);
+    const [cashAmount, setCashAmount] = useState<number>(100);
     const [cashFee, setCashFee] = useState<number>(10);
     const [draftTransactions, setDraftTransactions] = useState<Transaction[]>([]);
     const [tradeOrCash, setTradeOrCash] = useState<"TRADE" | "CASH">("TRADE");
@@ -185,17 +186,19 @@ export const Transactions = () => {
     const cashInputs = (
         <div className="flex flex-col gap-2 m-2">
             {/* Input field for cash amount */}
-            <div className="text-gray-700">Cash Amount: 
+            <div className="flex text-gray-700">
+                <h1>Cash Amount: </h1>
                 <input
                     type="number"
-                    value={numStocks}
-                    onChange={(e) => setNumStocks(Number(e.target.value))}
+                    value={cashAmount}
+                    onChange={(e) => setCashAmount(Number(e.target.value))}
                     className="w-24 bg-white border border-gray-400 rounded ml-2"
                 />
             </div>
 
             {/* Input field for cash fee */}
-            <div className="text-gray-700">Cash Fee: 
+            <div className="flex text-gray-700">
+                <h1>Cash Fee: </h1>
                 <input
                     type="number"
                     value={cashFee}
@@ -205,8 +208,8 @@ export const Transactions = () => {
             </div>
 
             <div className="flex gap-2">
-                <button onClick={() => handleAddTransaction({ type: "DEPOSIT", amount: 100, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Deposit</button>
-                <button onClick={() => handleAddTransaction({ type: "WITHDRAWAL", amount: 100, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Withdraw</button>
+                <button onClick={() => handleAddTransaction({ type: "DEPOSIT", amount: cashAmount, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Deposit</button>
+                <button onClick={() => handleAddTransaction({ type: "WITHDRAWAL", amount: cashAmount, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Withdraw</button>
             </div>
         </div>
     );
