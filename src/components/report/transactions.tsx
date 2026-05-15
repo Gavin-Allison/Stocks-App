@@ -175,8 +175,8 @@ export const Transactions = () => {
             )}
             {fixedOrDynamic === "DYNAMIC" && (
                 <div className="flex gap-2">
-                    <button onClick={() => handleAddTransaction({ type: "DBUY", ticker: selectedStock, value: percentOfCash, fees: tradeFee })} className="bg-blue-600 text-white w-16 py-1 rounded hover:bg-blue-700">Buy %</button>
-                    <button onClick={() => handleAddTransaction({ type: "DSELL", ticker: selectedStock, value: percentOfCash, fees: cashFee })} className="bg-blue-600 text-white w-16 py-1 rounded hover:bg-blue-700">Sell %</button>
+                    <button onClick={() => handleAddTransaction({ type: "DBUY", ticker: selectedStock, value: percentOfCash/100, fees: tradeFee })} className="bg-blue-600 text-white w-16 py-1 rounded hover:bg-blue-700">Buy %</button>
+                    <button onClick={() => handleAddTransaction({ type: "DSELL", ticker: selectedStock, value: percentOfCash/100, fees: cashFee })} className="bg-blue-600 text-white w-16 py-1 rounded hover:bg-blue-700">Sell %</button>
                 </div>
             )}
             
@@ -215,8 +215,6 @@ export const Transactions = () => {
     );
 
     const errorOutput = previewLedger.find(e => e.error)?.errorMessage || "No errors";
-
-
 
     return (
         <div className="flex flex-col w-full h-full p-4">
