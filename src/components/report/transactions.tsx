@@ -92,8 +92,11 @@ export const Transactions = () => {
         const isDraft = draftTransactionIds.has(entry.transaction.id);
         return (
             <li key={entry.transaction.id} className={`m-1 flex justify-between items-center py-1 border-b border-gray-300 ${isDraft ? 'text-red-700 bg-red-50' : ''}`}>
-                <span>
+                {/* highlight date if matches current date */}
+                <span className={entry.transaction.date === date ? "text-blue-600" : ""}>
                     {`${entry.transaction.date}, `}
+                </span>
+                <span>
                     {`${entry.transaction.type}, `}
                     {`$${entry.currentCash.toFixed(2)}, `}
                     {formatTransaction(entry.transaction)}
@@ -179,7 +182,6 @@ export const Transactions = () => {
                     <button onClick={() => handleAddTransaction({ type: "DSELL", ticker: selectedStock, value: percentOfCash/100, fees: cashFee })} className="bg-blue-600 text-white w-16 py-1 rounded hover:bg-blue-700">Sell %</button>
                 </div>
             )}
-            
         </div>
     );
 
