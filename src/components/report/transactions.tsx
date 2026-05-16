@@ -77,6 +77,11 @@ export const Transactions = () => {
         setSelectedBatchId(null);
     }
 
+    const handleCommitSingleTransaction = (transaction: Transaction) => {
+        addTransaction(transaction);
+        setDraftTransactions((prev) => prev.filter((t) => t.id !== transaction.id));
+    }
+
     const highlightedBatchCount = selectedBatchId
         ? transactions.filter((t) => t.batchId === selectedBatchId).length
         : 0;
@@ -127,12 +132,17 @@ export const Transactions = () => {
                     {!isDraft ? (
                         <button
                             onClick={() => setSelectedBatchId(isBatchHighlighted ? null : entry.transaction.batchId)}
-                            className="px-3 py-1 bg-white text-gray-700 rounded border border-gray-300 hover:bg-gray-100 transition-colors text-sm font-medium"
+                            className="px-3 py-1 bg-white text-gray-700 rounded hover:bg-gray-100 transition-colors text-sm font-medium"
                         >
                             {isBatchHighlighted ? 'Clear' : 'Select'}
                         </button>
                     ) : (
-                        <div className="hidden md:block md:w-32" />
+                        <button
+                            onClick={() => handleCommitSingleTransaction(entry.transaction)}
+                            className="px-3 py-1 bg-green-100 text-green-600 rounded hover:bg-green-200 transition-colors text-sm font-medium"
+                        >
+                            Commit
+                        </button>
                     )}
                     <button
                         onClick={() => isDraft ? setDraftTransactions(prev => prev.filter((t) => t.id !== entry.transaction.id)) : removeTransaction(entry.transaction)}
