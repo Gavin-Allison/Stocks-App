@@ -4,6 +4,7 @@ import { useAppStore } from "../../stores/appStore"
 import { StockDatePicker } from "../common/datepicker"
 import { validateLedger } from "../../stores/ledger"
 
+import type { LedgerEntry } from "../../types/ledgerEntry"
 import type { Transaction } from "../../types/transaction"
 
 export const Transactions = () => {
@@ -80,19 +81,19 @@ export const Transactions = () => {
         ? transactions.filter((t) => t.batchId === selectedBatchId).length
         : 0;
 
-    function formatTransaction(transaction: Transaction): string {
+    function formatTransaction(entry: LedgerEntry): string {
+        const transaction = entry.transaction;
+
         switch (transaction.type) {
             case 'FBUY':
             case 'FSELL':
-                return `${transaction.type === 'FBUY' ? 'BUY,' : 'SELL,'} ${transaction.ticker}, ${transaction.amount} shares at $${transaction.pricePerUnit.toFixed(2)}`;
+                return `${transaction.type === 'FBUY' ? 'Bought' : 'Sold'} ${transaction.amount} shares of ${transaction.ticker} for $${(transaction.amount * transaction.pricePerUnit).toFixed(2)}`;
             case 'DBUY':
             case 'DSELL':
-                return `${transaction.type === 'DBUY' ? 'BUY,' : 'SELL,'} ${transaction.ticker}, ${transaction.value * 100}%`;
+                return `${transaction.type === 'DBUY' ? 'Bought' : 'Sold'} ${entry.executionAmount ?? 0} shares of ${transaction.ticker} for $${((entry.executionAmount ?? 0) * (entry.executionPrice ?? 0)).toFixed(2)} (${(transaction.value * 100)}%)`;
             case 'DEPOSIT':
             case 'WITHDRAWAL':
                 return `${transaction.type === 'DEPOSIT' ? 'DEPOSIT,' : 'WITHDRAW,'} $${transaction.amount.toFixed(2)}`;
-            case 'DIVIDEND':
-                return `${transaction.type}, ${transaction.ticker}, $${transaction.amount}, (${transaction.isReinvested ? 'reinvested' : 'cash'})`;
             default:
                 return `Unknown transaction type`;
         }
@@ -112,10 +113,11 @@ export const Transactions = () => {
                 <div className="flex flex-col gap-1 w-full md:w-auto">
                     <span className={entry.transaction.date === date ? "text-green-600" : ""}>
                         {`${entry.transaction.date}, `}
+                        {entry.transaction.type === 'FBUY' || entry.transaction.type === 'FSELL' ? `Share Price: $${entry.transaction.pricePerUnit.toFixed(2)}` : null}
                     </span>
                     <span>
                         {`$${entry.currentCash.toFixed(2)}, `}
-                        {formatTransaction(entry.transaction)}
+                        {formatTransaction(entry)}
                     </span>
                     <span className={`text-xs ${isDraft ? 'text-red-600' : 'text-gray-500'}`}>
                         {`Batch ${entry.transaction.batchId}`}

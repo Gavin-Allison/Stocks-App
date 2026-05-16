@@ -11,36 +11,47 @@ export const validateLedger = (transactions: Transaction[], priceData: {symbol: 
     let ignore = false;
 
     return transactions.map((t) => {
+        let executionAmount: number | undefined;
+        let executionPrice: number | undefined;
+        let executionCash: number | undefined;
+
         // When a transaction errors do not worry about transactions that come after
         if (!error) {
             // Logic for validating each transaction type
             switch(t.type) {
                 case "DEPOSIT":
-                    cash += t.amount - t.fees
+                    cash += t.amount - t.fees;
                     break;
 
                 case "WITHDRAWAL":
-                    cash -= t.amount - t.fees
+                    cash -= t.amount - t.fees;
+                    executionCash = t.amount - t.fees;
                     if (cash < 0) {
-                        error = true
-                        errorMessage = "Withdrew cash that you do not have"
+                        error = true;
+                        errorMessage = "Withdrew cash that you do not have";
                     };
                     break;
 
                 case "FBUY":
-                    cash -= t.pricePerUnit * t.amount
+                    cash -= t.pricePerUnit * t.amount;
                     assets[t.ticker] = (assets[t.ticker] ?? 0) + t.amount;
-                    cash -= t.fees
+                    cash -= t.fees;
+                    executionAmount = t.amount;
+                    executionPrice = t.pricePerUnit;
+                    executionCash = t.pricePerUnit * t.amount + t.fees;
                     if (cash < 0) {
-                        error = true
-                        errorMessage = "Bought shares with cash you do not have"
+                        error = true;
+                        errorMessage = "Bought shares with cash you do not have";
                     };
                     break;
 
                 case "FSELL":
                     assets[t.ticker] = (assets[t.ticker] ?? 0) - t.amount;
-                    cash += t.pricePerUnit * t.amount
-                    cash -= t.fees
+                    cash += t.pricePerUnit * t.amount;
+                    cash -= t.fees;
+                    executionAmount = t.amount;
+                    executionPrice = t.pricePerUnit;
+                    executionCash = t.pricePerUnit * t.amount - t.fees;
                     if (assets[t.ticker] < 0) {
                         error = true;
                         errorMessage = "Sold shares you do not have";
@@ -64,6 +75,10 @@ export const validateLedger = (transactions: Transaction[], priceData: {symbol: 
                         assets[t.ticker] = (assets[t.ticker] ?? 0) + shares;
                         cash -= t.fees;
 
+                        executionAmount = shares;
+                        executionPrice = pricePerShareBuy;
+                        executionCash = (moneyToSpend - leftover) + t.fees;
+
                         if (cash < 0) {
                             error = true;
                             errorMessage = "Bought shares with cash you do not have";
@@ -86,6 +101,10 @@ export const validateLedger = (transactions: Transaction[], priceData: {symbol: 
                         cash += moneyGained;
                         assets[t.ticker] = (assets[t.ticker] ?? 0) - sharesToSell;
                         cash -= t.fees;
+
+                        executionAmount = sharesToSell;
+                        executionPrice = pricePerShareSell;
+                        executionCash = moneyGained - t.fees;
                         
                         if (assets[t.ticker] < 0) {
                             error = true;
@@ -93,7 +112,7 @@ export const validateLedger = (transactions: Transaction[], priceData: {symbol: 
                         }
                     }
                     break;
-            }   
+            }
         } else {
             ignore = true;
         }
@@ -104,7 +123,10 @@ export const validateLedger = (transactions: Transaction[], priceData: {symbol: 
             currentAssets: assets,
             error: error,
             errorMessage: errorMessage,
-            ignore: ignore
+            ignore: ignore,
+            executionAmount,
+            executionPrice,
+            executionCash,
         };
     });
 }
