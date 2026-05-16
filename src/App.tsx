@@ -2,9 +2,9 @@ import { useEffect } from "react";
 
 import { useAppStore } from "./stores/appStore";
 
-import { Header } from "./layouts/header";
-import { Monitor } from "./layouts/monitor";
-import { Report } from "./layouts/report";
+import { Header } from "./components/layouts/header";
+import { Report } from "./components/layouts/report";
+import { StockChartList } from "./components/monitor/stockChartList";
 
 
 export default function App() {
@@ -32,7 +32,7 @@ export default function App() {
 
                     {/* Left Column*/}
                     <section className="flex-1 overflow-y-scroll bg-gray-100 border-r border-gray-400">
-                        <Monitor />
+                        <StockChartList />
                     </section>
 
                     {/* Right Column */}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAppStore } from "../stores/appStore";
+import { useAppStore } from "../../stores/appStore";
 
 // Bar at top
 export const Header = () => {
