@@ -2,7 +2,7 @@ import { useAppStore } from "../../stores/appStore";
 
 import { Tutorial } from "../!TODO/tutorial"
 import { Overview } from "../!TODO/overview"
-import { Transactions } from "../transactions/transactions"
+import { Transactions } from "./transactions"
 import { Results } from "../!TODO/results"
 
 export const Report = () => {
