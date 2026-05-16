@@ -92,10 +92,10 @@ export const Transactions = () => {
         switch (transaction.type) {
             case 'FBUY':
             case 'FSELL':
-                return `${transaction.type === 'FBUY' ? 'Bought' : 'Sold'} ${transaction.amount} shares of ${transaction.ticker} for $${(transaction.amount * transaction.pricePerUnit).toFixed(2)}`;
+                return `${transaction.type === 'FBUY' ? 'Bought' : 'Sold'} ${transaction.amount} share(s) for $${(transaction.amount * transaction.pricePerUnit).toFixed(2)}`;
             case 'DBUY':
             case 'DSELL':
-                return `${transaction.type === 'DBUY' ? 'Bought' : 'Sold'} ${entry.executionAmount ?? 0} shares of ${transaction.ticker} for $${((entry.executionAmount ?? 0) * (entry.executionPrice ?? 0)).toFixed(2)} (${(transaction.value * 100)}%)`;
+                return `${transaction.type === 'DBUY' ? 'Bought' : 'Sold'} ${entry.executionAmount ?? 0} share(s) for $${((entry.executionAmount ?? 0) * (entry.executionPrice ?? 0)).toFixed(2)} (${(transaction.value * 100)}%)`;
             case 'DEPOSIT':
             case 'WITHDRAWAL':
                 return `${transaction.type === 'DEPOSIT' ? 'DEPOSIT,' : 'WITHDRAW,'} $${transaction.amount.toFixed(2)}`;
@@ -113,13 +113,18 @@ export const Transactions = () => {
         return (
             <li
                 key={entry.transaction.id}
-                className={`m-1 flex flex-col md:flex-row md:justify-between items-start md:items-center py-2 border-b border-gray-300 ${isDraft ? 'text-red-700 bg-red-50' : ''} ${isBatchHighlighted ? 'text-blue-700 bg-blue-50' : ''}`}
+                className={`m-1 grid grid-cols-1 md:grid-cols-12 items-start md:items-center py-2 border-b border-gray-300 ${isDraft ? 'text-red-700 bg-red-50' : ''} ${isBatchHighlighted ? 'text-blue-700 bg-blue-50' : ''}`}
             >
-                <div className="flex flex-col gap-1 w-full md:w-auto">
-                    <span className={entry.transaction.date === date ? "text-green-600" : ""}>
-                        {`${entry.transaction.date}, `}
-                        {entry.transaction.type === 'FBUY' || entry.transaction.type === 'FSELL' ? `Share Price: $${entry.transaction.pricePerUnit.toFixed(2)}` : null}
-                    </span>
+                <div className="flex flex-col gap-1 w-full md:col-span-8">
+                    <div>
+                        <span className={entry.transaction.date === date ? "text-green-600" : ""}>
+                            {`${entry.transaction.date}, `}
+                        </span>
+                        <span>
+                            {entry.transaction.type === 'FBUY' || entry.transaction.type === 'FSELL' ? `${entry.transaction.ticker} Share Price: $${entry.transaction.pricePerUnit.toFixed(2)}` : entry.transaction.type === 'DBUY' || entry.transaction.type === 'DSELL' ? `${entry.transaction.ticker} Share Price: $${entry.executionPrice?.toFixed(2) ?? 'N/A'}` : ""}
+                        </span>
+                    </div>
+
                     <span>
                         {`$${entry.currentCash.toFixed(2)}, `}
                         {formatTransaction(entry)}
@@ -128,7 +133,15 @@ export const Transactions = () => {
                         {`Batch ${entry.transaction.batchId}`}
                     </span>
                 </div>
-                <div className="flex flex-col gap-2 mt-2 md:mt-0 justify-end w-full md:w-24">
+
+                <div className="md:col-span-1"> 
+                    <span className={`text-lg font-medium text-red-600 ${entry.error ? 'visible' : 'invisible'}`}>
+                        Error
+                    </span>
+                </div>
+
+
+                <div className="flex flex-col gap-2 mt-2 md:mt-0 justify-end w-full md:w-24 md:col-span-3 md:justify-self-end">
                     {!isDraft ? (
                         <button
                             onClick={() => setSelectedBatchId(isBatchHighlighted ? null : entry.transaction.batchId)}
