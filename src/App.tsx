@@ -4,7 +4,7 @@ import { useAppStore } from "./stores/appStore";
 
 import { Header } from "./components/layouts/header";
 import { Report } from "./components/layouts/report";
-import { StockChartList } from "./components/monitor/stockChartList";
+import { StockChartList } from "./components/stock/stockChartList";
 
 
 export default function App() {

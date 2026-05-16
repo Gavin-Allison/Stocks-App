@@ -1,9 +1,9 @@
 import { useAppStore } from "../../stores/appStore";
 
-import { Tutorial } from "../report/tutorial"
-import { Overview } from "../report/overview"
-import { Transactions } from "../report/transactions"
-import { Results } from "../report/results"
+import { Tutorial } from "../!TODO/tutorial"
+import { Overview } from "../!TODO/overview"
+import { Transactions } from "../transactions/transactions"
+import { Results } from "../!TODO/results"
 
 export const Report = () => {
     const { reportTab } = useAppStore();
