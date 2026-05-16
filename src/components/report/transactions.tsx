@@ -134,12 +134,11 @@ export const Transactions = () => {
                     </span>
                 </div>
 
-                <div className="md:col-span-1"> 
-                    <span className={`text-lg font-medium text-red-600 ${entry.error ? 'visible' : 'invisible'}`}>
-                        Error
+                <div className="md:col-span-1 flex justify-end md:justify-center w-full md:w-auto"> 
+                    <span className={`text-lg font-medium ${entry.ignore ? 'text-black visible' : entry.error ? 'text-red-600 visible' : 'invisible'}`}>
+                        {entry.ignore ? '━' : 'Error'}
                     </span>
                 </div>
-
 
                 <div className="flex flex-col gap-2 mt-2 md:mt-0 justify-end w-full md:w-24 md:col-span-3 md:justify-self-end">
                     {!isDraft ? (
