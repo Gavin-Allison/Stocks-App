@@ -185,57 +185,52 @@ export const Transactions = () => {
                         ))}
                     </select>
                 </div>
+                
+                <h1 className="">
+                    Share Price: ${currentPrice.toFixed(2)} 
+                </h1>
+            </div>
 
+            {/* Input field for trade fee */}
+            <div className="flex flex-row w-full items-center justify-between text-gray-700">                
                 {/* Input field for number of stocks/percentage of cash */}
                 {fixedOrDynamic === "FIXED" ? (
-                    <div className="flex text-gray-700">
-                        <h1>Number of Stocks: </h1>
+                    <div className="flex text-gray-700 items-center">
+                        <h1 className="w-36">Number of Stocks: </h1>
                         <input
                             type="number"
                             value={numStocks}
                             onChange={(e) => setNumStocks(Number(e.target.value))}
-                            className="w-16 bg-white border border-gray-400 rounded ml-2"
+                            className="w-16 bg-white border border-gray-400 rounded"
                         />
                         <button onClick={() => setFixedOrDynamic("DYNAMIC")} className="flex w-6 ml-2 items-center justify-center bg-gray-300 rounded hover:bg-gray-400">#</button>
                     </div>
                 ) : (
-                    <div className="flex text-gray-700">
-                        <h1>Percentage of Cash: </h1>
+                    <div className="flex text-gray-700 items-center">
+                        <h1 className="w-36">Percentage of Cash: </h1>
                         <input
                             type="number"
                             value={percentOfCash}
                             onChange={(e) => setPercentOfCash(Number(e.target.value))}
-                            className="w-16 bg-white border border-gray-400 rounded ml-2"
+                            className="w-16 bg-white border border-gray-400 rounded"
                         />
                         <button onClick={() => setFixedOrDynamic("FIXED")} className="flex w-6 ml-2 justify-center bg-gray-300 rounded hover:bg-gray-400">%</button>
                     </div>
                 )}
+
+                <div className="flex text-gray-700">
+                    <h1>Trade Fee: </h1>
+                    <input
+                        type="number"
+                        value={tradeFee}
+                        onChange={(e) => setTradeFee(Number(e.target.value))}
+                        className="w-16 bg-white border border-gray-400 rounded ml-2"
+                    />
+                </div>
             </div>
 
-            {/* Input field for trade fee */}
-            <div className="flex text-gray-700">
-                <h1>Trade Fee: </h1>
-                <input
-                    type="number"
-                    value={tradeFee}
-                    onChange={(e) => setTradeFee(Number(e.target.value))}
-                    className="w-24 bg-white border border-gray-400 rounded ml-2"
-                />
-            </div>
 
-            <div className="flex gap-2">
-                {fixedOrDynamic === "FIXED" ? (
-                    <>
-                        <button onClick={() => handleAddTransaction({ type: "FBUY", ticker: selectedStock, amount: numStocks, pricePerUnit: currentPrice, fees: tradeFee })} className="bg-blue-600 text-white w-16 py-1 rounded hover:bg-blue-700">Buy #</button>
-                        <button onClick={() => handleAddTransaction({ type: "FSELL", ticker: selectedStock, amount: numStocks, pricePerUnit: currentPrice, fees: tradeFee })} className="bg-blue-600 text-white w-16 py-1 rounded hover:bg-blue-700">Sell #</button>
-                    </>
-                ) : (
-                    <>
-                        <button onClick={() => handleAddTransaction({ type: "DBUY", ticker: selectedStock, value: percentOfCash/100, fees: tradeFee })} className="bg-blue-600 text-white w-16 py-1 rounded hover:bg-blue-700">Buy %</button>
-                        <button onClick={() => handleAddTransaction({ type: "DSELL", ticker: selectedStock, value: percentOfCash/100, fees: cashFee })} className="bg-blue-600 text-white w-16 py-1 rounded hover:bg-blue-700">Sell %</button>
-                    </>
-                )}
-            </div>
+
         </div>
     );
 
@@ -298,9 +293,21 @@ export const Transactions = () => {
 
                 {/* Current stock price and submit button */}
                 <div className="flex items-center justify-between p-2">
-                    <h1 className="text-lg font-bold">
-                        Share Price: ${currentPrice.toFixed(2)} 
-                    </h1>
+
+                    <div className="flex gap-2">
+                        {fixedOrDynamic === "FIXED" ? (
+                            <>
+                                <button onClick={() => handleAddTransaction({ type: "FBUY", ticker: selectedStock, amount: numStocks, pricePerUnit: currentPrice, fees: tradeFee })} className="bg-blue-600 text-white w-20 py-1 rounded hover:bg-blue-700">Buy #</button>
+                                <button onClick={() => handleAddTransaction({ type: "FSELL", ticker: selectedStock, amount: numStocks, pricePerUnit: currentPrice, fees: tradeFee })} className="bg-blue-600 text-white w-20 py-1 rounded hover:bg-blue-700">Sell #</button>
+                            </>
+                        ) : (
+                            <>
+                                <button onClick={() => handleAddTransaction({ type: "DBUY", ticker: selectedStock, value: percentOfCash/100, fees: tradeFee })} className="bg-blue-600 text-white w-20 py-1 rounded hover:bg-blue-700">Buy %</button>
+                                <button onClick={() => handleAddTransaction({ type: "DSELL", ticker: selectedStock, value: percentOfCash/100, fees: cashFee })} className="bg-blue-600 text-white w-20 py-1 rounded hover:bg-blue-700">Sell %</button>
+                            </>
+                        )}
+                    </div>
+
 
                     <div className="flex gap-2">
                         <button 
