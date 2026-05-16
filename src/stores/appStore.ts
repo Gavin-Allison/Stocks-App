@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+﻿import { create } from 'zustand';
 import { FetchStockData } from '../services/stockData';
 import type { Transaction } from '../types/transaction';
 
@@ -29,8 +29,14 @@ interface AppState {
     initialize: () => Promise<void>;
     addStock: (symbol: string) => Promise<void>;
     removeStock: (symbol: string) => void;
+
     addTransaction: (transaction: Transaction) => void;
+    addTransactionBatch: (transactions: Transaction[]) => void;
     removeTransaction: (transaction: Transaction) => void;
+    removeTransactionBatch: (batchId: string) => void;
+    commitTransaction: (transaction: Transaction) => void;
+    commitTransactionBatch: (batchId: string) => void;
+
     setReportTab: (tab: string) => void;
     setDate: (date: string) => void;
     setSelectedStock: (stock: string) => void;
@@ -112,7 +118,13 @@ export const useAppStore = create<AppState>((set, get) => ({
                     transaction,
                     ...state.transactions.slice(index)
                 ];
-            localStorage.setItem("transactions", JSON.stringify(newTransactions));
+            return { transactions: newTransactions };
+        });
+    },
+
+    addTransactionBatch: (transactions: Transaction[]) => {
+        set((state) => {
+            const newTransactions = [...state.transactions, ...transactions].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
             return { transactions: newTransactions };
         });
     },
@@ -121,6 +133,32 @@ export const useAppStore = create<AppState>((set, get) => ({
     removeTransaction: (transaction: Transaction) => {
         set((state) => {
             const newTransactions = state.transactions.filter((t) => t.id !== transaction.id);
+            localStorage.setItem("transactions", JSON.stringify(newTransactions));
+            return { transactions: newTransactions };
+        });
+    },
+
+    removeTransactionBatch: (batchId: string) => {
+        set((state) => {
+            const newTransactions = state.transactions.filter((t) => t.batchId !== batchId);
+            localStorage.setItem("transactions", JSON.stringify(newTransactions));
+            return { transactions: newTransactions };
+        });
+    },
+
+    // Commit transaction
+    commitTransaction: (transaction: Transaction) => {
+        set((state) => {
+            const newTransactions = state.transactions.map((t) => t.id === transaction.id ? { ...t, committed: true } : t);
+            localStorage.setItem("transactions", JSON.stringify(newTransactions));
+            return { transactions: newTransactions };
+        });
+    },
+
+    // Commit transaction batch
+    commitTransactionBatch: (batchId: string) => {
+        set((state) => {
+            const newTransactions = state.transactions.map((t) => t.batchId === batchId ? { ...t, committed: true } : t);
             localStorage.setItem("transactions", JSON.stringify(newTransactions));
             return { transactions: newTransactions };
         });

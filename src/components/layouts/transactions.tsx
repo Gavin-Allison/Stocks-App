@@ -1,21 +1,35 @@
-import { useMemo, useState } from "react"
-import { useAppStore } from "../../stores/appStore"
+import { useMemo, useState } from "react";
+import { useAppStore } from "../../stores/appStore";
 
-import { StockDatePicker } from "../common/datepicker"
-import { validateLedger } from "../../stores/ledger"
+import { StockDatePicker } from "../common/datepicker";
+import { validateLedger } from "../../stores/ledger";
 
-import type { LedgerEntry } from "../../types/ledgerEntry"
-import type { Transaction } from "../../types/transaction"
+import type { LedgerEntry } from "../../types/ledgerEntry";
+import type { Transaction } from "../../types/transaction";
 
 export const Transactions = () => {
-    const { stocks, transactions, priceData, date, selectedStock, setDate, setSelectedStock, addTransaction, removeTransaction, getStockPriceAtDate } = useAppStore()
+    const { 
+        stocks, 
+        transactions, 
+        priceData, 
+        date, 
+        selectedStock, 
+        setDate, 
+        setSelectedStock, 
+        addTransaction, 
+        removeTransaction, 
+        removeTransactionBatch,
+        commitTransaction,
+        commitTransactionBatch,
+        getStockPriceAtDate 
+    } = useAppStore();
 
     const [numStocks, setNumStocks] = useState<number>(1);
     const [percentOfCash, setPercentOfCash] = useState<number>(20);
     const [tradeFee, setTradeFee] = useState<number>(10);
     const [cashAmount, setCashAmount] = useState<number>(100);
     const [cashFee, setCashFee] = useState<number>(10);
-    const [draftTransactions, setDraftTransactions] = useState<Transaction[]>([]);
+    
     const [draftBatchId, setDraftBatchId] = useState<string | null>(null);
     const [selectedBatchId, setSelectedBatchId] = useState<string | null>(null);
     const [tradeOrCash, setTradeOrCash] = useState<"TRADE" | "CASH">("TRADE");
@@ -23,29 +37,13 @@ export const Transactions = () => {
 
     const currentPrice = getStockPriceAtDate(selectedStock, date) || 0;
 
-    // Helper function to combine two sorted transaction lists into one sorted list
-    const combineSortedTransactions = (left: Transaction[], right: Transaction[]) => {
-        const combined: Transaction[] = [];
-        let i = 0;
-        let j = 0;
-
-        while (i < left.length && j < right.length) {
-            if (left[i].date < right[j].date) {
-                combined.push(left[i]);
-                i += 1;
-            } else {
-                combined.push(right[j]);
-                j += 1;
-            }
-        }
-
-        return combined.concat(left.slice(i), right.slice(j));
-    };
+    const draftTransactions = useMemo(() => {
+        return transactions.filter(t => !t.committed && t.batchId === draftBatchId);
+    }, [transactions, draftBatchId]);
 
     const previewLedger = useMemo(() => {
-        const combinedTransactions = combineSortedTransactions(transactions, draftTransactions);
-        return validateLedger(combinedTransactions, priceData);
-    }, [transactions, draftTransactions, priceData]);
+        return validateLedger(transactions, priceData);
+    }, [transactions, priceData]);
 
     const handleAddTransaction = (details: any) => {
         const batchId = draftBatchId ?? crypto.randomUUID();
@@ -56,31 +54,33 @@ export const Transactions = () => {
             id: crypto.randomUUID(),
             date,
             batchId,
+            committed: false,
         };
 
-        setDraftTransactions((prev) => {
-            const insertionIndex = prev.findIndex((t) => t.date > transaction.date);
-            if (insertionIndex === -1) return [...prev, transaction];
-            return [...prev.slice(0, insertionIndex), transaction, ...prev.slice(insertionIndex)];
-        });
-    }
+        addTransaction(transaction);
+    };
 
     const handleSubmitTransactions = () => {
-        draftTransactions.forEach((transaction) => addTransaction(transaction));
-        setDraftTransactions([]);
+        if (!draftBatchId) return;
+        
+        commitTransactionBatch(draftBatchId);
         setDraftBatchId(null);
-    }
+    };
 
     const handleRemoveHighlightedBatch = () => {
         if (!selectedBatchId) return;
-        transactions.filter((t) => t.batchId === selectedBatchId).forEach(removeTransaction);
+        removeTransactionBatch(selectedBatchId);
         setSelectedBatchId(null);
-    }
+    };
 
     const handleCommitSingleTransaction = (transaction: Transaction) => {
-        addTransaction(transaction);
-        setDraftTransactions((prev) => prev.filter((t) => t.id !== transaction.id));
-    }
+        commitTransaction(transaction);
+        
+        const remainingDrafts = transactions.filter(t => !t.committed && t.batchId === draftBatchId && t.id !== transaction.id);
+        if (remainingDrafts.length === 0) {
+            setDraftBatchId(null);
+        }
+    };
 
     const highlightedBatchCount = selectedBatchId
         ? transactions.filter((t) => t.batchId === selectedBatchId).length
@@ -104,10 +104,8 @@ export const Transactions = () => {
         }
     }
 
-    const draftTransactionIds = new Set(draftTransactions.map((t) => t.id));
-
     const ledgerItems = previewLedger.map((entry) => {
-        const isDraft = draftTransactionIds.has(entry.transaction.id);
+        const isDraft = !entry.transaction.committed;
         const isBatchHighlighted = !isDraft && selectedBatchId !== null && entry.transaction.batchId === selectedBatchId;
 
         return (
@@ -157,7 +155,7 @@ export const Transactions = () => {
                         </button>
                     )}
                     <button
-                        onClick={() => isDraft ? setDraftTransactions(prev => prev.filter((t) => t.id !== entry.transaction.id)) : removeTransaction(entry.transaction)}
+                        onClick={() => removeTransaction(entry.transaction)}
                         className="bg-red-100 text-red-600 hover:bg-red-200 px-3 py-1 rounded transition-colors text-sm font-medium"
                     >
                         Remove
@@ -172,7 +170,6 @@ export const Transactions = () => {
             <div className="flex flex-row w-full items-center justify-between text-gray-700"> 
                 <div className="flex flex-row">
                     <h1>Select Stock: </h1>
-                    {/* Dropdown to select stock for transaction */}
                     <select 
                         value={selectedStock} 
                         onChange={(e) => setSelectedStock(e.target.value)} 
@@ -191,9 +188,7 @@ export const Transactions = () => {
                 </h1>
             </div>
 
-            {/* Input field for trade fee */}
             <div className="flex flex-row w-full items-center justify-between text-gray-700">                
-                {/* Input field for number of stocks/percentage of cash */}
                 {fixedOrDynamic === "FIXED" ? (
                     <div className="flex text-gray-700 items-center">
                         <h1 className="w-36">Number of Stocks: </h1>
@@ -228,15 +223,11 @@ export const Transactions = () => {
                     />
                 </div>
             </div>
-
-
-
         </div>
     );
 
     const cashInputs = (
         <div className="flex flex-col gap-2 m-2">
-            {/* Input field for cash amount */}
             <div className="flex text-gray-700">
                 <h1>Cash Amount: </h1>
                 <input
@@ -247,7 +238,6 @@ export const Transactions = () => {
                 />
             </div>
 
-            {/* Input field for cash fee */}
             <div className="flex text-gray-700">
                 <h1>Cash Fee: </h1>
                 <input
@@ -278,10 +268,7 @@ export const Transactions = () => {
                 <StockDatePicker className="w-38" date={date} onDateChange={setDate} />
             </div>
             
-            {/* Transaction buttons and inputs */}
-            <div className="flex flex-wrap gap-2 mb-4">
-
-            </div>
+            <div className="flex flex-wrap gap-2 mb-4"></div>
 
             {/* Input fields for transaction details */}
             <div className="flex flex-col mb-4 w-full h-1/2 border border-gray-400 rounded bg-gray-200 justify-between">
@@ -291,9 +278,8 @@ export const Transactions = () => {
                     </div>
                 </div>
 
-                {/* Current stock price and submit button */}
+                {/* Execution and Submission Management */}
                 <div className="flex items-center justify-between p-2">
-
                     <div className="flex gap-2">
                         {fixedOrDynamic === "FIXED" ? (
                             <>
@@ -307,7 +293,6 @@ export const Transactions = () => {
                             </>
                         )}
                     </div>
-
 
                     <div className="flex gap-2">
                         <button 
@@ -337,5 +322,5 @@ export const Transactions = () => {
 
             <div className="mt-4 text-red-600">{errorOutput}</div>
         </div>
-    )
-}
+    );
+};

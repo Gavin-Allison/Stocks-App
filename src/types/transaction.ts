@@ -3,6 +3,7 @@ interface BaseTransaction {
     id: string;
     date: string;
     batchId: string;
+    committed: boolean;
 }
 
 interface FixedTrade extends BaseTransaction {
