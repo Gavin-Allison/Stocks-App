@@ -2,7 +2,7 @@
 interface BaseTransaction {
     id: string;
     date: string;
-    batchId?: string;
+    batchId: string;
 }
 
 interface FixedTrade extends BaseTransaction {

@@ -15,6 +15,8 @@ export const Transactions = () => {
     const [cashAmount, setCashAmount] = useState<number>(100);
     const [cashFee, setCashFee] = useState<number>(10);
     const [draftTransactions, setDraftTransactions] = useState<Transaction[]>([]);
+    const [draftBatchId, setDraftBatchId] = useState<string | null>(null);
+    const [selectedBatchId, setSelectedBatchId] = useState<string | null>(null);
     const [tradeOrCash, setTradeOrCash] = useState<"TRADE" | "CASH">("TRADE");
     const [fixedOrDynamic, setFixedOrDynamic] = useState<"FIXED" | "DYNAMIC">("FIXED");
 
@@ -45,16 +47,19 @@ export const Transactions = () => {
     }, [transactions, draftTransactions, priceData]);
 
     const handleAddTransaction = (details: any) => {
+        const batchId = draftBatchId ?? crypto.randomUUID();
+        if (!draftBatchId) setDraftBatchId(batchId);
+
         const transaction: Transaction = {
             ...details,
             id: crypto.randomUUID(),
-            date: date,
-        }
+            date,
+            batchId,
+        };
+
         setDraftTransactions((prev) => {
             const insertionIndex = prev.findIndex((t) => t.date > transaction.date);
-            if (insertionIndex === -1) {
-                return [...prev, transaction];
-            }
+            if (insertionIndex === -1) return [...prev, transaction];
             return [...prev.slice(0, insertionIndex), transaction, ...prev.slice(insertionIndex)];
         });
     }
@@ -62,28 +67,32 @@ export const Transactions = () => {
     const handleSubmitTransactions = () => {
         draftTransactions.forEach((transaction) => addTransaction(transaction));
         setDraftTransactions([]);
+        setDraftBatchId(null);
     }
+
+    const handleRemoveHighlightedBatch = () => {
+        if (!selectedBatchId) return;
+        transactions.filter((t) => t.batchId === selectedBatchId).forEach(removeTransaction);
+        setSelectedBatchId(null);
+    }
+
+    const highlightedBatchCount = selectedBatchId
+        ? transactions.filter((t) => t.batchId === selectedBatchId).length
+        : 0;
 
     function formatTransaction(transaction: Transaction): string {
         switch (transaction.type) {
             case 'FBUY':
             case 'FSELL':
-                const fType = transaction.type === 'FBUY' ? 'BUY,' : 'SELL,';
-            return `${fType} ${transaction.ticker}, ${transaction.amount} shares at $${transaction.pricePerUnit.toFixed(2)}`;
-
+                return `${transaction.type === 'FBUY' ? 'BUY,' : 'SELL,'} ${transaction.ticker}, ${transaction.amount} shares at $${transaction.pricePerUnit.toFixed(2)}`;
             case 'DBUY':
             case 'DSELL':
-                const dType = transaction.type === 'DBUY' ? 'BUY,' : 'SELL,';
-                return `${dType} ${transaction.ticker}, ${transaction.value * 100}%`;
-
+                return `${transaction.type === 'DBUY' ? 'BUY,' : 'SELL,'} ${transaction.ticker}, ${transaction.value * 100}%`;
             case 'DEPOSIT':
             case 'WITHDRAWAL':
-                const cType = transaction.type === 'DEPOSIT' ? 'DEPOSIT,' : 'WITHDRAW,';
-                return `${cType} $${transaction.amount.toFixed(2)}`;
-
+                return `${transaction.type === 'DEPOSIT' ? 'DEPOSIT,' : 'WITHDRAW,'} $${transaction.amount.toFixed(2)}`;
             case 'DIVIDEND':
                 return `${transaction.type}, ${transaction.ticker}, $${transaction.amount}, (${transaction.isReinvested ? 'reinvested' : 'cash'})`;
-
             default:
                 return `Unknown transaction type`;
         }
@@ -93,22 +102,43 @@ export const Transactions = () => {
 
     const ledgerItems = previewLedger.map((entry) => {
         const isDraft = draftTransactionIds.has(entry.transaction.id);
+        const isBatchHighlighted = !isDraft && selectedBatchId !== null && entry.transaction.batchId === selectedBatchId;
+
         return (
-            <li key={entry.transaction.id} className={`m-1 flex justify-between items-center py-1 border-b border-gray-300 ${isDraft ? 'text-red-700 bg-red-50' : ''}`}>
-                {/* Highlight date if matches current date */}
-                <span className={entry.transaction.date === date ? "text-blue-600" : ""}>
-                    {`${entry.transaction.date}, `}
-                </span>
-                <span>
-                    {`$${entry.currentCash.toFixed(2)}, `}
-                    {formatTransaction(entry.transaction)}
-                </span>
-                <button
-                    onClick={() => isDraft ? setDraftTransactions(prev => prev.filter((t) => t.id !== entry.transaction.id)) : removeTransaction(entry.transaction)}
-                    className="px-3 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-colors text-sm font-medium"
-                >
-                    Remove
-                </button>
+            <li
+                key={entry.transaction.id}
+                className={`m-1 flex flex-col md:flex-row md:justify-between items-start md:items-center py-2 border-b border-gray-300 ${isDraft ? 'text-red-700 bg-red-50' : ''} ${isBatchHighlighted ? 'text-blue-700 bg-blue-50' : ''}`}
+            >
+                <div className="flex flex-col gap-1 w-full md:w-auto">
+                    <span className={entry.transaction.date === date ? "text-green-600" : ""}>
+                        {`${entry.transaction.date}, `}
+                    </span>
+                    <span>
+                        {`$${entry.currentCash.toFixed(2)}, `}
+                        {formatTransaction(entry.transaction)}
+                    </span>
+                    <span className={`text-xs ${isDraft ? 'text-red-600' : 'text-gray-500'}`}>
+                        {`Batch ${entry.transaction.batchId}`}
+                    </span>
+                </div>
+                <div className="flex flex-col gap-2 mt-2 md:mt-0 justify-end w-full md:w-24">
+                    {!isDraft ? (
+                        <button
+                            onClick={() => setSelectedBatchId(isBatchHighlighted ? null : entry.transaction.batchId)}
+                            className="px-3 py-1 bg-white text-gray-700 rounded border border-gray-300 hover:bg-gray-100 transition-colors text-sm font-medium"
+                        >
+                            {isBatchHighlighted ? 'Clear' : 'Select'}
+                        </button>
+                    ) : (
+                        <div className="hidden md:block md:w-32" />
+                    )}
+                    <button
+                        onClick={() => isDraft ? setDraftTransactions(prev => prev.filter((t) => t.id !== entry.transaction.id)) : removeTransaction(entry.transaction)}
+                        className="bg-red-100 text-red-600 hover:bg-red-200 px-3 py-1 rounded transition-colors text-sm font-medium"
+                    >
+                        Remove
+                    </button>
+                </div>
             </li>
         );
     });
@@ -116,7 +146,6 @@ export const Transactions = () => {
     const tradeInputs = (
         <div className="flex flex-col w-full gap-2 p-2">
             <div className="flex flex-row w-full items-center justify-between text-gray-700"> 
-                
                 <div className="flex flex-row">
                     <h1>Select Stock: </h1>
                     {/* Dropdown to select stock for transaction */}
@@ -134,7 +163,7 @@ export const Transactions = () => {
                 </div>
 
                 {/* Input field for number of stocks/percentage of cash */}
-                {fixedOrDynamic === "FIXED" && (
+                {fixedOrDynamic === "FIXED" ? (
                     <div className="flex text-gray-700">
                         <h1>Number of Stocks: </h1>
                         <input
@@ -145,9 +174,7 @@ export const Transactions = () => {
                         />
                         <button onClick={() => setFixedOrDynamic("DYNAMIC")} className="flex w-6 ml-2 items-center justify-center bg-gray-300 rounded hover:bg-gray-400">#</button>
                     </div>
-                    
-                )}
-                {fixedOrDynamic === "DYNAMIC" && (
+                ) : (
                     <div className="flex text-gray-700">
                         <h1>Percentage of Cash: </h1>
                         <input
@@ -172,18 +199,19 @@ export const Transactions = () => {
                 />
             </div>
 
-            {fixedOrDynamic === "FIXED" && (
-                <div className="flex gap-2">
-                    <button onClick={() => handleAddTransaction({ type: "FBUY", ticker: selectedStock, amount: numStocks, pricePerUnit: currentPrice, fees: tradeFee })} className="bg-blue-600 text-white w-16 py-1 rounded hover:bg-blue-700">Buy #</button>
-                    <button onClick={() => handleAddTransaction({ type: "FSELL", ticker: selectedStock, amount: numStocks, pricePerUnit: currentPrice, fees: tradeFee })} className="bg-blue-600 text-white w-16 py-1 rounded hover:bg-blue-700">Sell #</button>
-                </div>
-            )}
-            {fixedOrDynamic === "DYNAMIC" && (
-                <div className="flex gap-2">
-                    <button onClick={() => handleAddTransaction({ type: "DBUY", ticker: selectedStock, value: percentOfCash/100, fees: tradeFee })} className="bg-blue-600 text-white w-16 py-1 rounded hover:bg-blue-700">Buy %</button>
-                    <button onClick={() => handleAddTransaction({ type: "DSELL", ticker: selectedStock, value: percentOfCash/100, fees: cashFee })} className="bg-blue-600 text-white w-16 py-1 rounded hover:bg-blue-700">Sell %</button>
-                </div>
-            )}
+            <div className="flex gap-2">
+                {fixedOrDynamic === "FIXED" ? (
+                    <>
+                        <button onClick={() => handleAddTransaction({ type: "FBUY", ticker: selectedStock, amount: numStocks, pricePerUnit: currentPrice, fees: tradeFee })} className="bg-blue-600 text-white w-16 py-1 rounded hover:bg-blue-700">Buy #</button>
+                        <button onClick={() => handleAddTransaction({ type: "FSELL", ticker: selectedStock, amount: numStocks, pricePerUnit: currentPrice, fees: tradeFee })} className="bg-blue-600 text-white w-16 py-1 rounded hover:bg-blue-700">Sell #</button>
+                    </>
+                ) : (
+                    <>
+                        <button onClick={() => handleAddTransaction({ type: "DBUY", ticker: selectedStock, value: percentOfCash/100, fees: tradeFee })} className="bg-blue-600 text-white w-16 py-1 rounded hover:bg-blue-700">Buy %</button>
+                        <button onClick={() => handleAddTransaction({ type: "DSELL", ticker: selectedStock, value: percentOfCash/100, fees: cashFee })} className="bg-blue-600 text-white w-16 py-1 rounded hover:bg-blue-700">Sell %</button>
+                    </>
+                )}
+            </div>
         </div>
     );
 
@@ -238,19 +266,11 @@ export const Transactions = () => {
 
             {/* Input fields for transaction details */}
             <div className="flex flex-col mb-4 w-full h-1/2 border border-gray-400 rounded bg-gray-200 justify-between">
-                {tradeInputs && cashInputs && (
-                    <div className="flex w-full h-full">
-                        {tradeOrCash === "TRADE" ? (
-                            <div className="w-full">
-                                {tradeInputs}
-                            </div>
-                        ) : (
-                            <div className="w-full">
-                                {cashInputs}
-                            </div>
-                        )}
+                <div className="flex w-full h-full">
+                    <div className="w-full">
+                        {tradeOrCash === "TRADE" ? tradeInputs : cashInputs}
                     </div>
-                )}
+                </div>
 
                 {/* Current stock price and submit button */}
                 <div className="flex items-center justify-between p-2">
@@ -258,14 +278,22 @@ export const Transactions = () => {
                         Share Price: ${currentPrice.toFixed(2)} 
                     </h1>
 
-                    {/* Button to submit pending transactions */}
-                    <button 
-                        onClick={handleSubmitTransactions}
-                        disabled={draftTransactions.length === 0}
-                        className="bg-green-600 disabled:bg-gray-400 text-white px-3 py-1 rounded hover:bg-green-700"
-                    >
-                        Submit Pending ({draftTransactions.length})
-                    </button>
+                    <div className="flex gap-2">
+                        <button 
+                            onClick={handleSubmitTransactions}
+                            disabled={draftTransactions.length === 0}
+                            className="bg-green-600 disabled:bg-gray-400 text-white px-2 py-1 rounded hover:bg-green-700"
+                        >
+                            Submit Pending ({draftTransactions.length})
+                        </button>
+                        <button
+                            onClick={handleRemoveHighlightedBatch}
+                            disabled={!selectedBatchId}
+                            className="bg-red-600 disabled:bg-gray-400 text-white px-2 py-1 rounded hover:bg-red-700"
+                        >
+                            Remove Batch ({highlightedBatchCount})
+                        </button>
+                    </div>
                 </div>
             </div>
 

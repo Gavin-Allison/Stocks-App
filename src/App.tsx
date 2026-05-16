@@ -36,7 +36,7 @@ export default function App() {
                     </section>
 
                     {/* Right Column */}
-                    <section className="w-0 @2xl:w-64 @5xl:w-128 flex-none bg-white border-r border-gray-400">
+                    <section className="w-0 @2xl:w-96 @5xl:w-140 flex-none bg-white border-r border-gray-400">
                         <Report />
                     </section>
 

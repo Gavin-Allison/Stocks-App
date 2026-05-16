@@ -41,7 +41,10 @@ export const useAppStore = create<AppState>((set, get) => ({
     // Initial state
     stocks: JSON.parse(localStorage.getItem("stockList") || JSON.stringify(defaultStocks)),
     priceData: [],
-    transactions: JSON.parse(localStorage.getItem("transactions") || "[]"),
+    transactions: (() => {
+        const saved = JSON.parse(localStorage.getItem("transactions") || "[]") as Transaction[];
+        return saved.map((t) => ({ ...t, batchId: t.batchId ?? t.id ?? crypto.randomUUID() }));
+    })(),
     reportTab: 'Tutorial',
     date: new Date().toISOString().split('T')[0],
     selectedStock: '',
