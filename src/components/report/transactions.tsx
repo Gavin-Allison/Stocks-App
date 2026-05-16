@@ -30,7 +30,7 @@ export const Transactions = () => {
         let j = 0;
 
         while (i < left.length && j < right.length) {
-            if (left[i].date <= right[j].date) {
+            if (left[i].date < right[j].date) {
                 combined.push(left[i]);
                 i += 1;
             } else {
