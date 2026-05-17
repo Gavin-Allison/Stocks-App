@@ -62,7 +62,16 @@ export const createTransactionSlice: StateCreator<transactionSlice, [], [], tran
     setCashAmount: (value: number) => set({ cashAmount: value }),
     setCashFee: (value: number) => set({ cashFee: value }),
     setDraftBatchId: (value: string | null) => set({ draftBatchId: value }),
-    setSelectedBatchId: (value: string | null) => set({ selectedBatchId: value }),
+    setSelectedBatchId: (value: string | null) => {
+        set((state) => {
+            if (state.selectedBatchId === value) {
+                return { selectedBatchId: null, selectedBatchCount: 0 };
+            } else {
+                const selectedBatchCount = state.transactions.filter((t) => t.batchId === value).length;
+                return { selectedBatchId: value, selectedBatchCount };
+            }
+        }); 
+    },
     setTradeOrCash: (value: "TRADE" | "CASH") => set({ tradeOrCash: value }),
     setFixedOrDynamic: (value: "FIXED" | "DYNAMIC") => set({ fixedOrDynamic: value }),
     setCurrentPrice: (value: number) => set({ currentPrice: value }),
@@ -97,7 +106,15 @@ export const createTransactionSlice: StateCreator<transactionSlice, [], [], tran
         set((state) => {
             const newTransactions = state.transactions.filter((t) => t.id !== transaction.id);
             localStorage.setItem("transactions", JSON.stringify(newTransactions));
-            state.draftBatchCount -= 1;
+            if (transaction.batchId === state.draftBatchId) {
+                state.draftBatchCount -= 1;
+            }
+            if (transaction.batchId === state.selectedBatchId) {
+                state.selectedBatchCount -= 1;
+                if (state.selectedBatchCount === 0) {
+                    state.selectedBatchId = null;
+                }
+            }
             return { transactions: newTransactions };
         });
     },
@@ -107,7 +124,14 @@ export const createTransactionSlice: StateCreator<transactionSlice, [], [], tran
         set((state) => {
             const newTransactions = state.transactions.filter((t) => t.batchId !== batchId);
             localStorage.setItem("transactions", JSON.stringify(newTransactions));
-            state.draftBatchCount -= state.transactions.filter((t) => t.batchId === batchId).length;
+            if (batchId === state.draftBatchId) {
+                state.draftBatchCount = 0;
+                state.draftBatchId = null;
+            }
+            if (batchId === state.selectedBatchId) {
+                state.selectedBatchCount = 0;
+                state.selectedBatchId = null;
+            }
             return { transactions: newTransactions };
         });
     },
@@ -118,12 +142,18 @@ export const createTransactionSlice: StateCreator<transactionSlice, [], [], tran
             const newTransactions = state.transactions.map((t) => t.id === transaction.id ? { ...t, committed: true } : t);
             localStorage.setItem("transactions", JSON.stringify(newTransactions));
 
-            // If this was the last draft in the batch, clear the draftBatchId
-            const remainingDrafts = state.transactions.filter(
-                (t) => !t.committed && t.batchId === state.draftBatchId && t.id !== transaction.id
-            );
-            if (remainingDrafts.length === 0) {
-                state.setDraftBatchId(null);
+            if (transaction.batchId === state.draftBatchId) {
+                state.draftBatchCount -= 1;
+                if (state.draftBatchCount === 0) {
+                    state.draftBatchId = null;
+                }
+            }
+
+            if (transaction.batchId === state.selectedBatchId) {
+                state.selectedBatchCount -= 1;
+                if (state.selectedBatchCount === 0) {
+                    state.selectedBatchId = null;
+                }
             }
 
             return { transactions: newTransactions };
@@ -136,10 +166,13 @@ export const createTransactionSlice: StateCreator<transactionSlice, [], [], tran
             const newTransactions = state.transactions.map((t) => t.batchId === batchId ? { ...t, committed: true } : t);
             localStorage.setItem("transactions", JSON.stringify(newTransactions));
             if (batchId === state.draftBatchId) {
-                state.setDraftBatchId(null);
-            }
-            if (batchId === state.selectedBatchId) {
-                state.setSelectedBatchId(null);
+                state.draftBatchCount = 0;
+                if (state.selectedBatchId === batchId) {
+                    state.selectedBatchId = null;
+                }
+            } else if (batchId === state.selectedBatchId) {
+                state.selectedBatchCount = 0;
+                state.selectedBatchId = null;
             }
             return { transactions: newTransactions };
         });
