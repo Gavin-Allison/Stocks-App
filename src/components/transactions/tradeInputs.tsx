@@ -53,7 +53,7 @@ export const TradeInputs = () => {
                     </>
                 ) : (
                     <>
-                        <h1 className="min-w-[120px]">Percentage of Cash:</h1>
+                        <h1 className="min-w-[140px]">Percentage of Cash:</h1>
                         <input
                             type="number"
                             value={percentOfCash}

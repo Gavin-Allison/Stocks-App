@@ -34,6 +34,11 @@ export interface transactionSlice {
     commitTransactionBatch: (batchId: string) => void;
 }
 
+const saveTransactions = (transactions: Transaction[]) => {
+    const commitedTransactions = transactions.filter((t) => t.committed === true)
+    localStorage.setItem("transactions", JSON.stringify(commitedTransactions));
+};
+
 export const createTransactionSlice: StateCreator<transactionSlice, [], [], transactionSlice> = (set) => ({
     transactions: (() => {
         const saved = JSON.parse(localStorage.getItem("transactions") || "[]") as Transaction[];
@@ -105,7 +110,7 @@ export const createTransactionSlice: StateCreator<transactionSlice, [], [], tran
     removeTransaction: (transaction: Transaction) => {
         set((state) => {
             const newTransactions = state.transactions.filter((t) => t.id !== transaction.id);
-            localStorage.setItem("transactions", JSON.stringify(newTransactions));
+            saveTransactions(newTransactions);
             
             let nextDraftBatchCount = state.draftBatchCount;
             if (transaction.batchId === "Preview") {
@@ -134,7 +139,7 @@ export const createTransactionSlice: StateCreator<transactionSlice, [], [], tran
     removeTransactionBatch: (batchId: string) => {
         set((state) => {
             const newTransactions = state.transactions.filter((t) => t.batchId !== batchId);
-            localStorage.setItem("transactions", JSON.stringify(newTransactions));
+            saveTransactions(newTransactions);
             
             let nextDraftBatchCount = state.draftBatchCount;
             if (batchId === "Preview") {
@@ -162,7 +167,7 @@ export const createTransactionSlice: StateCreator<transactionSlice, [], [], tran
         set((state) => {
             const newBatchId = crypto.randomUUID();
             const newTransactions = state.transactions.map((t) => t.id === transaction.id ? { ...t, batchId: newBatchId, committed: true } : t);
-            localStorage.setItem("transactions", JSON.stringify(newTransactions));
+            saveTransactions(newTransactions);
             return { 
                 transactions: newTransactions,
                 draftBatchCount: state.draftBatchCount - 1 
@@ -175,9 +180,8 @@ export const createTransactionSlice: StateCreator<transactionSlice, [], [], tran
         set((state) => {
             const newBatchId = crypto.randomUUID();
             const newTransactions = state.transactions.map((t) => t.batchId === batchId ? { ...t, batchId: newBatchId, committed: true } : t);
-            localStorage.setItem("transactions", JSON.stringify(newTransactions));
+            saveTransactions(newTransactions);
             return { transactions: newTransactions, draftBatchCount: 0 };
         });
     },
-    
 });
