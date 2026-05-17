@@ -21,7 +21,6 @@ export const Transactions = () => {
         addTransaction, 
         removeTransactionBatch,
         commitTransactionBatch,
-        getStockPriceAtDate,
 
         // Local UI state
         tradeOrCash,
@@ -33,38 +32,16 @@ export const Transactions = () => {
         cashAmount,
         cashFee,
         draftBatchId,
+        draftBatchCount,
         setDraftBatchId,
         selectedBatchId,
-        setSelectedBatchId,
+        selectedBatchCount,
+        currentPrice
     } = useAppStore();
-
-
-    const currentPrice = getStockPriceAtDate(selectedStock, date) || 0;
-
-    const draftTransactions = useMemo(() => {
-        return transactions.filter(t => !t.committed && t.batchId === draftBatchId);
-    }, [transactions, draftBatchId]);
 
     const ledger = useMemo(() => {
         return validateLedger(transactions, priceData);
     }, [transactions, priceData]);
-
-    const handleSubmitTransactions = () => {
-        if (!draftBatchId) return;
-        
-        commitTransactionBatch(draftBatchId);
-        setDraftBatchId(null);
-    };
-
-    const handleRemoveHighlightedBatch = () => {
-        if (!selectedBatchId) return;
-        removeTransactionBatch(selectedBatchId);
-        setSelectedBatchId(null);
-    };
-
-    const highlightedBatchCount = selectedBatchId
-        ? transactions.filter((t) => t.batchId === selectedBatchId).length
-        : 0;
 
     const handleAddTransaction = (details: any) => {
         const batchId = draftBatchId ?? crypto.randomUUID();
@@ -81,8 +58,6 @@ export const Transactions = () => {
             addTransaction(transaction);
     };
 
-    const errorOutput = ledger.find(e => e.error)?.errorMessage || "No errors";
-
     return (
         <div className="flex flex-col w-full h-full p-4">
 
@@ -98,12 +73,9 @@ export const Transactions = () => {
 
             {/* Input fields for transaction details */}
             <div className="flex flex-col mb-4 w-full h-1/2 border border-gray-400 rounded bg-gray-200 justify-between">
-                <div className="flex w-full h-full">
-                    <div className="w-full">
-                        {tradeOrCash === "TRADE" ? <TradeInputs /> : <CashInputs />}
-                    </div>
-                </div>
-
+                
+                {tradeOrCash === "TRADE" ? <TradeInputs /> : <CashInputs />}
+                
                 {/* Execution and Submission Management */}
                 <div className="flex items-center justify-between p-2">
                     <div className="flex gap-2">
@@ -127,31 +99,28 @@ export const Transactions = () => {
 
                     <div className="flex gap-2">
                         <button 
-                            onClick={handleSubmitTransactions}
-                            disabled={draftTransactions.length === 0}
+                            onClick={() => commitTransactionBatch(draftBatchId!)}
+                            disabled={draftBatchCount === 0}
                             className="bg-green-600 disabled:bg-gray-400 text-white px-2 py-1 rounded hover:bg-green-700"
                         >
-                            Submit Pending ({draftTransactions.length})
+                            Submit Pending ({draftBatchCount})
                         </button>
                         <button
-                            onClick={handleRemoveHighlightedBatch}
-                            disabled={!selectedBatchId}
+                            onClick={() => removeTransactionBatch(selectedBatchId!)}
+                            disabled={selectedBatchCount === 0}
                             className="bg-red-600 disabled:bg-gray-400 text-white px-2 py-1 rounded hover:bg-red-700"
                         >
-                            Remove Batch ({highlightedBatchCount})
+                            Remove Batch ({selectedBatchCount})
                         </button>
                     </div>
                 </div>
             </div>
 
             {/* Ledger */}
-            <div className="flex flex-col w-full h-full overflow-y-scroll border border-gray-400 rounded bg-gray-200">
-                <ul className="w-full pb-48" >
-                    <LedgerList ledger={ledger} />
-                </ul>
-            </div>
+            <LedgerList ledger={ledger} />
 
-            <div className="mt-4 text-red-600">{errorOutput}</div>
+            {/* Error Output */}
+            <div className="mt-4 text-red-600">{ledger.find(e => e.error)?.errorMessage || "No errors"}</div>
         </div>
     );
 };

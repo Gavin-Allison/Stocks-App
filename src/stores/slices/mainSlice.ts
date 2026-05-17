@@ -1,6 +1,5 @@
 import type { StateCreator } from 'zustand';
 import { FetchStockData } from '../../services/stockData';
-import type { Transaction } from '../../types/transaction';
 
 // Stock interface for saving
 export interface Stock {
@@ -18,7 +17,6 @@ export interface mainSlice {
     // portfolio data
     stocks: Stock[];
     priceData: { symbol: string; data: Record<string, number> }[];
-    transactions: Transaction[];
 
     // UI state
     reportTab: string;
@@ -30,13 +28,6 @@ export interface mainSlice {
     addStock: (symbol: string) => Promise<void>;
     removeStock: (symbol: string) => void;
 
-    addTransaction: (transaction: Transaction) => void;
-    addTransactionBatch: (transactions: Transaction[]) => void;
-    removeTransaction: (transaction: Transaction) => void;
-    removeTransactionBatch: (batchId: string) => void;
-    commitTransaction: (transaction: Transaction) => void;
-    commitTransactionBatch: (batchId: string) => void;
-
     setReportTab: (tab: string) => void;
     setDate: (date: string) => void;
     setSelectedStock: (stock: string) => void;
@@ -47,10 +38,6 @@ export const createMainSlice: StateCreator<mainSlice, [], [], mainSlice> = (set,
     // Initial state
     stocks: JSON.parse(localStorage.getItem("stockList") || JSON.stringify(defaultStocks)),
     priceData: [],
-    transactions: (() => {
-        const saved = JSON.parse(localStorage.getItem("transactions") || "[]") as Transaction[];
-        return saved.map((t) => ({ ...t, batchId: t.batchId ?? t.id ?? crypto.randomUUID() }));
-    })(),
     reportTab: 'Tutorial',
     date: new Date().toISOString().split('T')[0],
     selectedStock: '',
@@ -104,63 +91,6 @@ export const createMainSlice: StateCreator<mainSlice, [], [], mainSlice> = (set,
                 priceData: newPriceData,
                 selectedStock: newSelectedStock,
             };
-        });
-    },
-
-    // Add transaction
-    addTransaction: (transaction: Transaction) => {
-        set((state) => {
-            const index = state.transactions.findIndex(t => t.date > transaction.date);
-            const newTransactions = index === -1
-                ? [...state.transactions, transaction]
-                : [
-                    ...state.transactions.slice(0, index),
-                    transaction,
-                    ...state.transactions.slice(index)
-                  ];
-            return { transactions: newTransactions };
-        });
-    },
-
-    addTransactionBatch: (transactions: Transaction[]) => {
-        set((state) => {
-            const newTransactions = [...state.transactions, ...transactions].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-            return { transactions: newTransactions };
-        });
-    },
-
-    // Remove transaction
-    removeTransaction: (transaction: Transaction) => {
-        set((state) => {
-            const newTransactions = state.transactions.filter((t) => t.id !== transaction.id);
-            localStorage.setItem("transactions", JSON.stringify(newTransactions));
-            return { transactions: newTransactions };
-        });
-    },
-
-    removeTransactionBatch: (batchId: string) => {
-        set((state) => {
-            const newTransactions = state.transactions.filter((t) => t.batchId !== batchId);
-            localStorage.setItem("transactions", JSON.stringify(newTransactions));
-            return { transactions: newTransactions };
-        });
-    },
-
-    // Commit transaction
-    commitTransaction: (transaction: Transaction) => {
-        set((state) => {
-            const newTransactions = state.transactions.map((t) => t.id === transaction.id ? { ...t, committed: true } : t);
-            localStorage.setItem("transactions", JSON.stringify(newTransactions));
-            return { transactions: newTransactions };
-        });
-    },
-
-    // Commit transaction batch
-    commitTransactionBatch: (batchId: string) => {
-        set((state) => {
-            const newTransactions = state.transactions.map((t) => t.batchId === batchId ? { ...t, committed: true } : t);
-            localStorage.setItem("transactions", JSON.stringify(newTransactions));
-            return { transactions: newTransactions };
         });
     },
 
