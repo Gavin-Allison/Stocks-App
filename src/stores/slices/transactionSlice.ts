@@ -34,7 +34,7 @@ export interface transactionSlice {
     commitTransactionBatch: (batchId: string) => void;
 }
 
-export const createTransactionSlice: StateCreator<transactionSlice, [], [], transactionSlice> = (set, get) => ({
+export const createTransactionSlice: StateCreator<transactionSlice, [], [], transactionSlice> = (set) => ({
     transactions: (() => {
         const saved = JSON.parse(localStorage.getItem("transactions") || "[]") as Transaction[];
         return saved.map((t) => ({ ...t, batchId: t.batchId ?? t.id ?? crypto.randomUUID() }));
