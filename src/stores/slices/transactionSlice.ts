@@ -9,7 +9,6 @@ export interface transactionSlice {
     tradeFee: number;
     cashAmount: number;
     cashFee: number;
-    draftBatchId: string | null;
     draftBatchCount: number;
     selectedBatchId: string | null;
     selectedBatchCount: number;
@@ -22,7 +21,6 @@ export interface transactionSlice {
     setTradeFee: (value: number) => void;
     setCashAmount: (value: number) => void;
     setCashFee: (value: number) => void;
-    setDraftBatchId: (value: string | null) => void;
     setSelectedBatchId: (value: string | null) => void;
     setTradeOrCash: (value: "TRADE" | "CASH") => void;
     setFixedOrDynamic: (value: "FIXED" | "DYNAMIC") => void;
@@ -47,7 +45,6 @@ export const createTransactionSlice: StateCreator<transactionSlice, [], [], tran
     tradeFee: 10,
     cashAmount: 100,
     cashFee: 10,
-    draftBatchId: null,
     draftBatchCount: 0,
     selectedBatchId: null,
     selectedBatchCount: 0,
@@ -61,7 +58,6 @@ export const createTransactionSlice: StateCreator<transactionSlice, [], [], tran
     setTradeFee: (value: number) => set({ tradeFee: value }),
     setCashAmount: (value: number) => set({ cashAmount: value }),
     setCashFee: (value: number) => set({ cashFee: value }),
-    setDraftBatchId: (value: string | null) => set({ draftBatchId: value }),
     setSelectedBatchId: (value: string | null) => {
         set((state) => {
             if (state.selectedBatchId === value) {
@@ -87,8 +83,10 @@ export const createTransactionSlice: StateCreator<transactionSlice, [], [], tran
                     transaction,
                     ...state.transactions.slice(index)
                   ];
-            state.draftBatchCount += 1;
-            return { transactions: newTransactions };
+            return { 
+                transactions: newTransactions,
+                draftBatchCount: state.draftBatchCount + 1 
+            };
         });
     },
 
@@ -96,8 +94,10 @@ export const createTransactionSlice: StateCreator<transactionSlice, [], [], tran
     addTransactionBatch: (transactions: Transaction[]) => {
         set((state) => {
             const newTransactions = [...state.transactions, ...transactions].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-            state.draftBatchCount += transactions.length;
-            return { transactions: newTransactions };
+            return { 
+                transactions: newTransactions,
+                draftBatchCount: state.draftBatchCount + transactions.length 
+            };
         });
     },
 
@@ -106,16 +106,27 @@ export const createTransactionSlice: StateCreator<transactionSlice, [], [], tran
         set((state) => {
             const newTransactions = state.transactions.filter((t) => t.id !== transaction.id);
             localStorage.setItem("transactions", JSON.stringify(newTransactions));
-            if (transaction.batchId === state.draftBatchId) {
-                state.draftBatchCount -= 1;
+            
+            let nextDraftBatchCount = state.draftBatchCount;
+            if (transaction.batchId === "Preview") {
+                nextDraftBatchCount -= 1;
             }
+
+            let nextSelectedBatchCount = state.selectedBatchCount;
+            let nextSelectedBatchId = state.selectedBatchId;
             if (transaction.batchId === state.selectedBatchId) {
-                state.selectedBatchCount -= 1;
-                if (state.selectedBatchCount === 0) {
-                    state.selectedBatchId = null;
+                nextSelectedBatchCount -= 1;
+                if (nextSelectedBatchCount === 0) {
+                    nextSelectedBatchId = null;
                 }
             }
-            return { transactions: newTransactions };
+
+            return { 
+                transactions: newTransactions,
+                draftBatchCount: nextDraftBatchCount,
+                selectedBatchId: nextSelectedBatchId,
+                selectedBatchCount: nextSelectedBatchCount
+            };
         });
     },
 
@@ -124,57 +135,48 @@ export const createTransactionSlice: StateCreator<transactionSlice, [], [], tran
         set((state) => {
             const newTransactions = state.transactions.filter((t) => t.batchId !== batchId);
             localStorage.setItem("transactions", JSON.stringify(newTransactions));
-            if (batchId === state.draftBatchId) {
-                state.draftBatchCount = 0;
-                state.draftBatchId = null;
+            
+            let nextDraftBatchCount = state.draftBatchCount;
+            if (batchId === "Preview") {
+                nextDraftBatchCount = 0;
             }
+
+            let nextSelectedBatchCount = state.selectedBatchCount;
+            let nextSelectedBatchId = state.selectedBatchId;
             if (batchId === state.selectedBatchId) {
-                state.selectedBatchCount = 0;
-                state.selectedBatchId = null;
+                nextSelectedBatchCount = 0;
+                nextSelectedBatchId = null;
             }
-            return { transactions: newTransactions };
+
+            return { 
+                transactions: newTransactions,
+                draftBatchCount: nextDraftBatchCount,
+                selectedBatchId: nextSelectedBatchId,
+                selectedBatchCount: nextSelectedBatchCount
+            };
         });
     },
 
     // Commit transaction
     commitTransaction: (transaction: Transaction) => {
         set((state) => {
-            const newTransactions = state.transactions.map((t) => t.id === transaction.id ? { ...t, committed: true } : t);
+            const newBatchId = crypto.randomUUID();
+            const newTransactions = state.transactions.map((t) => t.id === transaction.id ? { ...t, batchId: newBatchId, committed: true } : t);
             localStorage.setItem("transactions", JSON.stringify(newTransactions));
-
-            if (transaction.batchId === state.draftBatchId) {
-                state.draftBatchCount -= 1;
-                if (state.draftBatchCount === 0) {
-                    state.draftBatchId = null;
-                }
-            }
-
-            if (transaction.batchId === state.selectedBatchId) {
-                state.selectedBatchCount -= 1;
-                if (state.selectedBatchCount === 0) {
-                    state.selectedBatchId = null;
-                }
-            }
-
-            return { transactions: newTransactions };
+            return { 
+                transactions: newTransactions,
+                draftBatchCount: state.draftBatchCount - 1 
+            };
         });
     },
 
     // Commit transaction batch
     commitTransactionBatch: (batchId: string) => {
         set((state) => {
-            const newTransactions = state.transactions.map((t) => t.batchId === batchId ? { ...t, committed: true } : t);
+            const newBatchId = crypto.randomUUID();
+            const newTransactions = state.transactions.map((t) => t.batchId === batchId ? { ...t, batchId: newBatchId, committed: true } : t);
             localStorage.setItem("transactions", JSON.stringify(newTransactions));
-            if (batchId === state.draftBatchId) {
-                state.draftBatchCount = 0;
-                if (state.selectedBatchId === batchId) {
-                    state.selectedBatchId = null;
-                }
-            } else if (batchId === state.selectedBatchId) {
-                state.selectedBatchCount = 0;
-                state.selectedBatchId = null;
-            }
-            return { transactions: newTransactions };
+            return { transactions: newTransactions, draftBatchCount: 0 };
         });
     },
     

@@ -31,9 +31,7 @@ export const Transactions = () => {
         tradeFee,
         cashAmount,
         cashFee,
-        draftBatchId,
         draftBatchCount,
-        setDraftBatchId,
         selectedBatchId,
         selectedBatchCount,
         currentPrice
@@ -44,14 +42,11 @@ export const Transactions = () => {
     }, [transactions, priceData]);
 
     const handleAddTransaction = (details: any) => {
-        const batchId = draftBatchId ?? crypto.randomUUID();
-        if (!draftBatchId) setDraftBatchId(batchId);
-
             const transaction: Transaction = {
                 ...details,
                 id: crypto.randomUUID(),
                 date,
-                batchId,
+                batchId: "Preview",
                 committed: false,
             };
 
@@ -99,7 +94,7 @@ export const Transactions = () => {
 
                     <div className="flex gap-2">
                         <button 
-                            onClick={() => commitTransactionBatch(draftBatchId!)}
+                            onClick={() => commitTransactionBatch("Preview")}
                             disabled={draftBatchCount === 0}
                             className="bg-green-600 disabled:bg-gray-400 text-white px-2 py-1 rounded hover:bg-green-700"
                         >
