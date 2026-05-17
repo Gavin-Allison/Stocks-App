@@ -17,7 +17,7 @@ export const TradeInputs = () => {
     } = useAppStore();
 
     return (
-        <div className="grid grid-cols-2 gap-4 p-2 text-gray-700 w-full items-center">
+        <div className="grid grid-cols-2 gap-2 p-2 text-gray-700 w-full items-center">
             {/* Row 1: Stock Selection and Price */}
             <div className="flex items-center gap-2">
                 <h1>Select Stock:</h1>
