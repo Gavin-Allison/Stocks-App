@@ -3,6 +3,7 @@ import { useAppStore } from "../../stores/appStore";
 
 import { TradeInputs } from "../transactions/tradeInputs";
 import { CashInputs } from "../transactions/cashInputs";
+import { RepeatSchedule } from "../transactions/repeatSchedule";
 import { LedgerList } from "../transactions/ledgerList";
 
 import { StockDatePicker } from "../common/datepicker";
@@ -19,6 +20,7 @@ export const Transactions = () => {
         setDate, 
         selectedStock, 
         addTransaction, 
+        addTransactionBatch,
         removeTransactionBatch,
         commitTransactionBatch,
 
@@ -31,6 +33,10 @@ export const Transactions = () => {
         tradeFee,
         cashAmount,
         cashFee,
+        repeatScheduleOpen,
+        repeatFrequency,
+        repeatIntervalDays,
+        repeatOccurrences,
         draftBatchCount,
         selectedBatchId,
         selectedBatchCount,
@@ -41,16 +47,65 @@ export const Transactions = () => {
         return validateLedger(transactions, priceData);
     }, [transactions, priceData]);
 
-    const handleAddTransaction = (details: any) => {
-            const transaction: Transaction = {
+    const addMonths = (dateValue: Date, months: number) => {
+        const result = new Date(dateValue);
+        const day = result.getDate();
+        result.setDate(1);
+        result.setMonth(result.getMonth() + months);
+        const daysInMonth = new Date(result.getFullYear(), result.getMonth() + 1, 0).getDate();
+        result.setDate(Math.min(day, daysInMonth));
+        return result;
+    };
+
+    const addYears = (dateValue: Date, years: number) => {
+        const result = new Date(dateValue);
+        const day = result.getDate();
+        const month = result.getMonth();
+        result.setFullYear(result.getFullYear() + years);
+        const daysInMonth = new Date(result.getFullYear(), month + 1, 0).getDate();
+        result.setDate(Math.min(day, daysInMonth));
+        return result;
+    };
+
+    const buildScheduledTransactions = (details: any) => {
+        const activeFrequency = repeatScheduleOpen ? repeatFrequency : "NONE";
+        const activeOccurrences = repeatScheduleOpen ? Math.max(1, repeatOccurrences) : 1;
+        const occurrences = activeFrequency === "NONE" ? 1 : activeOccurrences;
+        const startDate = new Date(date);
+        const result: Transaction[] = [];
+
+        for (let index = 0; index < occurrences; index += 1) {
+            const occurrence = new Date(startDate);
+            if (repeatFrequency === "MONTHLY") {
+                const nextDate = addMonths(startDate, index);
+                occurrence.setTime(nextDate.getTime());
+            } else if (repeatFrequency === "YEARLY") {
+                const nextDate = addYears(startDate, index);
+                occurrence.setTime(nextDate.getTime());
+            } else if (repeatFrequency === "EVERY_X_DAYS") {
+                occurrence.setDate(startDate.getDate() + repeatIntervalDays * index);
+            }
+
+            result.push({
                 ...details,
                 id: crypto.randomUUID(),
-                date,
+                date: occurrence.toISOString().split("T")[0],
                 batchId: "Preview",
                 committed: false,
-            };
+            });
+        }
 
-            addTransaction(transaction);
+        return result;
+    };
+
+    const handleAddTransaction = (details: any) => {
+        const scheduledTransactions = buildScheduledTransactions(details);
+
+        if (scheduledTransactions.length === 1) {
+            addTransaction(scheduledTransactions[0]);
+        } else {
+            addTransactionBatch(scheduledTransactions);
+        }
     };
 
     return (
@@ -67,10 +122,12 @@ export const Transactions = () => {
             <div className="flex flex-wrap gap-2 mb-4"></div>
 
             {/* Input fields for transaction details */}
-            <div className="flex flex-col mb-4 w-full h-1/2 border border-gray-400 rounded bg-gray-200 justify-between">
+            <div className="flex flex-col mb-4 w-full border border-gray-400 rounded bg-gray-200 p-4">
                 
                 {tradeOrCash === "TRADE" ? <TradeInputs /> : <CashInputs />}
-                
+
+                <RepeatSchedule />
+
                 {/* Execution and Submission Management */}
                 <div className="flex items-center justify-between p-2">
                     <div className="flex gap-2">

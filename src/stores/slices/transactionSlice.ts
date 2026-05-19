@@ -14,9 +14,15 @@ export interface transactionSlice {
     selectedBatchCount: number;
     tradeOrCash: "TRADE" | "CASH";
     fixedOrDynamic: "FIXED" | "DYNAMIC";
+    repeatScheduleOpen: boolean;
+    repeatFrequency: "NONE" | "YEARLY" | "MONTHLY" | "EVERY_X_DAYS";
+    repeatIntervalDays: number;
+    repeatOccurrences: number;
     currentPrice: number;
+    errorMessage?: string;
 
     setNumStocks: (value: number) => void;
+    setRepeatScheduleOpen: (open: boolean) => void;
     setPercentOfCash: (value: number) => void;
     setTradeFee: (value: number) => void;
     setCashAmount: (value: number) => void;
@@ -25,6 +31,9 @@ export interface transactionSlice {
     setTradeOrCash: (value: "TRADE" | "CASH") => void;
     setFixedOrDynamic: (value: "FIXED" | "DYNAMIC") => void;
     setCurrentPrice: (value: number) => void;
+    setRepeatFrequency: (frequency: "NONE" | "YEARLY" | "MONTHLY" | "EVERY_X_DAYS") => void;
+    setRepeatIntervalDays: (value: number) => void;
+    setRepeatOccurrences: (value: number) => void;
 
     addTransaction: (transaction: Transaction) => void;
     addTransactionBatch: (transactions: Transaction[]) => void;
@@ -55,7 +64,11 @@ export const createTransactionSlice: StateCreator<transactionSlice, [], [], tran
     selectedBatchCount: 0,
     tradeOrCash: "TRADE",
     fixedOrDynamic: "FIXED",
+    repeatScheduleOpen: false,
     currentPrice: 0,
+    repeatFrequency: "NONE",
+    repeatIntervalDays: 1,
+    repeatOccurrences: 1,
     errorMessage: undefined,
 
     setNumStocks: (value: number) => set({ numStocks: value }),
@@ -76,6 +89,10 @@ export const createTransactionSlice: StateCreator<transactionSlice, [], [], tran
     setTradeOrCash: (value: "TRADE" | "CASH") => set({ tradeOrCash: value }),
     setFixedOrDynamic: (value: "FIXED" | "DYNAMIC") => set({ fixedOrDynamic: value }),
     setCurrentPrice: (value: number) => set({ currentPrice: value }),
+    setRepeatScheduleOpen: (open: boolean) => set({ repeatScheduleOpen: open }),
+    setRepeatFrequency: (frequency) => set({ repeatFrequency: frequency }),
+    setRepeatIntervalDays: (value: number) => set({ repeatIntervalDays: value }),
+    setRepeatOccurrences: (value: number) => set({ repeatOccurrences: value }),
 
     // Add transaction
     addTransaction: (transaction: Transaction) => {
