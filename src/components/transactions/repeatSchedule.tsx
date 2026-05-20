@@ -1,15 +1,15 @@
 import { useAppStore } from '../../stores/appStore';
 
 const summarizeSchedule = (frequency: string, interval: number, occurrences: number) => {
-    if (frequency === 'NONE') {
+    if (frequency === 'NONE' || occurrences === 1) {
         return 'No repeat';
     }
 
     if (frequency === 'EVERY_X_DAYS') {
-        return `Every ${interval} day${interval === 1 ? '' : 's'} for ${occurrences} occurrence${occurrences === 1 ? '' : 's'}`;
+        return `Every ${interval} day${interval === 1 ? '' : 's'} for ${occurrences} occurrences`;
     }
 
-    return `${frequency.charAt(0) + frequency.slice(1).toLowerCase()} for ${occurrences} occurrence${occurrences === 1 ? '' : 's'}`;
+    return `${frequency.charAt(0) + frequency.slice(1).toLowerCase()} for ${occurrences} occurrences`;
 };
 
 export const RepeatSchedule = () => {

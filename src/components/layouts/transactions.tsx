@@ -33,7 +33,6 @@ export const Transactions = () => {
         tradeFee,
         cashAmount,
         cashFee,
-        repeatScheduleOpen,
         repeatFrequency,
         repeatIntervalDays,
         repeatOccurrences,
@@ -68,9 +67,7 @@ export const Transactions = () => {
     };
 
     const buildScheduledTransactions = (details: any) => {
-        const activeFrequency = repeatScheduleOpen ? repeatFrequency : "NONE";
-        const activeOccurrences = repeatScheduleOpen ? Math.max(1, repeatOccurrences) : 1;
-        const occurrences = activeFrequency === "NONE" ? 1 : activeOccurrences;
+        const occurrences = repeatFrequency === "NONE" ? 1 : Math.max(1, repeatOccurrences);
         const startDate = new Date(date);
         const result: Transaction[] = [];
 
