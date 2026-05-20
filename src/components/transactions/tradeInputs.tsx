@@ -1,4 +1,5 @@
 import { useAppStore } from '../../stores/appStore';
+import { useEffect } from 'react';
 
 export const TradeInputs = () => {
     const { 
@@ -14,7 +15,18 @@ export const TradeInputs = () => {
         tradeFee,
         setTradeFee,
         currentPrice,
+        setCurrentPrice,
+        date,
+        getStockPriceAtDate,
     } = useAppStore();
+
+    // Update current price when selected stock or date changes
+    useEffect(() => {
+        if (selectedStock && date) {
+            const price = getStockPriceAtDate(selectedStock, date);
+            setCurrentPrice(price || 0);
+        }
+    }, [selectedStock, date, getStockPriceAtDate, setCurrentPrice]);
 
     return (
         <div className="grid grid-cols-2 gap-2 p-2 text-gray-700 w-full items-center">
