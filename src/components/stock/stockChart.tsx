@@ -25,7 +25,7 @@ export const ChartComponent = ({
     const chartContainerRef = useRef<HTMLDivElement>(null);
     const chartRef = useRef<any>(null);
     const seriesRef = useRef<any>(null);
-    console.log(data);
+
     // Initial Setup
     useEffect(() => {
         if (!chartContainerRef.current) return;
