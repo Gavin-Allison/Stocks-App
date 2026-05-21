@@ -119,7 +119,7 @@ const validateLedger = (transactions: Transaction[], priceData: {symbol: string,
         return {
             transaction: t,
             currentCash: cash,
-            currentAssets: assets,
+            currentAssets: { ...assets },
             error: error,
             errorMessage: errorMessage,
             ignore: ignore,
