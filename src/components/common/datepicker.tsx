@@ -10,7 +10,6 @@ export const StockDatePicker = ({ className, date, onDateChange }: { className?:
                 key={date}
                 value={date ? dayjs(date) : null}
                 onChange={(newValue) => onDateChange(newValue ? newValue.format('YYYY-MM-DD') : '')}
-                inputFormat="YYYY-MM-DD"
                 format="YYYY-MM-DD"
                 slotProps={{
                     textField: {
