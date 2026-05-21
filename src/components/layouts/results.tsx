@@ -69,7 +69,6 @@ export const Results = () => {
             const price = priceData.find(p => p.symbol === ticker)?.data[availablePriceDate] ?? 0;
             data[ticker] = shares * price;
         });
-        data["Cash"] = currentState.cash;
         return data;
     }, [currentState, priceData, availablePriceDate]);
 
