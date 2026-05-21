@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useAppStore } from "../../stores/appStore";
 
 import { TradeInputs } from "../transactions/tradeInputs";
@@ -7,15 +6,12 @@ import { RepeatSchedule } from "../transactions/repeatSchedule";
 import { LedgerList } from "../transactions/ledgerList";
 
 import { StockDatePicker } from "../common/datepicker";
-import { validateLedger } from "../../stores/ledger";
 
 import type { Transaction } from "../../types/transaction";
 
 export const Transactions = () => {
     const { 
-        // Global state
-        transactions, 
-        priceData, 
+        // Global state 
         date, 
         setDate, 
         selectedStock, 
@@ -23,6 +19,7 @@ export const Transactions = () => {
         addTransactionBatch,
         removeTransactionBatch,
         commitTransactionBatch,
+        getLedger,
 
         // Local UI state
         tradeOrCash,
@@ -41,10 +38,6 @@ export const Transactions = () => {
         selectedBatchCount,
         currentPrice
     } = useAppStore();
-
-    const ledger = useMemo(() => {
-        return validateLedger(transactions, priceData);
-    }, [transactions, priceData]);
 
     const addMonths = (dateValue: Date, months: number) => {
         const result = new Date(dateValue);
@@ -104,6 +97,8 @@ export const Transactions = () => {
             addTransactionBatch(scheduledTransactions);
         }
     };
+
+    const ledger = getLedger();
 
     return (
         <div className="flex flex-col w-full h-full p-4">

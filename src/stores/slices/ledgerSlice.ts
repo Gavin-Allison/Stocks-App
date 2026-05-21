@@ -1,9 +1,10 @@
-import { type LedgerEntry } from "../types/ledgerEntry";
-import { type Transaction } from "../types/transaction"
+import type { StateCreator } from 'zustand';
+import type { LedgerEntry } from '../../types/ledgerEntry';
+import type { Transaction } from '../../types/transaction';
+import type { mainSlice } from './mainSlice';
+import type { transactionSlice } from './transactionSlice';
 
-export const validateLedger = (transactions: Transaction[], priceData: {symbol: string, data: Record<string, number>}[]): LedgerEntry[] => {
-    // Perform and validate all transactions
-
+const validateLedger = (transactions: Transaction[], priceData: {symbol: string, data: Record<string, number>}[]): LedgerEntry[] => {
     let cash = 0;
     const assets: Record<string, number> = {};
     let error = false;
@@ -15,9 +16,7 @@ export const validateLedger = (transactions: Transaction[], priceData: {symbol: 
         let executionPrice: number | undefined;
         let executionCash: number | undefined;
 
-        // When a transaction errors do not worry about transactions that come after
         if (!error) {
-            // Logic for validating each transaction type
             switch(t.type) {
                 case "DEPOSIT":
                     cash += t.amount - t.fees;
@@ -129,6 +128,15 @@ export const validateLedger = (transactions: Transaction[], priceData: {symbol: 
             executionCash,
         };
     });
+};
+
+export interface ledgerSlice {
+    getLedger: () => LedgerEntry[];
 }
-    
-    
+
+export const createLedgerSlice: StateCreator<mainSlice & transactionSlice & ledgerSlice, [], [], ledgerSlice> = (set, get) => ({
+    getLedger: () => {
+        const { transactions, priceData } = get();
+        return validateLedger(transactions, priceData);
+    },
+});

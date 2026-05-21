@@ -2,23 +2,21 @@ import { useMemo } from "react";
 import { useAppStore } from "../../stores/appStore"
 import { StockDatePicker } from "../common/datepicker"
 import { StockPieChart } from "../common/pieChart";
-import { validateLedger } from "../../stores/ledger";
 
 export const Results = () => {
     const {
         date,
         setDate,
         priceData,
-        transactions,
         stocks,
+        getLedger,
     } = useAppStore();
 
+    const ledger = getLedger();
+
     const ledgerAtDate = useMemo(() => {
-        return validateLedger(
-            transactions.filter(t => t.date <= date),
-            priceData
-        );
-    }, [transactions, priceData, date]);
+        return ledger.filter(entry => entry.transaction.date <= date);
+    }, [ledger, date]);
 
     const currentState = useMemo(() => {
         if (ledgerAtDate.length === 0) {
