@@ -37,12 +37,21 @@ export const ChartComponent = ({
             },
             handleScroll: {
                 mouseWheel: true,
-                pressedMouseMove: true,
+                pressedMouseMove: false,
+                horzTouchDrag: true,
+                vertTouchDrag: false,
             },
             handleScale: {
-                mouseWheel: false,
+                mouseWheel: true,
                 pinch: true,
-                axisPressedMouseMove: true,
+                axisPressedMouseMove: {
+                    time: true,
+                    price: false,
+                },
+            },
+            timeScale: {
+                fixLeftEdge: true,
+                fixRightEdge: true,
             },
             width: chartContainerRef.current.clientWidth,
             height: 300,
