@@ -72,6 +72,30 @@ export const Results = () => {
         return data;
     }, [currentState, priceData, availablePriceDate]);
 
+    // Dynamic calculations for your metrics blocks
+    const uniquePositionsCount = useMemo(() => {
+        return Object.keys(currentState.assets).length;
+    }, [currentState.assets]);
+
+    const highestConcentration = useMemo(() => {
+        if (uniquePositionsCount === 0 || portfolioValue === 0) {
+            return { ticker: "None", percentage: 0 };
+        }
+
+        let maxTicker = "None";
+        let maxValue = 0;
+
+        Object.entries(chartData).forEach(([ticker, val]) => {
+            if (val > maxValue) {
+                maxValue = val;
+                maxTicker = ticker;
+            }
+        });
+
+        const pct = (maxValue / portfolioValue) * 100;
+        return { ticker: maxTicker, percentage: pct };
+    }, [chartData, portfolioValue, uniquePositionsCount]);
+
     return (
         <div className="flex flex-col w-full h-full p-4">
 
@@ -81,9 +105,11 @@ export const Results = () => {
                 <StockDatePicker className="w-38" date={date} onDateChange={setDate} />
             </div>
 
-            {/* Top Box: Portfolio Summary and Pie Chart */}
+            {/* Top Box: Portfolio Summary and Balanced Multi-Column row chart segment */}
             <div className="flex flex-col mb-4 w-full border border-gray-400 rounded bg-gray-200 p-4">
-                <div className="flex flex-row w-full justify-between items-center mb-6">
+                
+                {/* Row 1: Original Summary Figures */}
+                <div className="flex flex-row w-full justify-between items-center mb-4">
 
                     <div className="mr-4">
                         <p className="text-gray-600 text-sm">Portfolio Value</p>
@@ -95,7 +121,7 @@ export const Results = () => {
                     <div className="text-center">
                         <p className="text-gray-600 text-sm">Total Invested</p>
                         <p className="text-2xl font-bold text-gray-900">
-                            ${(portfolioValue-currentState.cash).toFixed(2)}
+                            ${(portfolioValue - currentState.cash).toFixed(2)}
                         </p>
                     </div>
 
@@ -108,20 +134,39 @@ export const Results = () => {
 
                 </div>
 
-                {/* Pie Chart */}
-                <div className="mb-4">
-                    <StockPieChart assets={chartData} stocks={stocks} />
+                {/* Row 2: 3-Column Visual Row Layout - Aligned to the bottom baseline using items-end */}
+                <div className="flex flex-row w-full items-end justify-between border-t border-gray-300 pt-4">
+                    
+                    {/* Left Metric Callout - Anchored to bottom */}
+                    <div className="flex-1 text-left">
+                        <p className="text-gray-600 text-xs font-medium">Total Unique Positions</p>
+                        <p className="text-xl font-bold text-gray-800">{uniquePositionsCount} Assets</p>
+                    </div>
+
+                    {/* Centered Pie Chart Container */}
+                    <div className="flex justify-center px-4">
+                        <StockPieChart assets={chartData} stocks={stocks} />
+                    </div>
+
+                    {/* Right Metric Callout - Anchored to bottom */}
+                    <div className="flex-1 text-right">
+                        <p className="text-gray-600 text-xs font-medium">Highest Concentration</p>
+                        <p className="text-xl font-bold text-gray-800">
+                            {highestConcentration.ticker} ({highestConcentration.percentage.toFixed(0)}%)
+                        </p>
+                    </div>
+
                 </div>
             </div>
 
-            {/* Bottom Box: Holdings List styled like LedgerList containers but preserving your original grid structure */}
+            {/* Bottom Box: Holdings List container */}
             <div className="flex flex-col w-full border border-gray-400 rounded bg-gray-200 flex-1 min-h-0">
                 <div className="flex flex-col flex-1 min-h-0">
                     <p className="font-semibold text-gray-700 m-4 mb-2 flex-shrink-0">Holdings:</p>
                     
                     {Object.entries(currentState.assets).length > 0 ? (
                         <>
-                            {/* Scrollable list using your exact original 2-column layout mapping inside list items */}
+                            {/* Scrollable list */}
                             <ul className="w-full overflow-y-auto flex-1 min-h-0 px-4">
                                 {Object.entries(currentState.assets).map(([ticker, shares]) => {
                                     const price = priceData.find(p => p.symbol === ticker)?.data[availablePriceDate] ?? 0;

@@ -8,9 +8,7 @@ export const StockPieChart = ({
     assets: Record<string, number>; 
     stocks: Stock[]
 }) => {
-    // Transform { AAPL: 70, GOOG: 30 } into [{ id: 'AAPL', value: 70, label: 'AAPL' }, ...]
     const chartData = Object.entries(assets).map(([label, value]) => {
-
         const stockConfig = stocks.find((stock: Stock) => stock.ticker === label);
 
         return {
@@ -23,14 +21,24 @@ export const StockPieChart = ({
     
     const totalValue = Object.values(assets).reduce((a, b) => a + b, 0);
 
-return (
+    return (
         <PieChart
             series={[
                 {
                     data: chartData,
-                    arcLabel: (item) => `${((item.value / totalValue) * 100).toFixed(0)}%`,
+                    arcLabel: (item) => {
+                        if (!totalValue) return "";
+                        const percentage = (item.value / totalValue) * 100;
+                        return percentage >= 5 ? `${percentage.toFixed(0)}%` : "";
+                    },
+                    valueFormatter: (item) => {
+                        if (!totalValue) return "";
+                        const percentage = (item.value / totalValue) * 100;
+                        return `$${item.value.toFixed(2)} (${percentage.toFixed(1)}%)`;
+                    }
                 },
             ]}
+            hideLegend={true}
             skipAnimation
             width={200}
             height={200}
