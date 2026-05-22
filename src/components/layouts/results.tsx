@@ -81,9 +81,7 @@ export const Results = () => {
                 <StockDatePicker className="w-38" date={date} onDateChange={setDate} />
             </div>
 
-            <div className="flex flex-wrap gap-2 mb-4"></div>
-
-            {/* Portfolio Summary */}
+            {/* Top Box: Portfolio Summary and Pie Chart */}
             <div className="flex flex-col mb-4 w-full border border-gray-400 rounded bg-gray-200 p-4">
                 <div className="mb-4">
                     <p className="text-gray-600 text-sm">Portfolio Value</p>
@@ -96,45 +94,62 @@ export const Results = () => {
                 <div className="mb-4">
                     <StockPieChart assets={chartData} stocks={stocks} />
                 </div>
+            </div>
 
-                {/* Holdings */}
-                <div className="text-sm space-y-2">
-                    <p className="font-semibold text-gray-700 mb-2">Holdings:</p>
+            {/* Bottom Box: Holdings List styled like LedgerList containers but preserving your original grid structure */}
+            <div className="flex flex-col w-full border border-gray-400 rounded bg-gray-200 flex-1 min-h-0">
+                <div className="flex flex-col flex-1 min-h-0">
+                    <p className="font-semibold text-gray-700 m-4 mb-2 flex-shrink-0">Holdings:</p>
+                    
                     {Object.entries(currentState.assets).length > 0 ? (
                         <>
-                            {Object.entries(currentState.assets).map(([ticker, shares]) => {
-                                const price = priceData.find(p => p.symbol === ticker)?.data[availablePriceDate] ?? 0;
-                                const value = shares * price;
-                                const stock = stocks.find(s => s.ticker === ticker);
-                                return (
-                                    <div key={ticker} className="flex justify-between items-center text-gray-700">
-                                        <div className="flex items-center gap-2">
-                                            {stock && (
-                                                <div
-                                                    className="w-3 h-3 rounded-full"
-                                                    style={{ backgroundColor: stock.color }}
-                                                />
-                                            )}
-                                            <span>{ticker}</span>
-                                        </div>
-                                        <div className="text-right">
-                                            <div className="text-xs text-gray-500">
-                                                {shares} @ ${price.toFixed(2)}
+                            {/* Scrollable list using your exact original 2-column layout mapping inside list items */}
+                            <ul className="w-full overflow-y-auto flex-1 min-h-0 px-4">
+                                {Object.entries(currentState.assets).map(([ticker, shares]) => {
+                                    const price = priceData.find(p => p.symbol === ticker)?.data[availablePriceDate] ?? 0;
+                                    const value = shares * price;
+                                    const stock = stocks.find(s => s.ticker === ticker);
+                                    return (
+                                        <li key={ticker} className="grid grid-cols-2 items-center text-gray-700 py-2 border-b border-gray-300">
+                                            {/* Left Column: Color Dot & Ticker */}
+                                            <div className="flex items-center gap-2">
+                                                {stock && (
+                                                    <div
+                                                        className="w-3 h-3 rounded-full flex-shrink-0"
+                                                        style={{ backgroundColor: stock.color }}
+                                                    />
+                                                )}
+                                                <span className="font-medium">{ticker}</span>
                                             </div>
-                                            <div className="font-semibold">
-                                                ${value.toFixed(2)}
+
+                                            {/* Right Column: Pricing Breakdown & Total Value */}
+                                            <div className="grid grid-cols-2 text-right">
+                                                <div className="text-gray-500">
+                                                    {shares} at ${price.toFixed(2)}
+                                                </div>
+                                                <div className="font-semibold text-gray-900">
+                                                    ${value.toFixed(2)}
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                            <div className="border-t pt-2 mt-2 flex justify-between font-semibold text-gray-900">
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+
+                            {/* Cash anchored underneath the scrollable list */}
+                            <div className="border-t border-gray-400 bg-gray-200 p-4 flex justify-between font-semibold text-gray-900 flex-shrink-0">
                                 <span>Cash</span>
                                 <span>${currentState.cash.toFixed(2)}</span>
                             </div>
                         </>
                     ) : (
-                        <p className="text-gray-500 text-xs italic">No holdings at this date</p>
+                        <div className="flex-1 flex flex-col justify-between">
+                            <p className="text-gray-500 text-xs italic m-4">No holdings at this date</p>
+                            <div className="border-t border-gray-400 bg-gray-200 p-4 flex justify-between font-semibold text-gray-900">
+                                <span>Cash</span>
+                                <span>${currentState.cash.toFixed(2)}</span>
+                            </div>
+                        </div>
                     )}
                 </div>
             </div>
