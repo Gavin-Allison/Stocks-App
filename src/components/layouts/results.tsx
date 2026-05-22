@@ -94,7 +94,7 @@ export const Results = () => {
 
                 {/* Pie Chart */}
                 <div className="mb-4">
-                    <StockPieChart assets={chartData} />
+                    <StockPieChart assets={chartData} stocks={stocks} />
                 </div>
 
                 {/* Holdings */}

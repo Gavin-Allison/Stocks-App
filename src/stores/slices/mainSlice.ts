@@ -1,11 +1,6 @@
 import type { StateCreator } from 'zustand';
 import { FetchStockData } from '../../services/stockData';
-
-// Stock interface for saving
-export interface Stock {
-    ticker: string;
-    color: string;
-}
+import type { Stock } from '../../types/stock'
 
 const defaultStocks: Stock[] = [
     { ticker: "RY.TO", color: "hsl(210, 100%, 50%)" },
