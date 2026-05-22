@@ -45,7 +45,7 @@ export const StockChartList = () => {
     const { stocks, priceData } = useAppStore();
 
     return (
-        <div className="flex flex-col w-full h-full overflow-y-auto">
+        <div className="flex flex-col w-full h-full overflow-y-auto pt-4">
             {stocks.length === 0 && (
                 <p className="text-gray-500 text-sm italic m-4">No stocks monitored. Add one to get started.</p>
             )}
