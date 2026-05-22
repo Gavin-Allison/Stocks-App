@@ -35,7 +35,8 @@ export const StockPieChart = ({
                         if (!totalValue) return "";
                         const percentage = (item.value / totalValue) * 100;
                         return `$${item.value.toFixed(2)} (${percentage.toFixed(1)}%)`;
-                    }
+                    },
+                    highlightScope: { fade: 'global', highlight: 'item' },
                 },
             ]}
             hideLegend={true}

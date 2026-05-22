@@ -143,7 +143,7 @@ export const Results = () => {
                 <div className="flex flex-row w-full items-center justify-between border-t border-gray-300 pt-4">
                     
                     {/* Left Column: Centered Pie Chart Container */}
-                    <div className="flex justify-start pr-4">
+                    <div className="flex justify-start pr-4 ml-8">
                         <StockPieChart assets={chartData} stocks={stocks} />
                     </div>
 
