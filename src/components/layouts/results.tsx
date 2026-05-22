@@ -83,11 +83,29 @@ export const Results = () => {
 
             {/* Top Box: Portfolio Summary and Pie Chart */}
             <div className="flex flex-col mb-4 w-full border border-gray-400 rounded bg-gray-200 p-4">
-                <div className="mb-4">
-                    <p className="text-gray-600 text-sm">Portfolio Value</p>
-                    <p className="text-2xl font-bold text-gray-900">
-                        ${portfolioValue.toFixed(2)}
-                    </p>
+                <div className="flex flex-row w-full justify-between items-center mb-6">
+
+                    <div className="mr-4">
+                        <p className="text-gray-600 text-sm">Portfolio Value</p>
+                        <p className="text-2xl font-bold text-gray-900">
+                            ${portfolioValue.toFixed(2)}
+                        </p>
+                    </div>
+
+                    <div className="text-center">
+                        <p className="text-gray-600 text-sm">Total Invested</p>
+                        <p className="text-2xl font-bold text-gray-900">
+                            ${(portfolioValue-currentState.cash).toFixed(2)}
+                        </p>
+                    </div>
+
+                    <div className="text-right ml-4">
+                        <p className="text-gray-600 text-sm">Total Cash</p>
+                        <p className="text-2xl font-bold text-gray-900">
+                            ${currentState.cash.toFixed(2)}
+                        </p>
+                    </div>
+
                 </div>
 
                 {/* Pie Chart */}
