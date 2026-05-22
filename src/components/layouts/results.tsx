@@ -84,15 +84,20 @@ export const Results = () => {
 
         let maxTicker = "None";
         let maxValue = 0;
+        let totalAssetValue = 0; // Track just the money sitting in stocks
 
         Object.entries(chartData).forEach(([ticker, val]) => {
+            totalAssetValue += val;
             if (val > maxValue) {
                 maxValue = val;
                 maxTicker = ticker;
             }
         });
 
-        const pct = (maxValue / portfolioValue) * 100;
+        // Fallback to portfolioValue if totalAssetValue is 0 (e.g., all cash)
+        const divisor = totalAssetValue > 0 ? totalAssetValue : portfolioValue;
+        const pct = (maxValue / divisor) * 100;
+
         return { ticker: maxTicker, percentage: pct };
     }, [chartData, portfolioValue, uniquePositionsCount]);
 
@@ -139,7 +144,7 @@ export const Results = () => {
                     
                     {/* Left Metric Callout - Anchored to bottom */}
                     <div className="flex-1 text-left">
-                        <p className="text-gray-600 text-xs font-medium">Total Unique Positions</p>
+                        <p className="text-gray-600 text-xs font-medium">Total Unique Stocks</p>
                         <p className="text-xl font-bold text-gray-800">{uniquePositionsCount} Assets</p>
                     </div>
 
