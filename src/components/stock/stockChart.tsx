@@ -104,9 +104,9 @@ export const ChartComponent = ({
         });
 
         const handleResetZoom = () => {
-            if (data && data.length > 1008) {
+            if (data && data.length > 630) {
                 chart.timeScale().setVisibleLogicalRange({
-                    from: (data.length - 1008) as any,
+                    from: (data.length - 630) as any,
                     to: data.length as any
                 });
             } else {
@@ -119,10 +119,10 @@ export const ChartComponent = ({
 
             const size = newRange.to - newRange.from;
 
-            if (size > 1008) {
+            if (size > 630) {
                 isAdjustingRef.current = true;
                 chart.timeScale().setVisibleLogicalRange({
-                    from: (newRange.to - 1008) as any,
+                    from: (newRange.to - 630) as any,
                     to: newRange.to as any
                 });
                 setTimeout(() => { isAdjustingRef.current = false; }, 0);
@@ -148,9 +148,9 @@ export const ChartComponent = ({
 
         if (data && data.length > 0) {
             series.setData(data);
-            if (data.length > 1008) {
+            if (data.length > 630) {
                 chart.timeScale().setVisibleLogicalRange({
-                    from: (data.length - 1008) as any,
+                    from: (data.length - 630) as any,
                     to: data.length as any
                 });
             } else {
@@ -230,9 +230,9 @@ export const ChartComponent = ({
                 volumeSeriesRef.current.setData(volumeData);
             }
 
-            if (data.length > 1008) {
+            if (data.length > 630) {
                 chartRef.current.timeScale().setVisibleLogicalRange({
-                    from: (data.length - 1008) as any,
+                    from: (data.length - 630) as any,
                     to: data.length as any
                 });
             } else {
@@ -270,7 +270,7 @@ export const ChartComponent = ({
     return (
         <div className="relative w-full h-full">
             {maxScroll > 0 && (
-                <div className="absolute top-2 left-4 right-18 z-20">
+                <div className="absolute top-2 left-4 right-24 z-20">
                     <input
                         type="range"
                         className="w-full h-1.5 bg-gray-300 rounded-lg appearance-none cursor-pointer"
