@@ -1,5 +1,5 @@
 import { AreaSeries, createChart, ColorType } from 'lightweight-charts';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAppStore } from '../../stores/appStore';
 
 // React component that renders a stock chart using the Lightweight Charts library
@@ -20,7 +20,8 @@ export const ChartComponent = ({
         textColor?: string;
     };
 }) => {
-    const { setDate, setSelectedStock } = useAppStore();
+    const { date, setDate, setSelectedStock } = useAppStore();
+    const [lineX, setLineX] = useState<number | null>(null);
 
     const chartContainerRef = useRef<HTMLDivElement>(null);
     const chartRef = useRef<any>(null);
@@ -42,7 +43,7 @@ export const ChartComponent = ({
                 vertTouchDrag: false,
             },
             handleScale: {
-                mouseWheel: true,
+                mouseWheel: false,
                 pinch: true,
                 axisPressedMouseMove: {
                     time: true,
@@ -92,15 +93,33 @@ export const ChartComponent = ({
             chart.timeScale().fitContent();
         };
 
+        // Custom handler to safely swap wheel behaviors on Shift key check
+        const handleWheelZoom = (e: WheelEvent) => {
+            if (e.shiftKey) {
+                e.preventDefault();
+                chart.applyOptions({
+                    handleScale: { mouseWheel: true }
+                });
+            } else {
+                chart.applyOptions({
+                    handleScale: { mouseWheel: false }
+                });
+            }
+        };
+
         if (data && data.length > 0) {
             series.setData(data);
         }
         resizeObserver.observe(chartContainerRef.current);
         window.addEventListener('dblclick', handleResetZoom);
+        
+        const container = chartContainerRef.current;
+        container.addEventListener('wheel', handleWheelZoom, { passive: false });
 
         return () => {
             resizeObserver.disconnect();
             window.removeEventListener('dblclick', handleResetZoom);
+            container.removeEventListener('wheel', handleWheelZoom);
             chart.remove();
         };
     }, [setDate, setSelectedStock, symbol, data, backgroundColor, lineColor, textColor]);
@@ -113,5 +132,45 @@ export const ChartComponent = ({
         }
     }, [data]);
 
-    return <div ref={chartContainerRef} className="w-full h-full" />;
+    useEffect(() => {
+        if (!chartRef.current || !date) {
+            setLineX(null);
+            return;
+        }
+
+        const updateLinePosition = () => {
+            const x = chartRef.current.timeScale().timeToCoordinate(date);
+            setLineX(x);
+        };
+
+        updateLinePosition();
+
+        chartRef.current.timeScale().subscribeVisibleTimeRangeChange(updateLinePosition);
+        chartRef.current.timeScale().subscribeVisibleLogicalRangeChange(updateLinePosition);
+
+        return () => {
+            if (chartRef.current) {
+                chartRef.current.timeScale().unsubscribeVisibleTimeRangeChange(updateLinePosition);
+                chartRef.current.timeScale().unsubscribeVisibleLogicalRangeChange(updateLinePosition);
+            }
+        };
+    }, [date, data]);
+
+    return (
+        <div className="relative w-full h-full">
+            <div ref={chartContainerRef} className="w-full h-full" />
+            {lineX !== null && lineX >= 0 && chartContainerRef.current && lineX <= chartContainerRef.current.clientWidth && (
+                <div
+                    className="absolute top-0 pointer-events-none"
+                    style={{
+                        left: `${lineX}px`,
+                        height: '260px',
+                        borderLeft: `2px dashed ${lineColor || '#2196F3'}`,
+                        transform: 'translateX(-50%)',
+                        zIndex: 10,
+                    }}
+                />
+            )}
+        </div>
+    );
 }
