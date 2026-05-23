@@ -1,8 +1,7 @@
-import { AreaSeries, createChart, ColorType } from 'lightweight-charts';
+import { AreaSeries, HistogramSeries, createChart, ColorType } from 'lightweight-charts';
 import { useEffect, useRef, useState } from 'react';
 import { useAppStore } from '../../stores/appStore';
 
-// React component that renders a stock chart using the Lightweight Charts library
 export const ChartComponent = ({
     data,
     symbol,
@@ -20,14 +19,17 @@ export const ChartComponent = ({
         textColor?: string;
     };
 }) => {
-    const { date, setDate, setSelectedStock } = useAppStore();
+    const { transactions, date, setDate, setSelectedStock } = useAppStore();
     const [lineX, setLineX] = useState<number | null>(null);
+    const [scrollPos, setScrollPos] = useState(0);
+    const [visibleSize, setVisibleSize] = useState(0);
 
     const chartContainerRef = useRef<HTMLDivElement>(null);
     const chartRef = useRef<any>(null);
     const seriesRef = useRef<any>(null);
+    const volumeSeriesRef = useRef<any>(null);
+    const isAdjustingRef = useRef(false);
 
-    // Initial Setup
     useEffect(() => {
         if (!chartContainerRef.current) return;
 
@@ -57,8 +59,6 @@ export const ChartComponent = ({
             width: chartContainerRef.current.clientWidth,
             height: 300,
         });
-        
-        chart.timeScale().fitContent();
 
         const series = chart.addSeries(AreaSeries, {
             lineColor,
@@ -66,8 +66,22 @@ export const ChartComponent = ({
             bottomColor: "rgba(255, 255, 255, 0)",
         });
 
+        const volumeSeries = chart.addSeries(HistogramSeries, {
+            priceScaleId: '',
+            lastValueVisible: false,
+            priceLineVisible: false,
+        });
+
+        chart.priceScale('').applyOptions({
+            scaleMargins: {
+                top: 0.85,
+                bottom: 0,
+            },
+        });
+
         chartRef.current = chart;
         seriesRef.current = series;
+        volumeSeriesRef.current = volumeSeries;
 
         chart.subscribeClick((param) => {
             if (param.time) {
@@ -90,10 +104,35 @@ export const ChartComponent = ({
         });
 
         const handleResetZoom = () => {
-            chart.timeScale().fitContent();
+            if (data && data.length > 1008) {
+                chart.timeScale().setVisibleLogicalRange({
+                    from: (data.length - 1008) as any,
+                    to: data.length as any
+                });
+            } else {
+                chart.timeScale().fitContent();
+            }
         };
 
-        // Custom handler to safely swap wheel behaviors on Shift key check
+        chart.timeScale().subscribeVisibleLogicalRangeChange((newRange) => {
+            if (!newRange || isAdjustingRef.current) return;
+
+            const size = newRange.to - newRange.from;
+
+            if (size > 1008) {
+                isAdjustingRef.current = true;
+                chart.timeScale().setVisibleLogicalRange({
+                    from: (newRange.to - 1008) as any,
+                    to: newRange.to as any
+                });
+                setTimeout(() => { isAdjustingRef.current = false; }, 0);
+                return;
+            }
+
+            setScrollPos(newRange.from);
+            setVisibleSize(size);
+        });
+
         const handleWheelZoom = (e: WheelEvent) => {
             if (e.shiftKey) {
                 e.preventDefault();
@@ -109,7 +148,16 @@ export const ChartComponent = ({
 
         if (data && data.length > 0) {
             series.setData(data);
+            if (data.length > 1008) {
+                chart.timeScale().setVisibleLogicalRange({
+                    from: (data.length - 1008) as any,
+                    to: data.length as any
+                });
+            } else {
+                chart.timeScale().fitContent();
+            }
         }
+        
         resizeObserver.observe(chartContainerRef.current);
         window.addEventListener('dblclick', handleResetZoom);
         
@@ -124,13 +172,74 @@ export const ChartComponent = ({
         };
     }, [setDate, setSelectedStock, symbol, data, backgroundColor, lineColor, textColor]);
 
-    // Update chart data
     useEffect(() => {
         if (seriesRef.current && data && data.length > 0) {
             seriesRef.current.setData(data);
-            chartRef.current.timeScale().fitContent();
+            
+            if (volumeSeriesRef.current && transactions) {
+                const volumeMap = new Map<string, { volume: number, net: number }>();
+                
+                transactions.forEach((tx: any) => {
+                    if (!('ticker' in tx) || tx.ticker !== symbol) return;
+                    
+                    let amount = 0;
+                    let isBuy = true;
+                    
+                    if (tx.type === 'FBUY') { amount = tx.amount; }
+                    else if (tx.type === 'FSELL') { amount = tx.amount; isBuy = false; }
+                    else if (tx.type === 'DBUY') { amount = tx.value; }
+                    else if (tx.type === 'DSELL') { amount = tx.value; isBuy = false; }
+                    else return;
+
+                    if (!volumeMap.has(tx.date)) {
+                        volumeMap.set(tx.date, { volume: 0, net: 0 });
+                    }
+                    
+                    const dayData = volumeMap.get(tx.date)!;
+                    dayData.volume += amount;
+                    dayData.net += isBuy ? amount : -amount;
+                });
+
+                const volumeData: any[] = [];
+                let lastVol = -1;
+                let lastIsBuy = false;
+                let alt = false;
+
+                Array.from(volumeMap.keys()).sort().forEach(dateStr => {
+                    const dayData = volumeMap.get(dateStr)!;
+                    if (dayData.volume > 0) {
+                        const isBuy = dayData.net >= 0;
+                        
+                        if (dayData.volume === lastVol && isBuy === lastIsBuy) {
+                            alt = !alt;
+                        } else {
+                            alt = false;
+                        }
+                        
+                        lastVol = dayData.volume;
+                        lastIsBuy = isBuy;
+
+                        volumeData.push({
+                            time: dateStr,
+                            value: dayData.volume,
+                            color: isBuy ? (alt ? '#4db6ac' : '#26a69a') : (alt ? '#e57373' : '#ef5350'),
+                        });
+                    }
+                });
+
+                volumeSeriesRef.current.setData(volumeData);
+            }
+
+            if (data.length > 1008) {
+                chartRef.current.timeScale().setVisibleLogicalRange({
+                    from: (data.length - 1008) as any,
+                    to: data.length as any
+                });
+            } else {
+                chartRef.current.timeScale().fitContent();
+            }
         }
-    }, [data]);
+    }, [data, transactions, symbol]);
 
     useEffect(() => {
         if (!chartRef.current || !date) {
@@ -156,8 +265,34 @@ export const ChartComponent = ({
         };
     }, [date, data]);
 
+    const maxScroll = Math.max(0, (data?.length || 0) - visibleSize);
+
     return (
         <div className="relative w-full h-full">
+            {maxScroll > 0 && (
+                <div className="absolute top-2 left-4 right-18 z-20">
+                    <input
+                        type="range"
+                        className="w-full h-1.5 bg-gray-300 rounded-lg appearance-none cursor-pointer"
+                        min={0}
+                        max={maxScroll}
+                        step="any"
+                        value={Math.min(scrollPos, maxScroll)}
+                        onChange={(e) => {
+                            const newFrom = Number(e.target.value);
+                            const newTo = newFrom + visibleSize;
+                            setScrollPos(newFrom);
+                            if (chartRef.current) {
+                                chartRef.current.timeScale().setVisibleLogicalRange({
+                                    from: newFrom as any,
+                                    to: newTo as any
+                                });
+                            }
+                        }}
+                        style={{ accentColor: lineColor || '#2196F3' }}
+                    />
+                </div>
+            )}
             <div ref={chartContainerRef} className="w-full h-full" />
             {lineX !== null && lineX >= 0 && chartContainerRef.current && lineX <= chartContainerRef.current.clientWidth && (
                 <div
