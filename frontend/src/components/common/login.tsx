@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { GoogleLogin, type CredentialResponse } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
 
+import { handleLogin } from '../../services/db';
+
 interface GoogleJwtPayload {
   name: string;
   email: string;
@@ -12,10 +14,15 @@ interface GoogleJwtPayload {
 export default function Login() {
   const [userProfile, setUserProfile] = useState<GoogleJwtPayload | null>(null);
 
-  const handleSuccess = (res: CredentialResponse) => {
-    if (res.credential) {
-      const decoded = jwtDecode<GoogleJwtPayload>(res.credential);
-      setUserProfile(decoded);
+  const handleSuccess = async (res: CredentialResponse) => {
+    try {
+      if (res.credential) {
+        const decoded = jwtDecode<GoogleJwtPayload>(res.credential);
+        setUserProfile(decoded);
+        await handleLogin(decoded.email)
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 

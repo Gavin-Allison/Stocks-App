@@ -1,5 +1,5 @@
 import type { StateCreator } from 'zustand';
-import { FetchStockData } from '../../services/stockData';
+import { FetchStockData } from '../../services/getStockData';
 import type { Stock } from '../../types/stock'
 
 const defaultStocks: Stock[] = [

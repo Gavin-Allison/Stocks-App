@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { useAppStore } from "../../stores/appStore";
-import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import Login from "../common/login"
-
-const GOOGLE_CLIENT_ID = "706593098315-1gbpd9hppvnf88p0l25qs46srdlhdgga.apps.googleusercontent.com";
 
 // Bar at top
 export const Header = () => {
@@ -44,9 +41,7 @@ export const Header = () => {
                 <button onClick={() => setReportTab("Results")} className="px-2 py-1 hover:bg-gray-400 rounded">Results</button>
             </div>
 
-            <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-                <Login></Login>
-            </GoogleOAuthProvider>
+            <Login></Login>
         </div>
     );
 };
