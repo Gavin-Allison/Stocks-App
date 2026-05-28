@@ -35,8 +35,6 @@ export const Header = () => {
             <div className="flex-grow"></div>
 
             <div className="flex gap-2">
-                <button onClick={() => setReportTab("Tutorial")} className="px-2 py-1 hover:bg-gray-400 rounded">Tutorial</button>
-                <button onClick={() => setReportTab("Overview")} className="px-2 py-1 hover:bg-gray-400 rounded">Overview</button>
                 <button onClick={() => setReportTab("Transactions")} className="px-2 py-1 hover:bg-gray-400 rounded">Transactions</button>
                 <button onClick={() => setReportTab("Results")} className="px-2 py-1 hover:bg-gray-400 rounded">Results</button>
             </div>
