@@ -4,7 +4,7 @@ import YahooFinance from "yahoo-finance2";
 const router = Router();
 const YahooFinanceInstance = new YahooFinance();
 
-router.get('/history', async (Req, Res) => {
+router.get('/stock_history', async (Req, Res) => {
     const { symbol } = Req.query;
 
     try {
