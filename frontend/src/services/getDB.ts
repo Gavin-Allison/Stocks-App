@@ -6,7 +6,7 @@ import * as API from './apiDB';
  */
 export const handleLogin = async (email: string) => {
     const userData = await API.fetchUserLogin(email);
-    localStorage.setItem('userEmail', userData.email); // Relying on email instead of ID now
+    localStorage.setItem('userEmail', userData.email);
     return userData;
 };
 
@@ -27,7 +27,6 @@ export const addStockToTab = async (experimentName: string, ticker: string) => {
     const email = localStorage.getItem('userEmail');
     if (!email) throw new Error("User not logged in");
 
-    // Format to uppercase to keep DB clean
     const cleanTicker = ticker.toUpperCase().trim();
 
     return await API.fetchAddStockToExperiment(email, experimentName, cleanTicker);
@@ -51,7 +50,6 @@ export const logTransaction = async (experimentName: string, transaction: Transa
         delete (details as any).ticker;
     }
 
-    // 3. Send to the API
     return await API.fetchCreateTransaction(
         email,
         experimentName,

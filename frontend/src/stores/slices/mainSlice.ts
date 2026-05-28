@@ -18,6 +18,9 @@ export interface mainSlice {
     date: string;
     selectedStock: string;
 
+    currentExperiment: string
+    experiments: string[];
+
     // Actions
     initialize: () => Promise<void>;
     addStock: (symbol: string) => Promise<void>;
@@ -27,6 +30,10 @@ export interface mainSlice {
     setDate: (date: string) => void;
     setSelectedStock: (stock: string) => void;
     getStockPriceAtDate: (ticker: string, date: string) => number | null;
+
+    addExperiment: (experiment: string) => void;
+    removeExperiment: (experiment: string) => void;
+    swapExperiment: (experiment: string) => void;
 }
 
 export const createMainSlice: StateCreator<mainSlice, [], [], mainSlice> = (set, get) => ({
@@ -36,6 +43,8 @@ export const createMainSlice: StateCreator<mainSlice, [], [], mainSlice> = (set,
     reportTab: 'Tutorial',
     date: new Date().toISOString().split('T')[0],
     selectedStock: '',
+    currentExperiment: "Default",
+    experiments: ["Default"],
 
     // Initialize portfolio data
     initialize: async () => {
@@ -98,5 +107,31 @@ export const createMainSlice: StateCreator<mainSlice, [], [], mainSlice> = (set,
         const { priceData } = get();
         const stockData = priceData.find((p) => p.symbol === ticker);
         return stockData ? stockData.data[date] : null;
+    },
+
+    addExperiment: (experiment: string) => {
+        set((state) => {
+            const newExperiments = [...state.experiments, experiment]
+
+            return {
+                experiments: newExperiments
+            };
+        });
+    },
+
+    removeExperiment: (experiment: string) => {
+        set((state) => {
+            const newExperiments = state.experiments.filter((e) => e !== experiment);
+
+            return {
+                experiments: newExperiments
+            };
+        });
+    },
+
+    swapExperiment:(experiment: string) => {
+        set({
+                currentExperiment: experiment
+        });
     },
 });

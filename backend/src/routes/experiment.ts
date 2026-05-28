@@ -3,13 +3,13 @@ import { pool } from "../config/db";
 
 const router = Router();
 
-// The "Large Pull" - gets all active stocks and transactions for a tab
+// The "Large Pull" - gets all active stocks, transactions, AND experiment list
 router.get('/:experiment_name/data', async (req, res) => {
     const { experiment_name } = req.params;
     const { user_email } = req.query;
 
     try {
-        // 1. Get the transactions
+        // Get the transactions linked to this tab
         const txQuery = `
             SELECT t.id, t.ticker, t.transaction_date, t.type, t.details
             FROM transactions t
@@ -19,7 +19,7 @@ router.get('/:experiment_name/data', async (req, res) => {
             ORDER BY t.transaction_date DESC;
         `;
         
-        // 2. Get the active stocks linked to this tab
+        // Get the active stocks linked to this tab
         const stockQuery = `
             SELECT es.ticker
             FROM experiment_stocks es
@@ -28,14 +28,24 @@ router.get('/:experiment_name/data', async (req, res) => {
             WHERE u.email = $1 AND e.name = $2;
         `;
 
-        const [txResult, stockResult] = await Promise.all([
-        pool.query(txQuery, [user_email, experiment_name]),
-        pool.query(stockQuery, [user_email, experiment_name])
+        // Get the list of experiments for this user
+        const listQuery = `
+            SELECT e.name 
+            FROM experiments e
+            JOIN users u ON e.user_id = u.id
+            WHERE u.email = $1;
+        `;
+
+        const [txResult, stockResult, listResult] = await Promise.all([
+            pool.query(txQuery, [user_email, experiment_name]),
+            pool.query(stockQuery, [user_email, experiment_name]),
+            pool.query(listQuery, [user_email])
         ]);
 
         res.status(200).json({
-        transactions: txResult.rows,
-        activeStocks: stockResult.rows.map(row => row.ticker)
+            transactions: txResult.rows,
+            activeStocks: stockResult.rows.map(row => row.ticker),
+            experimentList: listResult.rows.map(row => row.name)
         });
     } catch (err) {
         console.error(err);
@@ -43,7 +53,7 @@ router.get('/:experiment_name/data', async (req, res) => {
     }
 });
 
-// Adds a stock to an experiment tab (handles upserting everything automatically)
+// Adds a stock to an experiment tab
 router.post('/stocks', async (req, res) => {
     const { user_email, experiment_name, ticker } = req.body;
 

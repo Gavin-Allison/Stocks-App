@@ -229,15 +229,6 @@ export const ChartComponent = ({
 
                 volumeSeriesRef.current.setData(volumeData);
             }
-
-            if (data.length > 630) {
-                chartRef.current.timeScale().setVisibleLogicalRange({
-                    from: (data.length - 630) as any,
-                    to: data.length as any
-                });
-            } else {
-                chartRef.current.timeScale().fitContent();
-            }
         }
     }, [data, transactions, symbol]);
 
@@ -270,10 +261,10 @@ export const ChartComponent = ({
     return (
         <div className="relative w-full h-full">
             {maxScroll > 0 && (
-                <div className="absolute top-2 left-4 right-24 z-20">
+                <div className="absolute top-2 left-4 right-24 z-2 pointer-events-none">
                     <input
                         type="range"
-                        className="w-full h-1.5 bg-gray-300 rounded-lg appearance-none cursor-pointer"
+                        className="w-full h-1.5 bg-gray-300 rounded-lg appearance-none cursor-pointer pointer-events-auto"
                         min={0}
                         max={maxScroll}
                         step="any"
@@ -302,7 +293,7 @@ export const ChartComponent = ({
                         height: '260px',
                         borderLeft: `2px dashed ${lineColor || '#2196F3'}`,
                         transform: 'translateX(-50%)',
-                        zIndex: 10,
+                        zIndex: 5,
                     }}
                 />
             )}
