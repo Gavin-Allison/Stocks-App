@@ -25,13 +25,7 @@ router.post('/', async (req, res) => {
         
         res.status(200).json(result.rows[0]);
     } catch (err: any) {
-        console.error("FULL DATABASE ERROR:", err); // CHECK YOUR TERMINAL
-        res.status(500).json({ 
-            error: "Failed to log transaction xd", 
-            message: err.message,
-            detail: err.detail, // This usually contains the specific constraint violation
-            hint: err.hint      // This often tells you exactly how to fix it
-        });
+        res.status(500).json({ error: "Failed to log transaction" });
     }
 });
 
