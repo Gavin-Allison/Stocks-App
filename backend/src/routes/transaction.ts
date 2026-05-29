@@ -5,28 +5,33 @@ const router = Router();
 
 // Logs a transaction (Cash transactions will pass 'ticker' as null here)
 router.post('/', async (req, res) => {
-    const { user_email, experiment_name, ticker, transaction_date, type, details } = req.body;
+    const { user_email, id, batch_id, ticker, experiment_name, transaction_date, type, details } = req.body;
 
     try {
         const query = `
-            INSERT INTO transactions (experiment_id, ticker, transaction_date, type, details)
-            SELECT e.id, $3, $4, $5, $6
+            INSERT INTO transactions (id, batch_id, experiment_id, ticker, transaction_date, type, details)
+            SELECT $2, $3, e.id, $5, $6, $7, $8::jsonb
             FROM experiments e
             JOIN users u ON e.user_id = u.id
-            WHERE u.email = $1 AND e.name = $2
+            WHERE u.email = $1 AND e.name = $4
             RETURNING *;
         `;
         
-        const result = await pool.query(query, [user_email, experiment_name, ticker, transaction_date, type, details]);
+        const result = await pool.query(query, [user_email, id, batch_id, experiment_name, ticker, transaction_date, type, JSON.stringify(details)]);
         
         if (result.rows.length === 0) {
-        return res.status(404).json({ error: "Experiment tab not found for user" });
+            return res.status(404).json({ error: "Experiment tab not found for user" });
         }
         
         res.status(200).json(result.rows[0]);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Failed to log transaction" });
+    } catch (err: any) {
+        console.error("FULL DATABASE ERROR:", err); // CHECK YOUR TERMINAL
+        res.status(500).json({ 
+            error: "Failed to log transaction xd", 
+            message: err.message,
+            detail: err.detail, // This usually contains the specific constraint violation
+            hint: err.hint      // This often tells you exactly how to fix it
+        });
     }
 });
 

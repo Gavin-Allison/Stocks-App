@@ -39,7 +39,7 @@ export const logTransaction = async (experimentName: string, transaction: Transa
     const email = localStorage.getItem('userEmail');
     if (!email) throw new Error("User not logged in");
 
-    const { date, type, ...rawDetails } = transaction;
+    const { id, date, type, batchId, ...rawDetails } = transaction;
 
     let ticker: string | null = null;
     const details = { ...rawDetails };
@@ -53,10 +53,12 @@ export const logTransaction = async (experimentName: string, transaction: Transa
     return await API.fetchCreateTransaction(
         email,
         experimentName,
+        id,
         ticker,
         date,
         type,
-        details
+        details,
+        batchId
     );
 };
 

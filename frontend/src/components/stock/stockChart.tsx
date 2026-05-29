@@ -261,7 +261,7 @@ export const ChartComponent = ({
     return (
         <div className="relative w-full h-full">
             {maxScroll > 0 && (
-                <div className="absolute top-2 left-4 right-24 z-2 pointer-events-none">
+                <div className="absolute top-2 left-4 right-24 z-5 pointer-events-none">
                     <input
                         type="range"
                         className="w-full h-1.5 bg-gray-300 rounded-lg appearance-none cursor-pointer pointer-events-auto"

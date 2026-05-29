@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = 'http://localhost:3002/api';
 
 /**
  * Creates or logs in a user.
@@ -39,10 +39,12 @@ export const fetchAddStockToExperiment = async (userEmail: string, experimentNam
 export const fetchCreateTransaction = async (
     userEmail: string, 
     experimentName: string, 
+    id: string,
     ticker: string | null, 
     date: string, 
     type: string, 
-    details: Record<string, any>
+    details: Record<string, any>,
+    batch_id: string
 ) => {
     const response = await fetch(`${API_BASE}/transactions`, {
         method: 'POST',
@@ -50,10 +52,12 @@ export const fetchCreateTransaction = async (
         body: JSON.stringify({
             user_email: userEmail,
             experiment_name: experimentName,
+            id: id,
             ticker: ticker, 
             transaction_date: date,
             type: type,
-            details: details
+            details: details,
+            batch_id: batch_id
         }),
     });
     return response.json();
@@ -78,7 +82,7 @@ export const removeStockFromTab = async (experimentName: string, ticker: string)
 /**
  * Removes a specific transaction by its ID.
  */
-export const removeTransaction = async (transactionId: number) => {
+export const removeTransaction = async (transactionId: string) => {
     const response = await fetch(`${API_BASE}/transactions/${transactionId}`, {
         method: 'DELETE',
     });

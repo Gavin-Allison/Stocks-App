@@ -28,6 +28,7 @@ export const LedgerList = ({ ledger }: { ledger: LedgerEntry[] }) => {
                 return `Unknown transaction type`;
         }
     }
+    console.log("Current Ledger Data:", ledger);
 
     return (
         <div className="flex flex-col w-full h-full overflow-y-scroll border border-gray-400 rounded bg-gray-200">

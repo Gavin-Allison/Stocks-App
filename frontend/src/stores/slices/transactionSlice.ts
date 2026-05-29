@@ -1,5 +1,6 @@
 import type { StateCreator } from 'zustand';
 import type { Transaction } from '../../types/transaction';
+import { fetchCreateTransaction, removeTransaction } from '../../services/apiDB';
 
 export interface transactionSlice {
     transactions: Transaction[];
@@ -37,18 +38,20 @@ export interface transactionSlice {
 
     addTransaction: (transaction: Transaction) => void;
     addTransactionBatch: (transactions: Transaction[]) => void;
-    removeTransaction: (transaction: Transaction) => void;
-    removeTransactionBatch: (batchId: string) => void;
-    commitTransaction: (transaction: Transaction) => void;
-    commitTransactionBatch: (batchId: string) => void;
+    removeTransaction: (transaction: Transaction) => Promise<void>;
+    removeTransactionBatch: (batchId: string) => Promise<void>;
+    commitTransaction: (transaction: Transaction) => Promise<void>;
+    commitTransactionBatch: (batchId: string) => Promise<void>;
 }
 
-const saveTransactions = (transactions: Transaction[]) => {
-    const commitedTransactions = transactions.filter((t) => t.committed === true)
-    localStorage.setItem("transactions", JSON.stringify(commitedTransactions));
+const saveTransactions = (transactions: Transaction[], email: string | null) => {
+    if (!email) {
+        const commitedTransactions = transactions.filter((t) => t.committed === true);
+        localStorage.setItem("transactions", JSON.stringify(commitedTransactions));
+    }
 };
 
-export const createTransactionSlice: StateCreator<transactionSlice, [], [], transactionSlice> = (set) => ({
+export const createTransactionSlice: StateCreator<transactionSlice, [], [], transactionSlice> = (set, get) => ({
     transactions: (() => {
         const saved = JSON.parse(localStorage.getItem("transactions") || "[]") as Transaction[];
         return saved.map((t) => ({ ...t, batchId: t.batchId ?? t.id ?? crypto.randomUUID() }));
@@ -94,7 +97,6 @@ export const createTransactionSlice: StateCreator<transactionSlice, [], [], tran
     setRepeatIntervalDays: (value: number) => set({ repeatIntervalDays: value }),
     setRepeatOccurrences: (value: number) => set({ repeatOccurrences: value }),
 
-    // Add transaction
     addTransaction: (transaction: Transaction) => {
         set((state) => {
             const index = state.transactions.findIndex(t => t.date > transaction.date);
@@ -112,7 +114,6 @@ export const createTransactionSlice: StateCreator<transactionSlice, [], [], tran
         });
     },
 
-    // Add transaction batch
     addTransactionBatch: (transactions: Transaction[]) => {
         set((state) => {
             const newTransactions = [...state.transactions, ...transactions].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -123,11 +124,20 @@ export const createTransactionSlice: StateCreator<transactionSlice, [], [], tran
         });
     },
 
-    // Remove transaction
-    removeTransaction: (transaction: Transaction) => {
+    removeTransaction: async (transaction: Transaction) => {
+        const email = localStorage.getItem("userEmail");
+
+        if (email && transaction.committed) {
+            try {
+                await removeTransaction(transaction.id);
+            } catch (err) {
+                console.error("Failed to delete transaction from DB", err);
+            }
+        }
+
         set((state) => {
             const newTransactions = state.transactions.filter((t) => t.id !== transaction.id);
-            saveTransactions(newTransactions);
+            saveTransactions(newTransactions, email);
             
             let nextDraftBatchCount = state.draftBatchCount;
             if (transaction.batchId === "Preview") {
@@ -152,11 +162,25 @@ export const createTransactionSlice: StateCreator<transactionSlice, [], [], tran
         });
     },
 
-    // Remove transaction batch
-    removeTransactionBatch: (batchId: string) => {
+    removeTransactionBatch: async (batchId: string) => {
+        const email = localStorage.getItem("userEmail");
+        const toRemove = get().transactions.filter(t => t.batchId === batchId);
+
+        if (email) {
+            await Promise.all(toRemove.map(async (t) => {
+                if (t.committed) {
+                    try {
+                        await removeTransaction(t.id);
+                    } catch (err) {
+                        console.error("Failed to delete batch transaction from DB", err);
+                    }
+                }
+            }));
+        }
+
         set((state) => {
             const newTransactions = state.transactions.filter((t) => t.batchId !== batchId);
-            saveTransactions(newTransactions);
+            saveTransactions(newTransactions, email);
             
             let nextDraftBatchCount = state.draftBatchCount;
             if (batchId === "Preview") {
@@ -179,25 +203,77 @@ export const createTransactionSlice: StateCreator<transactionSlice, [], [], tran
         });
     },
 
-    // Commit transaction
-    commitTransaction: (transaction: Transaction) => {
-        set((state) => {
-            const newBatchId = crypto.randomUUID();
-            const newTransactions = state.transactions.map((t) => t.id === transaction.id ? { ...t, batchId: newBatchId, committed: true } : t);
-            saveTransactions(newTransactions);
-            return { 
-                transactions: newTransactions,
-                draftBatchCount: state.draftBatchCount - 1 
-            };
-        });
+    commitTransaction: async (transaction: Transaction) => {
+        const email = localStorage.getItem("userEmail");
+        const currentExperiment = (get() as any).currentExperiment || "Default";
+        
+        if (email) {
+            const { date, type, id, batchId, committed, ...rawDetails } = transaction;
+            let ticker = null;
+            
+            if ('ticker' in rawDetails) {
+                ticker = (rawDetails as any).ticker;
+                delete (rawDetails as any).ticker;
+            }
+
+            try {
+                const newBatchId = crypto.randomUUID();
+                await fetchCreateTransaction(email, currentExperiment, id, ticker, date, type, rawDetails, newBatchId);
+           
+                set((state) => {
+                    
+                    const newTransactions = state.transactions.map((t) => 
+                        t.id === transaction.id ? { ...t, batchId: newBatchId, committed: true } : t
+                    );
+                    
+                    saveTransactions(newTransactions, email);
+                    
+                    return { 
+                        transactions: newTransactions,
+                        draftBatchCount: state.draftBatchCount - 1 
+                    };
+                });
+           
+            } catch (err) {
+                console.error("Failed to commit transaction to DB", err);
+            }
+        }
     },
 
-    // Commit transaction batch
-    commitTransactionBatch: (batchId: string) => {
+    commitTransactionBatch: async (batchId: string) => {
+        const email = localStorage.getItem("userEmail");
+        const currentExperiment = (get() as any).currentExperiment || "Default";
+        const newBatchId = crypto.randomUUID();
+        
+        const toCommit = get().transactions.filter(t => t.batchId === batchId);
+
+        if (email) {
+            await Promise.all(toCommit.map(async (t) => {
+                const { date, type, id, batchId: currentBatchId, committed, ...rawDetails } = t;
+                let ticker = null;
+                
+                if ('ticker' in rawDetails) {
+                    ticker = (rawDetails as any).ticker;
+                    delete (rawDetails as any).ticker;
+                }
+
+                try {
+                    await fetchCreateTransaction(email, currentExperiment, id, ticker, date, type, rawDetails, newBatchId);
+                } catch (err) {
+                    console.error("Failed to commit batch transaction", err);
+                }
+            }));
+        }
+
         set((state) => {
-            const newBatchId = crypto.randomUUID();
-            const newTransactions = state.transactions.map((t) => t.batchId === batchId ? { ...t, batchId: newBatchId, committed: true } : t);
-            saveTransactions(newTransactions);
+            const newTransactions = state.transactions.map((t) => 
+                t.batchId === batchId 
+                    ? { ...t, batchId: newBatchId, committed: true } 
+                    : t
+            );
+            
+            saveTransactions(newTransactions, email);
+            
             return { transactions: newTransactions, draftBatchCount: 0 };
         });
     },

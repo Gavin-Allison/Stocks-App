@@ -11,12 +11,12 @@ router.get('/:experiment_name/data', async (req, res) => {
     try {
         // Get the transactions linked to this tab
         const txQuery = `
-            SELECT t.id, t.ticker, t.transaction_date, t.type, t.details
+            SELECT t.id, t.ticker, t.transaction_date, t.type, t.details, t.batch_id
             FROM transactions t
             JOIN experiments e ON t.experiment_id = e.id
             JOIN users u ON e.user_id = u.id
             WHERE u.email = $1 AND e.name = $2
-            ORDER BY t.transaction_date DESC;
+            ORDER BY t.transaction_date ASC;
         `;
         
         // Get the active stocks linked to this tab
