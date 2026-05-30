@@ -1,6 +1,7 @@
 import type { StateCreator } from 'zustand';
 import type { Transaction } from '../../types/transaction';
 import { fetchCreateTransaction, removeTransaction } from '../../services/apiDB';
+import { fetchPromptResponse } from '../../services/apiAI';
 
 export interface transactionSlice {
     transactions: Transaction[];
@@ -13,7 +14,7 @@ export interface transactionSlice {
     draftBatchCount: number;
     selectedBatchId: string | null;
     selectedBatchCount: number;
-    tradeOrCash: "TRADE" | "CASH";
+    tradeOrCash: "TRADE" | "CASH" | "AI";
     fixedOrDynamic: "FIXED" | "DYNAMIC";
     repeatScheduleOpen: boolean;
     repeatFrequency: "NONE" | "YEARLY" | "MONTHLY" | "EVERY_X_DAYS";
@@ -21,6 +22,8 @@ export interface transactionSlice {
     repeatOccurrences: number;
     currentPrice: number;
     errorMessage?: string;
+    prompt: string;
+    promptResponse: string;
 
     setNumStocks: (value: number) => void;
     setRepeatScheduleOpen: (open: boolean) => void;
@@ -29,12 +32,14 @@ export interface transactionSlice {
     setCashAmount: (value: number) => void;
     setCashFee: (value: number) => void;
     setSelectedBatchId: (value: string | null) => void;
-    setTradeOrCash: (value: "TRADE" | "CASH") => void;
+    setTradeOrCash: (value: "TRADE" | "CASH" | "AI") => void;
     setFixedOrDynamic: (value: "FIXED" | "DYNAMIC") => void;
     setCurrentPrice: (value: number) => void;
     setRepeatFrequency: (frequency: "NONE" | "YEARLY" | "MONTHLY" | "EVERY_X_DAYS") => void;
     setRepeatIntervalDays: (value: number) => void;
     setRepeatOccurrences: (value: number) => void;
+    setPrompt: (newPrompt: string) => void;
+    getPromptResponse: (prompt: string) => Promise<void>;
 
     addTransaction: (transaction: Transaction) => void;
     addTransactionBatch: (transactions: Transaction[]) => void;
@@ -73,6 +78,8 @@ export const createTransactionSlice: StateCreator<transactionSlice, [], [], tran
     repeatIntervalDays: 1,
     repeatOccurrences: 1,
     errorMessage: undefined,
+    prompt: "",
+    promptResponse: "",
 
     setNumStocks: (value: number) => set({ numStocks: value }),
     setPercentOfCash: (value: number) => set({ percentOfCash: value }),
@@ -89,13 +96,22 @@ export const createTransactionSlice: StateCreator<transactionSlice, [], [], tran
             }
         }); 
     },
-    setTradeOrCash: (value: "TRADE" | "CASH") => set({ tradeOrCash: value }),
+    setTradeOrCash: (value: "TRADE" | "CASH" | "AI") => set({ tradeOrCash: value }),
     setFixedOrDynamic: (value: "FIXED" | "DYNAMIC") => set({ fixedOrDynamic: value }),
     setCurrentPrice: (value: number) => set({ currentPrice: value }),
     setRepeatScheduleOpen: (open: boolean) => set({ repeatScheduleOpen: open }),
     setRepeatFrequency: (frequency) => set({ repeatFrequency: frequency }),
     setRepeatIntervalDays: (value: number) => set({ repeatIntervalDays: value }),
     setRepeatOccurrences: (value: number) => set({ repeatOccurrences: value }),
+
+    setPrompt: (newPrompt: string) => set({ prompt: newPrompt}),
+    getPromptResponse: async (prompt: string) => {
+        const response = await fetchPromptResponse(prompt);
+
+        set({
+            promptResponse: response.color,
+        });
+    },
 
     addTransaction: (transaction: Transaction) => {
         set((state) => {

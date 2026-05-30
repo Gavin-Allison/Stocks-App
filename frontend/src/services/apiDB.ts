@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:3002/api';
+const API_BASE = "http://localhost:3003/api"
 
 /**
  * Creates or logs in a user.

@@ -2,6 +2,7 @@ import { useAppStore } from "../../stores/appStore";
 
 import { TradeInputs } from "../transactions/tradeInputs";
 import { CashInputs } from "../transactions/cashInputs";
+import { PromptInputs } from "../transactions/promptInputs";
 import { RepeatSchedule } from "../transactions/repeatSchedule";
 import { LedgerList } from "../transactions/ledgerList";
 
@@ -36,7 +37,9 @@ export const Transactions = () => {
         draftBatchCount,
         selectedBatchId,
         selectedBatchCount,
-        currentPrice
+        currentPrice,
+        prompt,
+        getPromptResponse
     } = useAppStore();
 
     const addMonths = (dateValue: Date, months: number) => {
@@ -108,6 +111,7 @@ export const Transactions = () => {
                 <h1 className="text-xl font-bold">Transactions</h1>
                 <button onClick={() => setTradeOrCash("TRADE")} className="bg-blue-600 text-white px-5 py-1 rounded hover:bg-blue-700">Trade</button>
                 <button onClick={() => setTradeOrCash("CASH")} className="bg-blue-600 text-white px-5 py-1 rounded hover:bg-blue-700">Cash</button>
+                <button onClick={() => setTradeOrCash("AI")} className="bg-blue-600 text-white px-5 py-1 rounded hover:bg-blue-700">AI</button>
                 <StockDatePicker className="w-38" date={date} onDateChange={setDate} />
             </div>
             
@@ -116,29 +120,50 @@ export const Transactions = () => {
             {/* Input fields for transaction details */}
             <div className="flex flex-col mb-4 w-full border border-gray-400 rounded bg-gray-200 p-4">
                 
-                {tradeOrCash === "TRADE" ? <TradeInputs /> : <CashInputs />}
-
-                <RepeatSchedule />
+                <>
+                    {tradeOrCash === "TRADE" && <> <TradeInputs /> <RepeatSchedule /> </>}
+                    {tradeOrCash === "CASH" && <> <CashInputs /><RepeatSchedule /> </>}
+                    {tradeOrCash === "AI" && <PromptInputs />}
+                </>
 
                 {/* Execution and Submission Management */}
                 <div className="flex items-center justify-between p-2">
                     <div className="flex gap-2">
-                        {tradeOrCash === "CASH" ? (
+                        {tradeOrCash === "AI" ? (
+                            <button
+                                onClick={(() => getPromptResponse(prompt))}
+                                className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                            >
+                                Submit
+                            </button>
+                        ) : tradeOrCash === "CASH" ? (
                             <>
-                                <button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "DEPOSIT", amount: cashAmount, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Deposit</button>
-                                <button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "WITHDRAWAL", amount: cashAmount, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Withdraw</button>
+                                <button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "DEPOSIT", amount: cashAmount, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">
+                                    Deposit
+                                </button>
+                                <button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "WITHDRAWAL", amount: cashAmount, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">
+                                    Withdraw
+                                </button>
                             </>
-                        ) : fixedOrDynamic === "FIXED" ? (
+                    ) : fixedOrDynamic === "FIXED" ? (
                             <>
-                                <button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "FBUY", ticker: selectedStock, amount: numStocks, pricePerUnit: currentPrice, fees: tradeFee })} className="bg-blue-600 text-white w-20 py-1 rounded hover:bg-blue-700">Buy #</button>
-                                <button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "FSELL", ticker: selectedStock, amount: numStocks, pricePerUnit: currentPrice, fees: tradeFee })} className="bg-blue-600 text-white w-20 py-1 rounded hover:bg-blue-700">Sell #</button>
+                                <button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "FBUY", ticker: selectedStock, amount: numStocks, pricePerUnit: currentPrice, fees: tradeFee })} className="bg-blue-600 text-white w-20 py-1 rounded hover:bg-blue-700">
+                                    Buy #
+                                </button>
+                                <button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "FSELL", ticker: selectedStock, amount: numStocks, pricePerUnit: currentPrice, fees: tradeFee })} className="bg-blue-600 text-white w-20 py-1 rounded hover:bg-blue-700">
+                                    Sell #
+                                </button>
                             </>
                         ) : (
                             <>
-                                <button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "DBUY", ticker: selectedStock, value: percentOfCash / 100, fees: tradeFee })} className="bg-blue-600 text-white w-20 py-1 rounded hover:bg-blue-700">Buy %</button>
-                                <button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "DSELL", ticker: selectedStock, value: percentOfCash / 100, fees: cashFee })} className="bg-blue-600 text-white w-20 py-1 rounded hover:bg-blue-700">Sell %</button>
+                                <button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "DBUY", ticker: selectedStock, value: percentOfCash / 100, fees: tradeFee })} className="bg-blue-600 text-white w-20 py-1 rounded hover:bg-blue-700">
+                                    Buy %
+                                </button>
+                                <button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "DSELL", ticker: selectedStock, value: percentOfCash / 100, fees: cashFee })} className="bg-blue-600 text-white w-20 py-1 rounded hover:bg-blue-700">
+                                    Sell %
+                                </button>
                             </>
-                        )}                     
+                        )}                  
                     </div>
 
                     <div className="flex gap-2">
@@ -165,6 +190,6 @@ export const Transactions = () => {
 
             {/* Error Output */}
             <div className="mt-4 text-red-600">{ledger.find(e => e.error)?.errorMessage || "No errors"}</div>
-        </div>
+        </div>    
     );
 };
