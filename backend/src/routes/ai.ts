@@ -6,7 +6,7 @@ const router = Router();
 
 router.post('/ai', async (req, res) => {
     const { prompt } = req.body
-    const response = parsePrompt(prompt)
+    const response = await parsePrompt(prompt)
 
     res.status(200).json(response);
 });
