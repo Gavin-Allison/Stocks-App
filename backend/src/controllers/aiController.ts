@@ -1,3 +1,4 @@
+import { Request, Response } from "express";
 import { GoogleGenAI } from "@google/genai";
 import { z } from "zod";
 
@@ -8,9 +9,6 @@ const model = ai.models;
 
 const transactionListSchema = z.array(transactionSchema);
 
-/**
- * Parses conversational text into a chronological list of validated Transactions.
- */
 interface ParseTransactionPayload {
     promptText: string;
     selectedStock?: string;
@@ -18,7 +16,7 @@ interface ParseTransactionPayload {
     transactionDate?: string;
 }
 
-export const parseTransactionPrompt = async (payload: ParseTransactionPayload): Promise<Transaction[]> => {
+const parseTransactionPrompt = async (payload: ParseTransactionPayload): Promise<Transaction[]> => {
     const { promptText, selectedStock, priceData, transactionDate } = payload;
 
     const priceDataContext = selectedStock && priceData
@@ -83,3 +81,22 @@ export const parseTransactionPrompt = async (payload: ParseTransactionPayload): 
         throw error;
     }
 };
+
+export class AiController {
+    async parseTransactionPrompt(req: Request, res: Response): Promise<void> {
+        try {
+            const { prompt, selectedStock, priceData, date } = req.body;
+            const response = await parseTransactionPrompt({
+                promptText: prompt,
+                selectedStock,
+                priceData,
+                transactionDate: date,
+            });
+            res.status(200).json(response);
+        } catch (error: any) {
+            res.status(500).json({ error: error.message });
+        }
+    }
+}
+
+export const aiController = new AiController();
