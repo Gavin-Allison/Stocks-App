@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useAppStore } from "../../stores/appStore";
 import { StockDatePicker } from "../common/datepicker";
 import { StockPieChart } from "../common/pieChart";
+import { Panel } from "../common/ui";
 
 export const Results = () => {
     const {
@@ -111,7 +112,7 @@ export const Results = () => {
             </div>
 
             {/* Top Box: Portfolio Summary and Balanced Layout segment */}
-            <div className="flex flex-col mb-4 w-full border border-gray-400 rounded bg-gray-200 p-4">
+            <Panel muted className="w-full">
                 
                 {/* Row 1: Original Summary Figures */}
                 <div className="flex flex-row w-full justify-between items-center mb-4">
@@ -162,10 +163,11 @@ export const Results = () => {
                     </div>
 
                 </div>
-            </div>
+            </Panel>
 
             {/* Bottom Box: Holdings List container */}
-            <div className="flex flex-col w-full border border-gray-400 rounded bg-gray-200 flex-1 min-h-0">
+            <Panel>
+            
                 <div className="flex flex-col flex-1 min-h-0">
                     
                     {Object.entries(currentState.assets).length > 0 ? (
@@ -230,7 +232,7 @@ export const Results = () => {
                         </div>
                     )}
                 </div>
-            </div>
+            </Panel>
         </div>
     );
 };

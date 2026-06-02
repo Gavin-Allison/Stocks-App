@@ -1,4 +1,5 @@
 import { useAppStore } from '../../stores/appStore';
+import { Input } from '../common/ui';
 
 const summarizeSchedule = (frequency: string, interval: number, occurrences: number) => {
     if (frequency === 'NONE' || occurrences === 1) {
@@ -59,12 +60,12 @@ export const RepeatSchedule = () => {
                             <div className="flex flex-col gap-1">
                                 <label className="text-sm text-gray-700">Interval</label>
                                 <div className="flex items-center gap-2">
-                                    <input
+                                    <Input
                                         type="number"
                                         min={1}
                                         value={repeatIntervalDays}
                                         onChange={(e) => setRepeatIntervalDays(Math.max(1, Number(e.target.value)))}
-                                        className="w-20 bg-white border border-gray-300 rounded px-2 py-1 text-sm"
+                                        className="w-20"
                                     />
                                     <span className="text-sm text-gray-600">days</span>
                                 </div>
@@ -73,12 +74,12 @@ export const RepeatSchedule = () => {
 
                         <div className="flex flex-col gap-1">
                             <label className="text-sm text-gray-700">Occurrences</label>
-                            <input
+                            <Input
                                 type="number"
                                 min={1}
                                 value={repeatOccurrences}
                                 onChange={(e) => setRepeatOccurrences(Math.max(1, Number(e.target.value)))}
-                                className="w-full bg-white border border-gray-300 rounded px-2 py-1 text-sm"
+                                className="w-full"
                             />
                         </div>
 

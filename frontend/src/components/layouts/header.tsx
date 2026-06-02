@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAppStore } from "../../stores/appStore";
 import Login from "../common/login"
+import { Button } from "../common/ui";
 
 export const Header = () => {
     const [addableStock, setAddableStock] = useState("");
@@ -25,8 +26,10 @@ export const Header = () => {
         <div className="max-w-[var(--layout-width)] h-full flex items-center mx-auto bg-gray-300 border-x border-gray-400 px-4 gap-2">
             <h1 className="text-xl font-bold">Stocks App</h1>
 
+            {/* Experiment menu and selection */}
             <div className="relative">
-                <button
+                <Button
+                    variant="light"
                     onClick={() => {
                         const menu = document.getElementById("experiment-menu");
                         if (menu) menu.classList.toggle("hidden");
@@ -34,7 +37,7 @@ export const Header = () => {
                     className="px-3 py-1 bg-gray-200 border border-gray-400 rounded"
                 >
                     Experiments
-                </button>
+                </Button>
                 <div
                     id="experiment-menu"
                     className="hidden absolute top-full left-0 mt-1 bg-white border border-gray-400 rounded shadow-lg p-2 min-w-[200px] z-10"
@@ -47,7 +50,7 @@ export const Header = () => {
                 >
                     {experiments.map((exp) => (
                         <div key={exp} className="flex items-center justify-between gap-2 p-1">
-                            <button
+                            <Button
                                 disabled={exp === currentExperiment}
                                 onClick={() => {
                                     swapExperiment(exp);
@@ -56,15 +59,17 @@ export const Header = () => {
                                 className="px-2 py-1 rounded transition-colors disabled:bg-blue-100 disabled:text-blue-800 disabled:font-bold disabled:cursor-not-allowed hover:bg-gray-100"
                             >
                                 {exp}
-                            </button>
-                            <button 
+                            </Button>
+                            <Button
                                 onClick={() => removeExperiment(exp)}
-                                className="bg-red-100 text-red-600 hover:bg-red-200 px-3 py-1 rounded transition-colors text-sm font-medium"
+                                className="px-3"
+                                variant="danger"
                             >
                                 x
-                            </button>
+                            </Button>
                         </div>
                     ))}
+                    {/* Add new experiment input */}
                     <div className="mt-2 pt-2 border-t flex gap-1">
                         <input
                             type="text"
@@ -73,7 +78,7 @@ export const Header = () => {
                             placeholder="New name..."
                             className="border border-gray-400 px-1 py-1 rounded w-full text-sm"
                         />
-                        <button
+                        <Button
                             disabled={!newExpName.trim() || experiments.includes(newExpName.trim())}
                             onClick={(e) => {
                                 e.preventDefault();
@@ -81,14 +86,16 @@ export const Header = () => {
                                 setNewExpName("");
                                 document.getElementById("experiment-menu")?.focus();
                             }}
-                            className="bg-green-600 text-white px-2 py-1 rounded text-sm disabled:bg-gray-400"
+                            className="px-2"
+                            variant="success"
                         >
                             Add
-                        </button>
+                        </Button>
                     </div>
                 </div>
             </div>
 
+            {/* Add stock input */}
             <input
                 type="text"
                 value={addableStock}
@@ -97,20 +104,18 @@ export const Header = () => {
                 className="border border-gray-400 px-2 py-1 rounded"
             />
             
-            <button
-                onClick={handleAdd}
-                className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
-            >
-                Add Stock
-            </button>
+            <Button onClick={handleAdd} className="px-3">Add Stock</Button>
 
+            {/* Spacer */}
             <div className="flex-grow"></div>
 
+            {/* Navigation buttons */}
             <div className="flex gap-2">
                 <button onClick={() => setReportTab("Transactions")} className="px-2 py-1 hover:bg-gray-400 rounded">Transactions</button>
                 <button onClick={() => setReportTab("Results")} className="px-2 py-1 hover:bg-gray-400 rounded">Results</button>
             </div>
 
+            {/* Authentication */}
             <Login></Login>
         </div>
     );

@@ -7,6 +7,7 @@ import { RepeatSchedule } from "../transactions/repeatSchedule";
 import { LedgerList } from "../transactions/ledgerList";
 
 import { StockDatePicker } from "../common/datepicker";
+import { Button, Panel } from "../common/ui";
 
 import type { Transaction } from "../../types/transactionType";
 
@@ -107,18 +108,20 @@ export const Transactions = () => {
         <div className="flex flex-col w-full h-full p-4">
 
             {/* Header with date picker */}
-            <div className="flex items-center justify-between"> 
-                <h1 className="text-xl font-bold">Transactions</h1>
-                <button onClick={() => setTradeOrCash("TRADE")} className="bg-blue-600 text-white px-5 py-1 rounded hover:bg-blue-700">Trade</button>
-                <button onClick={() => setTradeOrCash("CASH")} className="bg-blue-600 text-white px-5 py-1 rounded hover:bg-blue-700">Cash</button>
-                <button onClick={() => setTradeOrCash("AI")} className="bg-blue-600 text-white px-5 py-1 rounded hover:bg-blue-700">AI</button>
-                <StockDatePicker className="w-38" date={date} onDateChange={setDate} />
-            </div>
+                        <div className="flex items-center justify-between"> 
+                                <h1 className="text-xl font-bold">Transactions</h1>
+                                <div className="flex gap-2">
+                                    <Button onClick={() => setTradeOrCash("TRADE")} className="px-5">Trade</Button>
+                                    <Button onClick={() => setTradeOrCash("CASH")} className="px-5">Cash</Button>
+                                    <Button onClick={() => setTradeOrCash("AI")} className="px-5">AI</Button>
+                                </div>
+                                <StockDatePicker className="w-38" date={date} onDateChange={setDate} />
+                        </div>
             
             <div className="flex flex-wrap gap-2 mb-4"></div>
 
             {/* Input fields for transaction details */}
-            <div className="flex flex-col mb-4 w-full border border-gray-400 rounded bg-gray-200 p-4">
+            <Panel muted className="w-full">
                 
                 <>
                     {tradeOrCash === "TRADE" && <> <TradeInputs /> <RepeatSchedule /> </>}
@@ -130,60 +133,31 @@ export const Transactions = () => {
                 <div className="flex items-center justify-between p-2">
                     <div className="flex gap-2">
                         {tradeOrCash === "AI" ? (
-                            <button
-                                onClick={(() => getPromptResponse(prompt))}
-                                className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
-                            >
-                                Submit
-                            </button>
+                            <Button onClick={() => getPromptResponse(prompt)}>Submit</Button>
                         ) : tradeOrCash === "CASH" ? (
                             <>
-                                <button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "DEPOSIT", amount: cashAmount, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">
-                                    Deposit
-                                </button>
-                                <button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "WITHDRAWAL", amount: cashAmount, fees: cashFee })} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">
-                                    Withdraw
-                                </button>
+                                <Button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "DEPOSIT", amount: cashAmount, fees: cashFee })}>Deposit</Button>
+                                <Button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "WITHDRAWAL", amount: cashAmount, fees: cashFee })}>Withdraw</Button>
                             </>
                     ) : fixedOrDynamic === "FIXED" ? (
                             <>
-                                <button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "FBUY", ticker: selectedStock, amount: numStocks, pricePerUnit: currentPrice, fees: tradeFee })} className="bg-blue-600 text-white w-20 py-1 rounded hover:bg-blue-700">
-                                    Buy #
-                                </button>
-                                <button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "FSELL", ticker: selectedStock, amount: numStocks, pricePerUnit: currentPrice, fees: tradeFee })} className="bg-blue-600 text-white w-20 py-1 rounded hover:bg-blue-700">
-                                    Sell #
-                                </button>
+                                <Button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "FBUY", ticker: selectedStock, amount: numStocks, pricePerUnit: currentPrice, fees: tradeFee })} className="w-20">Buy #</Button>
+                                <Button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "FSELL", ticker: selectedStock, amount: numStocks, pricePerUnit: currentPrice, fees: tradeFee })} className="w-20">Sell #</Button>
                             </>
                         ) : (
                             <>
-                                <button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "DBUY", ticker: selectedStock, value: percentOfCash / 100, fees: tradeFee })} className="bg-blue-600 text-white w-20 py-1 rounded hover:bg-blue-700">
-                                    Buy %
-                                </button>
-                                <button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "DSELL", ticker: selectedStock, value: percentOfCash / 100, fees: cashFee })} className="bg-blue-600 text-white w-20 py-1 rounded hover:bg-blue-700">
-                                    Sell %
-                                </button>
+                                <Button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "DBUY", ticker: selectedStock, value: percentOfCash / 100, fees: tradeFee })} className="w-20">Buy %</Button>
+                                <Button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "DSELL", ticker: selectedStock, value: percentOfCash / 100, fees: cashFee })} className="w-20">Sell %</Button>
                             </>
                         )}                  
                     </div>
 
                     <div className="flex gap-2">
-                        <button 
-                            onClick={() => commitTransactionBatch("Preview")}
-                            disabled={draftBatchCount === 0}
-                            className="bg-green-600 disabled:bg-gray-400 text-white px-2 py-1 rounded hover:bg-green-700"
-                        >
-                            Submit Pending ({draftBatchCount})
-                        </button>
-                        <button
-                            onClick={() => removeTransactionBatch(selectedBatchId!)}
-                            disabled={selectedBatchCount === 0}
-                            className="bg-red-600 disabled:bg-gray-400 text-white px-2 py-1 rounded hover:bg-red-700"
-                        >
-                            Remove Batch ({selectedBatchCount})
-                        </button>
+                        <Button onClick={() => commitTransactionBatch("Preview")} className="px-2" disabled={draftBatchCount === 0} variant="success">Submit Pending ({draftBatchCount})</Button>
+                        <Button onClick={() => removeTransactionBatch(selectedBatchId!)} className="px-2" disabled={selectedBatchCount === 0} variant="danger">Remove Batch ({selectedBatchCount})</Button>
                     </div>
                 </div>
-            </div>
+            </Panel>
 
             {/* Ledger */}
             <LedgerList ledger={ledger} />

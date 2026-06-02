@@ -1,4 +1,5 @@
 import { useAppStore } from '../../stores/appStore';
+import { Input } from '../common/ui';
 
 export const PromptInputs = () => {
     const {
@@ -8,11 +9,11 @@ export const PromptInputs = () => {
     } = useAppStore(); 
     return (
         <div>
-            <input
-                type="string"
+            <Input
+                type="text"
                 value={prompt}
                 onChange={(e) => setPrompt(String(e.target.value))}
-                className="w-24 bg-white border border-gray-400 rounded ml-2"
+                className="w-24 ml-2"
             />
             {promptResponse}
         </div>

@@ -1,5 +1,6 @@
 import { useAppStore } from '../../stores/appStore';
 import { useEffect } from 'react';
+import { Input, Button } from '../common/ui';
 
 export const TradeInputs = () => {
     const { 
@@ -55,24 +56,24 @@ export const TradeInputs = () => {
                 {fixedOrDynamic === "FIXED" ? (
                     <>
                         <h1 className="min-w-[120px]">Number of Stocks:</h1>
-                        <input
+                        <Input
                             type="number"
                             value={numStocks}
                             onChange={(e) => setNumStocks(Number(e.target.value))}
-                            className="w-16 bg-white border border-gray-400 rounded"
+                            className="w-16"
                         />
-                        <button onClick={() => setFixedOrDynamic("DYNAMIC")} className="w-6 bg-gray-300 rounded hover:bg-gray-400">#</button>
+                        <Button onClick={() => setFixedOrDynamic("DYNAMIC")} className="w-6" variant="muted">#</Button>
                     </>
                 ) : (
                     <>
                         <h1 className="min-w-[140px]">Percentage of Cash:</h1>
-                        <input
+                        <Input
                             type="number"
                             value={percentOfCash}
                             onChange={(e) => setPercentOfCash(Number(e.target.value))}
-                            className="w-16 bg-white border border-gray-400 rounded"
+                            className="w-16"
                         />
-                        <button onClick={() => setFixedOrDynamic("FIXED")} className="w-6 bg-gray-300 rounded hover:bg-gray-400">%</button>
+                        <Button onClick={() => setFixedOrDynamic("FIXED")} className="w-6" variant="muted">%</Button>
                     </>
                 )}
             </div>
@@ -80,11 +81,11 @@ export const TradeInputs = () => {
             {/* Trade Fee */}
             <div className="flex items-center gap-2 justify-self-end">
                 <h1>Trade Fee:</h1>
-                <input
+                <Input
                     type="number"
                     value={tradeFee}
                     onChange={(e) => setTradeFee(Number(e.target.value))}
-                    className="w-16 bg-white border border-gray-400 rounded"
+                    className="w-16"
                 />
             </div>
         </div>

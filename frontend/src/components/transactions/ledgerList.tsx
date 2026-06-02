@@ -1,4 +1,5 @@
 import { useAppStore } from '../../stores/appStore';
+import { Button, Panel } from '../common/ui';
 import type { LedgerEntry } from '../../types/ledgerEntry';
 
 export const LedgerList = ({ ledger }: { ledger: LedgerEntry[] }) => {
@@ -31,7 +32,7 @@ export const LedgerList = ({ ledger }: { ledger: LedgerEntry[] }) => {
     console.log("Current Ledger Data:", ledger);
 
     return (
-        <div className="flex flex-col w-full h-full overflow-y-scroll border border-gray-400 rounded bg-gray-200">
+        <Panel muted className="h-full overflow-y-scroll p-0">
             <ul className="w-full pb-48">
                 {ledger.map((entry) => {
                     const isDraft = !entry.transaction.committed;
@@ -82,33 +83,36 @@ export const LedgerList = ({ ledger }: { ledger: LedgerEntry[] }) => {
                             <div className="flex flex-col gap-2 mt-2 md:mt-0 justify-end w-full md:w-24 md:col-span-3 md:justify-self-end">
                                 {/* For committed transactions, show Select/Clear Batch button. For drafts, show Commit button. Always show Remove button. */}
                                 {!isDraft ? (
-                                    <button
+                                    <Button
                                         onClick={() => setSelectedBatchId(isBatchHighlighted ? null : entry.transaction.batchId)}
-                                        className="px-3 py-1 bg-white text-gray-700 rounded hover:bg-gray-100 transition-colors text-sm font-medium"
+                                        variant="light"
+                                        className="px-3"
                                     >
                                         {isBatchHighlighted ? 'Clear' : 'Select'}
-                                    </button>
+                                    </Button>
                                 ) : (
-                                    <button
+                                    <Button
                                         onClick={() => commitTransaction(entry.transaction)}
-                                        className="px-3 py-1 bg-green-100 text-green-600 rounded hover:bg-green-200 transition-colors text-sm font-medium"
+                                        variant="success"
+                                        className="px-3"
                                     >
                                         Commit
-                                    </button>
+                                    </Button>
                                 )}
 
                                 {/* Remove transaction button */}
-                                <button
+                                <Button
                                     onClick={() => removeTransaction(entry.transaction)}
-                                    className="bg-red-100 text-red-600 hover:bg-red-200 px-3 py-1 rounded transition-colors text-sm font-medium"
+                                    variant="danger"
+                                    className="px-3"
                                 >
                                     Remove
-                                </button>
+                                </Button>
                             </div>
                         </li>
                     );
                 })}
             </ul>
-        </div>
+        </Panel>
     );
 };

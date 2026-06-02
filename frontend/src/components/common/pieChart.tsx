@@ -22,6 +22,7 @@ export const StockPieChart = ({
     const totalValue = Object.values(assets).reduce((a, b) => a + b, 0);
 
     return (
+        // Pie chart render
         <PieChart
             series={[
                 {

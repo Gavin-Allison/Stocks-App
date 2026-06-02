@@ -30,6 +30,7 @@ export const ChartComponent = ({
     const volumeSeriesRef = useRef<any>(null);
     const isAdjustingRef = useRef(false);
 
+    // Chart initialization and primary effects
     useEffect(() => {
         if (!chartContainerRef.current) return;
 
@@ -172,6 +173,7 @@ export const ChartComponent = ({
         };
     }, [setDate, setSelectedStock, symbol, data, backgroundColor, lineColor, textColor]);
 
+    // Update series and volume when data or transactions change
     useEffect(() => {
         if (seriesRef.current && data && data.length > 0) {
             seriesRef.current.setData(data);
@@ -232,6 +234,7 @@ export const ChartComponent = ({
         }
     }, [data, transactions, symbol]);
 
+    // Track and render vertical line for selected date
     useEffect(() => {
         if (!chartRef.current || !date) {
             setLineX(null);
@@ -258,6 +261,7 @@ export const ChartComponent = ({
 
     const maxScroll = Math.max(0, (data?.length || 0) - visibleSize);
 
+    // Render controls and chart container
     return (
         <div className="relative w-full h-full">
             {maxScroll > 0 && (

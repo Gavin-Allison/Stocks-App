@@ -6,6 +6,7 @@ import dayjs from 'dayjs';
 export const StockDatePicker = ({ className, date, onDateChange }: { className?: string; date: string; onDateChange: (date: string) => void }) => {
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
+            {/* Date picker input */}
             <DatePicker
                 key={date}
                 value={date ? dayjs(date) : null}
