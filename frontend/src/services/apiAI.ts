@@ -1,13 +1,26 @@
-const API_BASE = "http://localhost:3003/api"
+const API_BASE = "http://localhost:3002/api"
+
+export interface PromptRequest {
+    prompt: string;
+    selectedStock?: string;
+    priceData?: Record<string, number>;
+    date?: string;
+}
 
 /**
  * Sends ai prompt to backend
  */
-export const fetchPromptResponse = async (prompt: string) => {
+export const fetchPromptResponse = async (payload: PromptRequest) => {
     const response = await fetch(`${API_BASE}/ai`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify(payload),
     });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`AI request failed: ${response.status} ${response.statusText} - ${errorText}`);
+    }
+
     return response.json();
 };

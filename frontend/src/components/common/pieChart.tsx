@@ -1,5 +1,5 @@
 import { PieChart } from '@mui/x-charts/PieChart';
-import type { Stock } from '../../types/stock'
+import type { Stock } from '../../types/stockType'
 
 export const StockPieChart = ({ 
     assets, 

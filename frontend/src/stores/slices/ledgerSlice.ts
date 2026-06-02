@@ -1,6 +1,6 @@
 import type { StateCreator } from 'zustand';
 import type { LedgerEntry } from '../../types/ledgerEntry';
-import type { Transaction } from '../../types/transaction';
+import type { Transaction } from '../../types/transactionType';
 import type { mainSlice } from './mainSlice';
 import type { transactionSlice } from './transactionSlice';
 

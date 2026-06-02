@@ -1,4 +1,4 @@
-import type { Transaction } from "../types/transaction";
+import type { Transaction } from "../types/transactionType";
 import * as API from './apiDB';
 
 /**

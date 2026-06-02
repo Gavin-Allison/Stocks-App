@@ -8,7 +8,7 @@ import { LedgerList } from "../transactions/ledgerList";
 
 import { StockDatePicker } from "../common/datepicker";
 
-import type { Transaction } from "../../types/transaction";
+import type { Transaction } from "../../types/transactionType";
 
 export const Transactions = () => {
     const { 

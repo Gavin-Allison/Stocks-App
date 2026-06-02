@@ -22,4 +22,4 @@ App.use('/api', aiRoutes)
 App.use('/api/experiments', experimentRoutes);
 App.use('/api/transactions', transactionRoutes);
 
-App.listen(3003, () => console.log('Proxy running on port 3003'));
+App.listen(3002, () => console.log('Proxy running on port 3002'));

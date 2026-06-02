@@ -1,7 +1,7 @@
 import type { StateCreator } from 'zustand';
 import { FetchStockData } from '../../services/getStockData';
-import type { Stock } from '../../types/stock';
-import type { Transaction } from '../../types/transaction';
+import type { Stock } from '../../types/stockType';
+import type { Transaction } from '../../types/transactionType';
 import { loadDashboard, addStockToTab } from '../../services/getDB';
 import { removeStockFromTab } from '../../services/apiDB';
 

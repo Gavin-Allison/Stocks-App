@@ -1,7 +1,14 @@
 import type { StateCreator } from 'zustand';
-import type { Transaction } from '../../types/transaction';
+import type { Transaction } from '../../types/transactionType';
 import { fetchCreateTransaction, removeTransaction } from '../../services/apiDB';
 import { fetchPromptResponse } from '../../services/apiAI';
+
+// Tell this file what external fields it's allowed to expect
+interface MainSliceDependencies {
+    selectedStock: string;
+    date: string;
+    priceData: { symbol: string; data: Record<string, number> }[];
+}
 
 export interface transactionSlice {
     transactions: Transaction[];
@@ -38,13 +45,13 @@ export interface transactionSlice {
     setRepeatFrequency: (frequency: "NONE" | "YEARLY" | "MONTHLY" | "EVERY_X_DAYS") => void;
     setRepeatIntervalDays: (value: number) => void;
     setRepeatOccurrences: (value: number) => void;
-    setPrompt: (newPrompt: string) => void;
-    getPromptResponse: (prompt: string) => Promise<void>;
 
     addTransaction: (transaction: Transaction) => void;
     addTransactionBatch: (transactions: Transaction[]) => void;
     removeTransaction: (transaction: Transaction) => Promise<void>;
     removeTransactionBatch: (batchId: string) => Promise<void>;
+    setPrompt: (newPrompt: string) => void;
+    getPromptResponse: (prompt: string) => Promise<void>;
     commitTransaction: (transaction: Transaction) => Promise<void>;
     commitTransactionBatch: (batchId: string) => Promise<void>;
 }
@@ -56,7 +63,7 @@ const saveTransactions = (transactions: Transaction[], email: string | null) => 
     }
 };
 
-export const createTransactionSlice: StateCreator<transactionSlice, [], [], transactionSlice> = (set, get) => ({
+export const createTransactionSlice: StateCreator<transactionSlice & MainSliceDependencies, [], [], transactionSlice> = (set, get) => ({
     transactions: (() => {
         const saved = JSON.parse(localStorage.getItem("transactions") || "[]") as Transaction[];
         return saved.map((t) => ({ ...t, batchId: t.batchId ?? t.id ?? crypto.randomUUID() }));
@@ -103,15 +110,6 @@ export const createTransactionSlice: StateCreator<transactionSlice, [], [], tran
     setRepeatFrequency: (frequency) => set({ repeatFrequency: frequency }),
     setRepeatIntervalDays: (value: number) => set({ repeatIntervalDays: value }),
     setRepeatOccurrences: (value: number) => set({ repeatOccurrences: value }),
-
-    setPrompt: (newPrompt: string) => set({ prompt: newPrompt}),
-    getPromptResponse: async (prompt: string) => {
-        const response = await fetchPromptResponse(prompt);
-
-        set({
-            promptResponse: response.color,
-        });
-    },
 
     addTransaction: (transaction: Transaction) => {
         set((state) => {
@@ -217,6 +215,53 @@ export const createTransactionSlice: StateCreator<transactionSlice, [], [], tran
                 selectedBatchCount: nextSelectedBatchCount
             };
         });
+    },
+
+
+    setPrompt: (newPrompt: string) => set({ prompt: newPrompt}),
+    getPromptResponse: async (prompt: string) => {
+        try {
+            const { 
+                selectedStock, 
+                date, 
+                priceData, 
+                addTransaction, 
+                addTransactionBatch 
+            } = get();
+            
+            const stockData = priceData.find((p) => p.symbol === selectedStock)?.data ?? {};
+            const response = await fetchPromptResponse({
+                prompt,
+                selectedStock,
+                priceData: stockData,
+                date,
+            });
+
+            console.log("AI Response:", response);
+
+            if (!Array.isArray(response)) {
+                set({ promptResponse: `AI did not return a transaction list: ${JSON.stringify(response)}` });
+                return;
+            }
+
+            const normalizedTransactions = response.map((t) => ({
+                ...t,
+                id: t.id ?? crypto.randomUUID(),
+                batchId: t.batchId ?? "Preview",
+                committed: false,
+            }));
+
+            if (normalizedTransactions.length === 1) {
+                addTransaction(normalizedTransactions[0]);
+            } else if (normalizedTransactions.length > 1) {
+                addTransactionBatch(normalizedTransactions);
+            }
+
+            set({ promptResponse: `AI added ${normalizedTransactions.length} draft transaction(s).` });
+        } catch (err) {
+            console.error("Failed to fetch AI transactions:", err);
+            set({ promptResponse: err instanceof Error ? err.message : String(err) });
+        }
     },
 
     commitTransaction: async (transaction: Transaction) => {

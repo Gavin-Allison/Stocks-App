@@ -1,12 +1,17 @@
 import { Router } from "express";
 
-import { parsePrompt } from "../controllers/aiParsePrompt"
+import { parseTransactionPrompt } from "../controllers/aiParsePrompt"
 
 const router = Router();
 
 router.post('/ai', async (req, res) => {
-    const { prompt } = req.body
-    const response = await parsePrompt(prompt)
+    const { prompt, selectedStock, priceData, date } = req.body;
+    const response = await parseTransactionPrompt({
+        promptText: prompt,
+        selectedStock,
+        priceData,
+        transactionDate: date,
+    });
 
     res.status(200).json(response);
 });
