@@ -134,7 +134,7 @@ export const Transactions = () => {
                 
                 <>
                     {tradeOrCash === "TRADE" && <> <TradeInputs /> <RepeatSchedule /> </>}
-                    {tradeOrCash === "CASH" && <> <CashInputs /><RepeatSchedule /> </>}
+                    {tradeOrCash === "CASH" && <> <CashInputs /> <RepeatSchedule /> </>}
                     {tradeOrCash === "AI" && <PromptInputs />}
                 </>
 
@@ -142,11 +142,11 @@ export const Transactions = () => {
                 <div className="flex items-center justify-between p-2">
                     <div className="flex gap-2">
                         {tradeOrCash === "AI" ? (
-                            <Button onClick={() => getPromptResponse(prompt)}>Submit</Button>
+                            <Button onClick={() => getPromptResponse(prompt)} className="w-20">Submit</Button>
                         ) : tradeOrCash === "CASH" ? (
                             <>
-                                <Button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "DEPOSIT", amount: cashAmount, fees: cashFee })}>Deposit</Button>
-                                <Button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "WITHDRAWAL", amount: cashAmount, fees: cashFee })}>Withdraw</Button>
+                                <Button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "DEPOSIT", amount: cashAmount, fees: cashFee })} className="w-20">Deposit</Button>
+                                <Button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "WITHDRAWAL", amount: cashAmount, fees: cashFee })} className="w-20">Withdraw</Button>
                             </>
                     ) : fixedOrDynamic === "FIXED" ? (
                             <>

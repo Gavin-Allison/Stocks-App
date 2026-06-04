@@ -14,7 +14,7 @@ const variantMap: Record<string, string> = {
 }
 
 export default function Button({ variant = 'primary', className = '', children, ...rest }: ButtonProps) {
-  const base = 'rounded px-3 py-1 text-sm font-medium transition-colors'
+  const base = 'rounded text-sm font-medium transition-colors'
   const v = variantMap[variant] || variantMap.primary
   return (
     <button className={[base, v, className].filter(Boolean).join(' ')} {...rest}>

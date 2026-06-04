@@ -34,14 +34,14 @@ export const TradeInputs = () => {
     const onTradeFee = useCallback((e: any) => setTradeFee(Number(e.target.value)), [setTradeFee]);
 
     return (
-        <div className={`grid grid-cols-2 gap-2 p-2 ${theme.text.secondary} w-full items-center`}>
+        <div className={`grid grid-cols-2 gap-2 m-2 ${theme.text.secondary} w-full items-center`}>
             {/* Row 1: Stock Selection and Price */}
             <div className="flex items-center gap-2">
                 <h1>Select Stock:</h1>
                 <select 
                     value={selectedStock} 
                     onChange={onSelectStock} 
-                    className={`${theme.input.base} px-1`}
+                    className={`${theme.input.base} px-1 h-[26px]`}
                 >
                     {stocks.map((stock) => (
                         <option key={stock.ticker} value={stock.ticker}>
@@ -59,14 +59,14 @@ export const TradeInputs = () => {
             <div className="flex items-center gap-2">
                 {fixedOrDynamic === "FIXED" ? (
                     <>
-                        <h1 className="min-w-[120px]">Number of Stocks:</h1>
+                        <h1 className="min-w-[140px]">Number of Stocks:</h1>
                         <Input
                             type="number"
                             value={numStocks}
                             onChange={onNumStocks}
                             className="w-16"
                         />
-                        <Button onClick={() => setFixedOrDynamic("DYNAMIC")} className="w-6" variant="muted">#</Button>
+                        <Button onClick={() => setFixedOrDynamic("DYNAMIC")} className="px-2 text-center" variant="muted">#</Button>
                     </>
                 ) : (
                     <>
@@ -77,7 +77,7 @@ export const TradeInputs = () => {
                             onChange={onPercentOfCash}
                             className="w-16"
                         />
-                        <Button onClick={() => setFixedOrDynamic("FIXED")} className="w-6" variant="muted">%</Button>
+                        <Button onClick={() => setFixedOrDynamic("FIXED")} className="px-2 text-center" variant="muted">%</Button>
                     </>
                 )}
             </div>

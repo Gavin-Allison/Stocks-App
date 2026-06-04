@@ -6,9 +6,9 @@ type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
 }
 
 const sizeMap: Record<string, string> = {
-  sm: 'px-1 py-1 text-sm',
-  md: 'px-2 py-1 text-sm',
-  lg: 'px-3 py-2 text-base',
+  sm: 'px-1 text-sm',
+  md: 'px-2 text-base',
+  lg: 'px-3 py-1 text-base',
 }
 
 export default function Input({ inputSize = 'md', className = '', ...rest }: InputProps) {
