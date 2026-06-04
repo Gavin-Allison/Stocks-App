@@ -1,6 +1,7 @@
 import { useEffect, useCallback } from 'react';
 import { useAppStore } from '../../stores/appStore';
 import { Input, Button } from '../common/ui';
+import { theme } from '../../styles/tokens';
 
 export const TradeInputs = () => {
     const stocks = useAppStore(s => s.stocks);
@@ -33,14 +34,14 @@ export const TradeInputs = () => {
     const onTradeFee = useCallback((e: any) => setTradeFee(Number(e.target.value)), [setTradeFee]);
 
     return (
-        <div className="grid grid-cols-2 gap-2 p-2 text-gray-700 w-full items-center">
+        <div className={`grid grid-cols-2 gap-2 p-2 ${theme.text.secondary} w-full items-center`}>
             {/* Row 1: Stock Selection and Price */}
             <div className="flex items-center gap-2">
                 <h1>Select Stock:</h1>
                 <select 
                     value={selectedStock} 
                     onChange={onSelectStock} 
-                    className="bg-white border border-gray-400 rounded px-1"
+                    className={`${theme.input.base} px-1`}
                 >
                     {stocks.map((stock) => (
                         <option key={stock.ticker} value={stock.ticker}>

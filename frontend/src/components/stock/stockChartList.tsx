@@ -2,6 +2,7 @@ import { memo } from "react";
 import { useAppStore } from "../../stores/appStore";
 import { ChartComponent } from "./stockChart";
 import { Panel, Button } from "../common/ui";
+import { theme } from "../../styles/tokens";
 
 // Stock chart item using fetched data
 const StockChart = memo(({
@@ -25,7 +26,7 @@ const StockChart = memo(({
                             style={{ backgroundColor: color }}
                         />
                     )}
-                    <h3 className="font-bold text-xl text-gray-900">{symbol}</h3>
+                    <h3 className={`font-bold text-xl ${theme.text.primary}`}>{symbol}</h3>
                 </div>
                 <Button onClick={() => onRemove(symbol)} variant="danger" className="px-3">Remove</Button>
             </div>
@@ -47,7 +48,7 @@ export const StockChartList = () => {
         <div className="flex flex-col w-full h-full overflow-y-auto pt-4">
             {/* Empty state */}
             {stocks.length === 0 && (
-                <p className="text-gray-500 text-sm italic m-4">No stocks monitored. Add one to get started.</p>
+                <p className={`text-sm italic m-4 ${theme.text.subtle}`}>No stocks monitored. Add one to get started.</p>
             )}
             {/* Stock chart cards */}
             {stocks.map((stock) => {

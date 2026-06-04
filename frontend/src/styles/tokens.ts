@@ -12,7 +12,7 @@ export const theme = {
     border: 'border border-gray-400',
   },
   input: {
-    base: 'bg-white border border-gray-400 rounded',
+    base: 'bg-white border border-gray-400 rounded text-gray-900',
   },
   layout: {
     pageBg: 'bg-gray-200',
@@ -23,7 +23,17 @@ export const theme = {
     sectionBg: 'bg-gray-200',
   },
   text: {
+    primary: 'text-gray-900',
+    strong: 'text-gray-800',
+    secondary: 'text-gray-700',
     muted: 'text-gray-600',
-    default: 'text-gray-900',
+    subtle: 'text-gray-500',
+    danger: 'text-red-600',
+    success: 'text-green-600',
+    inverse: 'text-white',
+  },
+  chart: {
+    background: '#e5e7eb',
+    text: '#000000',
   },
 }

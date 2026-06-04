@@ -3,6 +3,7 @@ import { useAppStore } from "../../stores/appStore";
 import { StockDatePicker } from "../common/datepicker";
 import { StockPieChart } from "../common/pieChart";
 import { Panel } from "../common/ui";
+import { theme } from "../../styles/tokens";
 
 export const Results = () => {
     const date = useAppStore(s => s.date);
@@ -116,22 +117,22 @@ export const Results = () => {
                 <div className="flex flex-row w-full justify-between items-center mb-4">
 
                     <div className="mr-4">
-                        <p className="text-gray-600 text-sm">Portfolio Value</p>
-                        <p className="text-2xl font-bold text-gray-900">
+                        <p className={`${theme.text.muted} text-sm`}>Portfolio Value</p>
+                        <p className={`text-2xl font-bold ${theme.text.primary}`}>
                             ${portfolioValue.toFixed(2)}
                         </p>
                     </div>
 
                     <div className="text-center">
-                        <p className="text-gray-600 text-sm">Total Invested</p>
-                        <p className="text-2xl font-bold text-gray-900">
+                        <p className={`${theme.text.muted} text-sm`}>Total Invested</p>
+                        <p className={`text-2xl font-bold ${theme.text.primary}`}>
                             ${(portfolioValue - currentState.cash).toFixed(2)}
                         </p>
                     </div>
 
                     <div className="text-right ml-4">
-                        <p className="text-gray-600 text-sm">Total Cash</p>
-                        <p className="text-2xl font-bold text-gray-900">
+                        <p className={`${theme.text.muted} text-sm`}>Total Cash</p>
+                        <p className={`text-2xl font-bold ${theme.text.primary}`}>
                             ${currentState.cash.toFixed(2)}
                         </p>
                     </div>
@@ -149,14 +150,14 @@ export const Results = () => {
                     {/* Right Column: Stacked Metric Callouts */}
                     <div className="flex flex-col gap-3 text-right">
                         <div>
-                            <p className="text-gray-600 text-xs font-medium">Highest Concentration</p>
-                            <p className="text-xl font-bold text-gray-800">
+                            <p className={`${theme.text.muted} text-xs font-medium`}>Highest Concentration</p>
+                            <p className={`text-xl font-bold ${theme.text.strong}`}>
                                 {highestConcentration.ticker} ({highestConcentration.percentage.toFixed(0)}%)
                             </p>
                         </div>
                         <div>
-                            <p className="text-gray-600 text-xs font-medium">Total Unique Stocks</p>
-                            <p className="text-xl font-bold text-gray-800">{uniquePositionsCount} Assets</p>
+                            <p className={`${theme.text.muted} text-xs font-medium`}>Total Unique Stocks</p>
+                            <p className={`text-xl font-bold ${theme.text.strong}`}>{uniquePositionsCount} Assets</p>
                         </div>
                     </div>
 
@@ -171,7 +172,7 @@ export const Results = () => {
                     {Object.entries(currentState.assets).length > 0 ? (
                         <>
                             {/* Header Line with perfectly equal spaces between individual titles */}
-                            <div className="flex justify-between items-center font-semibold text-gray-700 px-4 pb-2 mt-2 border-b border-gray-400 flex-shrink-0">
+                            <div className={`flex justify-between items-center font-semibold ${theme.text.secondary} px-4 pb-2 mt-2 border-b border-gray-400 flex-shrink-0`}>
                                 <div className="flex-1 text-left">Asset</div>
                                 <div className="flex-1 text-right">% of Assets</div>
                                 <div className="flex-1 text-right">Shares</div>
@@ -188,7 +189,7 @@ export const Results = () => {
                                     const allocationPercentage = totalAssetValue > 0 ? (value / totalAssetValue) * 100 : 0;
 
                                     return (
-                                        <li key={ticker} className="flex justify-between items-center text-gray-700 py-2 border-b border-gray-300">
+                                        <li key={ticker} className={`flex justify-between items-center ${theme.text.secondary} py-2 border-b border-gray-300`}>
                                             {/* Column 1: Color Dot & Ticker */}
                                             <div className="flex-1 flex items-center gap-2 text-left">
                                                 {stock && (
@@ -197,26 +198,26 @@ export const Results = () => {
                                                         style={{ backgroundColor: stock.color }}
                                                     />
                                                 )}
-                                                <span className="font-medium text-gray-900">{ticker}</span>
+                                                <span className={`font-medium ${theme.text.primary}`}>{ticker}</span>
                                             </div>
 
                                             {/* Column 2: Allocation % */}
-                                            <div className="flex-1 text-right text-gray-600">
+                                            <div className={`flex-1 text-right ${theme.text.muted}`}>
                                                 {allocationPercentage.toFixed(1)}%
                                             </div>
 
                                             {/* Column 3: Shares count */}
-                                            <div className="flex-1 text-right text-gray-600">
+                                            <div className={`flex-1 text-right ${theme.text.muted}`}>
                                                 {shares}
                                             </div>
 
                                             {/* Column 4: Current Price */}
-                                            <div className="flex-1 text-right text-gray-600">
+                                            <div className={`flex-1 text-right ${theme.text.muted}`}>
                                                 ${price.toFixed(2)}
                                             </div>
 
                                             {/* Column 5: Total Value */}
-                                            <div className="flex-1 text-right font-semibold text-gray-900">
+                                            <div className={`flex-1 text-right font-semibold ${theme.text.primary}`}>
                                                 ${value.toFixed(2)}
                                             </div>
                                         </li>
@@ -226,7 +227,7 @@ export const Results = () => {
                         </>
                     ) : (
                         <div className="flex-1 flex flex-col justify-between">
-                            <p className="text-gray-500 text-xs italic m-4">No holdings at this date</p>
+                            <p className={`text-xs italic m-4 ${theme.text.subtle}`}>No holdings at this date</p>
                         </div>
                     )}
                 </div>

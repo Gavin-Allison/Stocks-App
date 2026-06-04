@@ -1,14 +1,15 @@
 import { AreaSeries, HistogramSeries, createChart, ColorType } from 'lightweight-charts';
 import { useEffect, useRef, useState } from 'react';
 import { useAppStore } from '../../stores/appStore';
+import { theme } from '../../styles/tokens';
 
 export const ChartComponent = ({
     data,
     symbol,
     lineColor,
     colors: {
-        backgroundColor = '#e5e7eb',
-        textColor = 'black',
+        backgroundColor = theme.chart.background,
+        textColor = theme.chart.text,
     } = {},
 }: {
     data: any[];
@@ -263,7 +264,7 @@ export const ChartComponent = ({
 
     // Render controls and chart container
     return (
-        <div className="relative bg-gray-200 w-full h-full rounded border border-gray-400 overflow-hidden">
+        <div className={`relative ${theme.panel.muted} w-full h-full rounded ${theme.panel.border} overflow-hidden`}>
             {maxScroll > 0 && (
                 <div className="absolute top-2 left-4 right-24 z-5 pointer-events-none">
                     <input

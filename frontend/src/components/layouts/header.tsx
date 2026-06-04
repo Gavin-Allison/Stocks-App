@@ -23,7 +23,7 @@ export const Header = () => {
 
     return (
         <div className={`max-w-[var(--layout-width)] h-full flex items-center mx-auto ${theme.layout.headerBg} border-x ${theme.layout.headerBorder} px-4 gap-2`}>
-            <h1 className="text-xl font-bold">Stocks App</h1>
+            <h1 className={`text-xl font-bold ${theme.text.secondary}`}>Stocks App</h1>
 
             {/* Experiment menu and selection */}
             <div className="relative">
@@ -33,13 +33,13 @@ export const Header = () => {
                         const menu = document.getElementById("experiment-menu");
                         if (menu) menu.classList.toggle("hidden");
                     }}
-                    className="px-3 py-1 bg-gray-200 border border-gray-400 rounded"
+                    className="px-3"
                 >
                     Experiments
                 </Button>
                 <div
                     id="experiment-menu"
-                    className="hidden absolute top-full left-0 mt-1 bg-white border border-gray-400 rounded shadow-lg p-2 min-w-[200px] z-10"
+                    className={`hidden absolute top-full left-0 mt-1 ${theme.panel.regular} ${theme.panel.border} rounded shadow-lg p-2 min-w-[200px] z-10`}
                     onBlur={(e) => {
                         if (!e.currentTarget.contains(e.relatedTarget)) {
                             e.currentTarget.classList.add("hidden");
@@ -55,7 +55,8 @@ export const Header = () => {
                                     swapExperiment(exp);
                                     document.getElementById("experiment-menu")?.focus();
                                 }}
-                                className="px-2 py-1 rounded transition-colors disabled:bg-blue-100 disabled:text-blue-800 disabled:font-bold disabled:cursor-not-allowed hover:bg-gray-100"
+                                variant="light"
+                                className="px-2"
                             >
                                 {exp}
                             </Button>
@@ -75,7 +76,7 @@ export const Header = () => {
                             value={newExpName}
                             onChange={(e) => setNewExpName(e.target.value)}
                             placeholder="New name..."
-                            className="border border-gray-400 px-1 py-1 rounded w-full text-sm"
+                            className={`${theme.input.base} px-1 py-1 w-full text-sm`}
                         />
                         <Button
                             disabled={!newExpName.trim() || experiments.includes(newExpName.trim())}
@@ -100,10 +101,10 @@ export const Header = () => {
                 value={addableStock}
                 onChange={(e) => setAddableStock(e.target.value)}
                 placeholder="Ticker (e.g. AAPL)"
-                className="text-sm bg-white border border-gray-400 px-2 py-1 rounded"
+                className={`${theme.input.base} text-sm px-2 py-1`}
             />
             
-            <Button onClick={handleAdd} className="px-3">Add Stock</Button>
+            <Button onClick={handleAdd} className="px-3" variant="primary">Add Stock</Button>
 
             {/* Spacer */}
             <div className="flex-grow"></div>

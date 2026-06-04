@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { useAppStore } from '../../stores/appStore';
 import { Input } from '../common/ui';
+import { theme } from '../../styles/tokens';
 
 export const CashInputs = () => {
     const cashAmount = useAppStore(s => s.cashAmount);
@@ -13,7 +14,7 @@ export const CashInputs = () => {
 
     return (
         <div className="flex flex-col gap-2 m-2">
-            <div className="flex text-gray-700">
+            <div className={`flex ${theme.text.secondary}`}>
                 <h1>Cash Amount: </h1>
                 <Input
                     type="number"
@@ -23,7 +24,7 @@ export const CashInputs = () => {
                 />
             </div>
 
-            <div className="flex text-gray-700">
+            <div className={`flex ${theme.text.secondary}`}>
                 <h1>Cash Fee: </h1>
                 <Input
                     type="number"

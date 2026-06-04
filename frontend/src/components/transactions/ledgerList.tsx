@@ -3,6 +3,7 @@ import { FixedSizeList } from 'react-window';
 import type { ListChildComponentProps } from 'react-window';
 import { useAppStore } from '../../stores/appStore';
 import { Button, Panel } from '../common/ui';
+import { theme } from '../../styles/tokens';
 import type { LedgerEntry } from '../../types/ledgerEntry';
 
 const ROW_HEIGHT = 88;
@@ -43,7 +44,7 @@ const Row = React.memo(function Row({ index, style, data }: ListChildComponentPr
             <div className={`grid grid-cols-1 md:grid-cols-12 items-start md:items-center py-2 border-b border-gray-300 ${isDraft ? 'text-red-700 bg-red-50' : ''} ${isBatchHighlighted ? 'text-blue-700 bg-blue-50' : ''}`}>
                 <div className="flex flex-col gap-1 w-full md:col-span-8">
                     <div>
-                        <span className={entry.transaction.date === data.date ? "text-green-600" : ""}>
+                        <span className={entry.transaction.date === data.date ? theme.text.success : ''}>
                             {`${entry.transaction.date}, `}
                         </span>
                         <span>
@@ -60,13 +61,13 @@ const Row = React.memo(function Row({ index, style, data }: ListChildComponentPr
                         {formatTransaction(entry)}
                     </span>
 
-                    <span className={`text-xs ${isDraft ? 'text-red-600' : 'text-gray-500'}`}>
+                    <span className={`text-xs ${isDraft ? theme.text.danger : theme.text.subtle}`}>
                         {`Batch ${entry.transaction.batchId}`}
                     </span>
                 </div>
 
                 <div className="md:col-span-1 flex justify-end md:justify-center w-full md:w-auto">
-                    <span className={`text-lg font-medium ${entry.ignore ? 'text-black visible' : entry.error ? 'text-red-600 visible' : 'invisible'}`}>
+                    <span className={`text-lg font-medium ${entry.ignore ? `${theme.text.primary} visible` : entry.error ? `${theme.text.danger} visible` : 'invisible'}`}>
                         {entry.ignore ? '━' : 'Error'}
                     </span>
                 </div>

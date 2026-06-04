@@ -4,6 +4,7 @@ import { jwtDecode } from 'jwt-decode';
 
 import { handleLogin } from '../../services/getDB';
 import Button from './ui/Button';
+import { theme } from '../../styles/tokens';
 
 interface GoogleJwtPayload {
   name: string;
@@ -49,7 +50,7 @@ export default function Login() {
         <Button
           onClick={handleLogout}
           variant="light"
-          className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200"
+          className={`rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium ${theme.text.secondary} transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200`}
         >
           Sign out
         </Button>
