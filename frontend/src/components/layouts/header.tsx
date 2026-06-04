@@ -111,8 +111,8 @@ export const Header = () => {
 
             {/* Navigation buttons */}
             <div className="flex gap-2">
-                <Button onClick={() => setReportTab("Transactions")} className="px-2" variant="muted">Transactions</Button>
-                <Button onClick={() => setReportTab("Results")} className="px-2" variant="muted">Results</Button>
+                <Button onClick={() => setReportTab("Transactions")} className="px-2" variant="light">Transactions</Button>
+                <Button onClick={() => setReportTab("Results")} className="px-2" variant="light">Results</Button>
             </div>
 
             {/* Authentication */}

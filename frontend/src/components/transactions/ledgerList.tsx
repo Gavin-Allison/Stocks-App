@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState, useEffect, useRef } from 'react';
 import { FixedSizeList } from 'react-window';
 import type { ListChildComponentProps } from 'react-window';
 import { useAppStore } from '../../stores/appStore';
@@ -111,6 +111,24 @@ export const LedgerList = ({ ledger }: { ledger: LedgerEntry[] }) => {
     const commitTransaction = useAppStore(state => state.commitTransaction);
     const date = useAppStore(state => state.date);
 
+    const [containerHeight, setContainerHeight] = useState(300);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!containerRef.current) return;
+        
+        const observer = new ResizeObserver((entries) => {
+            for (let entry of entries) {
+                if (entry.contentRect.height) {
+                    setContainerHeight(entry.contentRect.height);
+                }
+            }
+        });
+        
+        observer.observe(containerRef.current);
+        return () => observer.disconnect();
+    }, []);
+
     const onSelectBatch = useCallback((batchId: string | null) => setSelectedBatchId(batchId), [setSelectedBatchId]);
     const onCommit = useCallback((t: any) => commitTransaction(t), [commitTransaction]);
     const onRemove = useCallback((t: any) => removeTransaction(t), [removeTransaction]);
@@ -122,16 +140,20 @@ export const LedgerList = ({ ledger }: { ledger: LedgerEntry[] }) => {
     }
 
     return (
-        <Panel muted className="h-full p-0">
-            <FixedSizeList
-                height={Math.min(ROW_HEIGHT * ledger.length, window.innerHeight - 500)}
-                itemCount={ledger.length}
-                itemSize={ROW_HEIGHT}
-                width="100%"
-                itemData={itemData}
-            >
-                {Row}
-            </FixedSizeList>
-        </Panel>
+        <div className="relative h-full w-full min-h-0 mb-4">
+            <div ref={containerRef} className="absolute inset-0">
+                <Panel muted className="h-full p-0">
+                    <FixedSizeList
+                        height={containerHeight}
+                        itemCount={ledger.length}
+                        itemSize={ROW_HEIGHT}
+                        width="100%"
+                        itemData={itemData}
+                    >
+                        {Row}
+                    </FixedSizeList>
+                </Panel>
+            </div>
+        </div>
     );
 };
