@@ -23,7 +23,7 @@ export const Header = () => {
 
     return (
         <div className={`max-w-[var(--layout-width)] h-full flex items-center mx-auto ${theme.layout.headerBg} border-x ${theme.layout.headerBorder} px-4 gap-2`}>
-            <h1 className={`text-xl font-bold ${theme.text.secondary}`}>Stocks App</h1>
+            <h1 className={`text-xl font-bold ${theme.text.secondary}`}>Backtesting Stock App</h1>
 
             {/* Experiment menu and selection */}
             <div className="relative">
