@@ -3,6 +3,7 @@ import { useState, useCallback } from "react";
 import { useAppStore } from "../../stores/appStore";
 import Login from "../common/login"
 import { Button } from "../common/ui";
+import { theme } from "../../styles/tokens";
 
 export const Header = () => {
     const [addableStock, setAddableStock] = useState("");
@@ -21,7 +22,7 @@ export const Header = () => {
     }, [addStock, addableStock]);
 
     return (
-        <div className="max-w-[var(--layout-width)] h-full flex items-center mx-auto bg-blue-100 border-x border-gray-400 px-4 gap-2">
+        <div className={`max-w-[var(--layout-width)] h-full flex items-center mx-auto ${theme.layout.headerBg} border-x ${theme.layout.headerBorder} px-4 gap-2`}>
             <h1 className="text-xl font-bold">Stocks App</h1>
 
             {/* Experiment menu and selection */}
@@ -109,8 +110,8 @@ export const Header = () => {
 
             {/* Navigation buttons */}
             <div className="flex gap-2">
-                <button onClick={() => setReportTab("Transactions")} className="px-2 py-1 hover:bg-gray-400 rounded">Transactions</button>
-                <button onClick={() => setReportTab("Results")} className="px-2 py-1 hover:bg-gray-400 rounded">Results</button>
+                <Button onClick={() => setReportTab("Transactions")} className="px-2" variant="muted">Transactions</Button>
+                <Button onClick={() => setReportTab("Results")} className="px-2" variant="muted">Results</Button>
             </div>
 
             {/* Authentication */}

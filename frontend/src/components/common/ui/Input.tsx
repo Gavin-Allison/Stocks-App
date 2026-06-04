@@ -1,4 +1,5 @@
 import React from 'react'
+import { theme } from '../../../styles/tokens'
 
 type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   inputSize?: 'sm' | 'md' | 'lg'
@@ -11,6 +12,5 @@ const sizeMap: Record<string, string> = {
 }
 
 export default function Input({ inputSize = 'md', className = '', ...rest }: InputProps) {
-  const base = 'bg-white border border-gray-400 rounded'
-  return <input className={[base, sizeMap[inputSize], className].filter(Boolean).join(' ')} {...rest} />
+  return <input className={[theme.input.base, sizeMap[inputSize], className].filter(Boolean).join(' ')} {...rest} />
 }

@@ -1,15 +1,16 @@
 import React from 'react'
+import { theme } from '../../../styles/tokens'
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: 'primary' | 'danger' | 'success' | 'muted' | 'light';
 }
 
 const variantMap: Record<string, string> = {
-  primary: 'bg-blue-600 text-white hover:bg-blue-700',
-  danger: 'bg-red-100 text-red-600 hover:bg-red-200',
-  success: 'bg-green-600 text-white hover:bg-green-700',
-  muted: 'bg-gray-200 text-gray-800 hover:bg-gray-300',
-  light: 'bg-white text-gray-700 hover:bg-gray-200',
+  primary: theme.button.primary,
+  danger: theme.button.danger,
+  success: theme.button.success,
+  muted: theme.button.muted,
+  light: theme.button.light,
 }
 
 export default function Button({ variant = 'primary', className = '', children, ...rest }: ButtonProps) {

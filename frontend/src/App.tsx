@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { theme } from "./styles/tokens";
 
 import { useAppStore } from "./stores/appStore";
 
@@ -22,7 +23,7 @@ export default function App() {
         <div className="flex h-screen w-full flex-col" style={layout}>
 
             {/* Header */}
-            <div className="h-16 w-full flex-none border-b border-gray-400">
+            <div className={`h-16 w-full flex-none border-b ${theme.layout.headerBorder}`}>
                 <Header />
             </div>
 
@@ -31,12 +32,12 @@ export default function App() {
                 <main className="max-w-[var(--layout-width)] w-full flex mx-auto">
 
                     {/* Left Column*/}
-                    <section className="flex-1 overflow-y-scroll bg-gray-200 border-r border-gray-400">
+                    <section className={`flex-1 overflow-y-scroll ${theme.layout.sectionBg} border-r ${theme.layout.sectionBorder}`}>
                         <StockChartList />
                     </section>
 
                     {/* Right Column */}
-                    <section className="w-0 @2xl:w-96 @5xl:w-140 flex-none bg-white border-r border-gray-400">
+                    <section className={`w-0 @2xl:w-96 @5xl:w-140 flex-none ${theme.layout.panelBg} border-r ${theme.layout.sectionBorder}`}>
                         <Report />
                     </section>
 
