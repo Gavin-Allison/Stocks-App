@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useCallback } from "react";
 import { useAppStore } from "../../stores/appStore";
 import Login from "../common/login"
 import { Button } from "../common/ui";
@@ -6,21 +7,18 @@ import { Button } from "../common/ui";
 export const Header = () => {
     const [addableStock, setAddableStock] = useState("");
     const [newExpName, setNewExpName] = useState("");
-    const { 
-        experiments, 
-        currentExperiment,
-        addExperiment, 
-        removeExperiment, 
-        swapExperiment, 
+    const experiments = useAppStore(s => s.experiments);
+    const currentExperiment = useAppStore(s => s.currentExperiment);
+    const addExperiment = useAppStore(s => s.addExperiment);
+    const removeExperiment = useAppStore(s => s.removeExperiment);
+    const swapExperiment = useAppStore(s => s.swapExperiment);
+    const addStock = useAppStore(s => s.addStock);
+    const setReportTab = useAppStore(s => s.setReportTab);
 
-        addStock, 
-        setReportTab 
-    } = useAppStore();
-
-    const handleAdd = () => {
+    const handleAdd = useCallback(() => {
         addStock(addableStock);
         setAddableStock("");
-    };
+    }, [addStock, addableStock]);
 
     return (
         <div className="max-w-[var(--layout-width)] h-full flex items-center mx-auto bg-gray-300 border-x border-gray-400 px-4 gap-2">

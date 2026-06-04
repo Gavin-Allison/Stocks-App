@@ -19,7 +19,10 @@ export const ChartComponent = ({
         textColor?: string;
     };
 }) => {
-    const { transactions, date, setDate, setSelectedStock } = useAppStore();
+    const transactions = useAppStore(s => s.transactions);
+    const date = useAppStore(s => s.date);
+    const setDate = useAppStore(s => s.setDate);
+    const setSelectedStock = useAppStore(s => s.setSelectedStock);
     const [lineX, setLineX] = useState<number | null>(null);
     const [scrollPos, setScrollPos] = useState(0);
     const [visibleSize, setVisibleSize] = useState(0);

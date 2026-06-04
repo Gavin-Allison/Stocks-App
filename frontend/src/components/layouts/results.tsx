@@ -5,15 +5,13 @@ import { StockPieChart } from "../common/pieChart";
 import { Panel } from "../common/ui";
 
 export const Results = () => {
-    const {
-        date,
-        setDate,
-        priceData,
-        stocks,
-        getLedger,
-    } = useAppStore();
+    const date = useAppStore(s => s.date);
+    const setDate = useAppStore(s => s.setDate);
+    const priceData = useAppStore(s => s.priceData);
+    const stocks = useAppStore(s => s.stocks);
+    const getLedger = useAppStore(s => s.getLedger);
 
-    const ledger = getLedger();
+    const ledger = useMemo(() => getLedger(), [getLedger]);
 
     const ledgerAtDate = useMemo(() => {
         return ledger.filter(entry => entry.transaction.date <= date);

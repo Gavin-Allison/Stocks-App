@@ -134,9 +134,24 @@ export interface ledgerSlice {
     getLedger: () => LedgerEntry[];
 }
 
-export const createLedgerSlice: StateCreator<mainSlice & transactionSlice & ledgerSlice, [], [], ledgerSlice> = (set, get) => ({
-    getLedger: () => {
-        const { transactions, priceData } = get();
-        return validateLedger(transactions, priceData);
-    },
+export const createLedgerSlice: StateCreator<mainSlice & transactionSlice & ledgerSlice, [], [], ledgerSlice> = (_set, get) => ({
+    getLedger: (() => {
+        let lastTransactions: Transaction[] | null = null;
+        let lastPriceData: {symbol: string, data: Record<string, number>}[] | null = null;
+        let lastResult: LedgerEntry[] | null = null;
+
+        return () => {
+            const { transactions, priceData } = get();
+
+            if (lastResult && transactions === lastTransactions && priceData === lastPriceData) {
+                return lastResult;
+            }
+
+            const result = validateLedger(transactions, priceData);
+            lastTransactions = transactions;
+            lastPriceData = priceData;
+            lastResult = result;
+            return result;
+        };
+    })(),
 });

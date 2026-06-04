@@ -1,20 +1,28 @@
+import React, { useCallback, useMemo } from 'react';
+import { FixedSizeList } from 'react-window';
+import type { ListChildComponentProps } from 'react-window';
 import { useAppStore } from '../../stores/appStore';
 import { Button, Panel } from '../common/ui';
 import type { LedgerEntry } from '../../types/ledgerEntry';
 
-export const LedgerList = ({ ledger }: { ledger: LedgerEntry[] }) => {
-    const {
-        date,
-        selectedBatchId,
-        setSelectedBatchId,
-        removeTransaction,
-        commitTransaction,
-    } = useAppStore();
+const ROW_HEIGHT = 88;
 
-    {/* Function to format transaction details for display */}
-    function formatTransaction(entry: LedgerEntry): string {
-        const transaction = entry.transaction;
+type RowData = {
+    ledger: LedgerEntry[];
+    selectedBatchId: string | null;
+    date: string;
+    onSelectBatch: (batchId: string | null) => void;
+    onCommit: (t: any) => void;
+    onRemove: (t: any) => void;
+};
 
+const Row = React.memo(function Row({ index, style, data }: ListChildComponentProps<RowData>) {
+    const entry = data.ledger[index];
+    const isDraft = !entry.transaction.committed;
+    const isBatchHighlighted = !isDraft && data.selectedBatchId !== null && entry.transaction.batchId === data.selectedBatchId;
+
+    const formatTransaction = useCallback((entry: LedgerEntry) => {
+        const transaction = entry.transaction as any;
         switch (transaction.type) {
             case 'FBUY':
             case 'FSELL':
@@ -28,91 +36,101 @@ export const LedgerList = ({ ledger }: { ledger: LedgerEntry[] }) => {
             default:
                 return `Unknown transaction type`;
         }
-    }
-    console.log("Current Ledger Data:", ledger);
+    }, []);
 
     return (
-        <Panel muted className="h-full overflow-y-scroll p-0">
-            <ul className="w-full pb-48">
-                {ledger.map((entry) => {
-                    const isDraft = !entry.transaction.committed;
-                    const isBatchHighlighted = !isDraft && selectedBatchId !== null && entry.transaction.batchId === selectedBatchId;
+        <div style={style} className="px-1">
+            <div className={`m-1 grid grid-cols-1 md:grid-cols-12 items-start md:items-center py-2 border-b border-gray-300 ${isDraft ? 'text-red-700 bg-red-50' : ''} ${isBatchHighlighted ? 'text-blue-700 bg-blue-50' : ''}`}>
+                <div className="flex flex-col gap-1 w-full md:col-span-8">
+                    <div>
+                        <span className={entry.transaction.date === data.date ? "text-green-600" : ""}>
+                            {`${entry.transaction.date}, `}
+                        </span>
+                        <span>
+                            {entry.transaction.type === 'FBUY' || entry.transaction.type === 'FSELL'
+                                ? `${entry.transaction.ticker} Share Price: $${entry.transaction.pricePerUnit.toFixed(2)}`
+                                : entry.transaction.type === 'DBUY' || entry.transaction.type === 'DSELL'
+                                    ? `${entry.transaction.ticker} Share Price: $${entry.executionPrice?.toFixed(2) ?? 'N/A'}`
+                                    : ""}
+                        </span>
+                    </div>
 
-                    return (
-                        <li
-                            key={entry.transaction.id}
-                            className={`m-1 grid grid-cols-1 md:grid-cols-12 items-start md:items-center py-2 border-b border-gray-300 ${isDraft ? 'text-red-700 bg-red-50' : ''} ${isBatchHighlighted ? 'text-blue-700 bg-blue-50' : ''}`}
+                    <span>
+                        {`$${entry.currentCash.toFixed(2)}, `}
+                        {formatTransaction(entry)}
+                    </span>
+
+                    <span className={`text-xs ${isDraft ? 'text-red-600' : 'text-gray-500'}`}>
+                        {`Batch ${entry.transaction.batchId}`}
+                    </span>
+                </div>
+
+                <div className="md:col-span-1 flex justify-end md:justify-center w-full md:w-auto">
+                    <span className={`text-lg font-medium ${entry.ignore ? 'text-black visible' : entry.error ? 'text-red-600 visible' : 'invisible'}`}>
+                        {entry.ignore ? '━' : 'Error'}
+                    </span>
+                </div>
+
+                <div className="flex flex-col gap-2 mt-2 md:mt-0 justify-end w-full md:w-24 md:col-span-3 md:justify-self-end">
+                    {!isDraft ? (
+                        <Button
+                            onClick={() => data.onSelectBatch(isBatchHighlighted ? null : entry.transaction.batchId)}
+                            variant="light"
+                            className="px-3"
                         >
-                            {/* Column 1: Transaction details */}
-                            <div className="flex flex-col gap-1 w-full md:col-span-8">
-                                {/* Row 1: Date and Stock Price (if applicable) */}
-                                <div>
-                                    <span className={entry.transaction.date === date ? "text-green-600" : ""}>
-                                        {`${entry.transaction.date}, `}
-                                    </span>
-                                    <span>
-                                        {entry.transaction.type === 'FBUY' || entry.transaction.type === 'FSELL' 
-                                            ? `${entry.transaction.ticker} Share Price: $${entry.transaction.pricePerUnit.toFixed(2)}` 
-                                            : entry.transaction.type === 'DBUY' || entry.transaction.type === 'DSELL' 
-                                            ? `${entry.transaction.ticker} Share Price: $${entry.executionPrice?.toFixed(2) ?? 'N/A'}` 
-                                            : ""}
-                                    </span>
-                                </div>
+                            {isBatchHighlighted ? 'Clear' : 'Select'}
+                        </Button>
+                    ) : (
+                        <Button
+                            onClick={() => data.onCommit(entry.transaction)}
+                            variant="success"
+                            className="px-3"
+                        >
+                            Commit
+                        </Button>
+                    )}
 
-                                {/* Row 2: Transaction Details */}
-                                <span>
-                                    {`$${entry.currentCash.toFixed(2)}, `}
-                                    {formatTransaction(entry)}
-                                </span>
+                    <Button
+                        onClick={() => data.onRemove(entry.transaction)}
+                        variant="danger"
+                        className="px-3"
+                    >
+                        Remove
+                    </Button>
+                </div>
+            </div>
+        </div>
+    );
+});
 
-                                {/* Row 3: Batch ID and Error Indicator */}
-                                <span className={`text-xs ${isDraft ? 'text-red-600' : 'text-gray-500'}`}>
-                                    {`Batch ${entry.transaction.batchId}`}
-                                </span>
-                            </div>
+export const LedgerList = ({ ledger }: { ledger: LedgerEntry[] }) => {
+    const selectedBatchId = useAppStore(state => state.selectedBatchId);
+    const setSelectedBatchId = useAppStore(state => state.setSelectedBatchId);
+    const removeTransaction = useAppStore(state => state.removeTransaction);
+    const commitTransaction = useAppStore(state => state.commitTransaction);
+    const date = useAppStore(state => state.date);
 
-                            {/* Column 2: Error Indicator */}
-                            <div className="md:col-span-1 flex justify-end md:justify-center w-full md:w-auto"> 
-                                <span className={`text-lg font-medium ${entry.ignore ? 'text-black visible' : entry.error ? 'text-red-600 visible' : 'invisible'}`}>
-                                    {entry.ignore ? '━' : 'Error'}
-                                </span>
-                            </div>
+    const onSelectBatch = useCallback((batchId: string | null) => setSelectedBatchId(batchId), [setSelectedBatchId]);
+    const onCommit = useCallback((t: any) => commitTransaction(t), [commitTransaction]);
+    const onRemove = useCallback((t: any) => removeTransaction(t), [removeTransaction]);
 
+    const itemData = useMemo<RowData>(() => ({ ledger, selectedBatchId, date, onSelectBatch, onCommit, onRemove }), [ledger, selectedBatchId, date, onSelectBatch, onCommit, onRemove]);
 
-                            {/* Column 3: Action Buttons */}
-                            <div className="flex flex-col gap-2 mt-2 md:mt-0 justify-end w-full md:w-24 md:col-span-3 md:justify-self-end">
-                                {/* For committed transactions, show Select/Clear Batch button. For drafts, show Commit button. Always show Remove button. */}
-                                {!isDraft ? (
-                                    <Button
-                                        onClick={() => setSelectedBatchId(isBatchHighlighted ? null : entry.transaction.batchId)}
-                                        variant="light"
-                                        className="px-3"
-                                    >
-                                        {isBatchHighlighted ? 'Clear' : 'Select'}
-                                    </Button>
-                                ) : (
-                                    <Button
-                                        onClick={() => commitTransaction(entry.transaction)}
-                                        variant="success"
-                                        className="px-3"
-                                    >
-                                        Commit
-                                    </Button>
-                                )}
+    if (!ledger || ledger.length === 0) {
+        return <Panel muted className="h-full p-2">No transactions</Panel>;
+    }
 
-                                {/* Remove transaction button */}
-                                <Button
-                                    onClick={() => removeTransaction(entry.transaction)}
-                                    variant="danger"
-                                    className="px-3"
-                                >
-                                    Remove
-                                </Button>
-                            </div>
-                        </li>
-                    );
-                })}
-            </ul>
+    return (
+        <Panel muted className="h-full p-0">
+            <FixedSizeList
+                height={Math.min(ROW_HEIGHT * ledger.length, 600)}
+                itemCount={ledger.length}
+                itemSize={ROW_HEIGHT}
+                width="100%"
+                itemData={itemData}
+            >
+                {Row}
+            </FixedSizeList>
         </Panel>
     );
 };

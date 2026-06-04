@@ -1,25 +1,23 @@
+import { useEffect, useCallback } from 'react';
 import { useAppStore } from '../../stores/appStore';
-import { useEffect } from 'react';
 import { Input, Button } from '../common/ui';
 
 export const TradeInputs = () => {
-    const { 
-        stocks, 
-        selectedStock,
-        setSelectedStock, 
-        fixedOrDynamic,
-        setFixedOrDynamic,
-        numStocks,
-        setNumStocks,
-        percentOfCash,
-        setPercentOfCash,
-        tradeFee,
-        setTradeFee,
-        currentPrice,
-        setCurrentPrice,
-        date,
-        getStockPriceAtDate,
-    } = useAppStore();
+    const stocks = useAppStore(s => s.stocks);
+    const selectedStock = useAppStore(s => s.selectedStock);
+    const setSelectedStock = useAppStore(s => s.setSelectedStock);
+    const fixedOrDynamic = useAppStore(s => s.fixedOrDynamic);
+    const setFixedOrDynamic = useAppStore(s => s.setFixedOrDynamic);
+    const numStocks = useAppStore(s => s.numStocks);
+    const setNumStocks = useAppStore(s => s.setNumStocks);
+    const percentOfCash = useAppStore(s => s.percentOfCash);
+    const setPercentOfCash = useAppStore(s => s.setPercentOfCash);
+    const tradeFee = useAppStore(s => s.tradeFee);
+    const setTradeFee = useAppStore(s => s.setTradeFee);
+    const currentPrice = useAppStore(s => s.currentPrice);
+    const setCurrentPrice = useAppStore(s => s.setCurrentPrice);
+    const date = useAppStore(s => s.date);
+    const getStockPriceAtDate = useAppStore(s => s.getStockPriceAtDate);
 
     // Update current price when selected stock or date changes
     useEffect(() => {
@@ -29,6 +27,11 @@ export const TradeInputs = () => {
         }
     }, [selectedStock, date, getStockPriceAtDate, setCurrentPrice]);
 
+    const onSelectStock = useCallback((e: any) => setSelectedStock(e.target.value), [setSelectedStock]);
+    const onNumStocks = useCallback((e: any) => setNumStocks(Number(e.target.value)), [setNumStocks]);
+    const onPercentOfCash = useCallback((e: any) => setPercentOfCash(Number(e.target.value)), [setPercentOfCash]);
+    const onTradeFee = useCallback((e: any) => setTradeFee(Number(e.target.value)), [setTradeFee]);
+
     return (
         <div className="grid grid-cols-2 gap-2 p-2 text-gray-700 w-full items-center">
             {/* Row 1: Stock Selection and Price */}
@@ -36,7 +39,7 @@ export const TradeInputs = () => {
                 <h1>Select Stock:</h1>
                 <select 
                     value={selectedStock} 
-                    onChange={(e) => setSelectedStock(e.target.value)} 
+                    onChange={onSelectStock} 
                     className="bg-white border border-gray-400 rounded px-1"
                 >
                     {stocks.map((stock) => (
@@ -59,7 +62,7 @@ export const TradeInputs = () => {
                         <Input
                             type="number"
                             value={numStocks}
-                            onChange={(e) => setNumStocks(Number(e.target.value))}
+                            onChange={onNumStocks}
                             className="w-16"
                         />
                         <Button onClick={() => setFixedOrDynamic("DYNAMIC")} className="w-6" variant="muted">#</Button>
@@ -70,7 +73,7 @@ export const TradeInputs = () => {
                         <Input
                             type="number"
                             value={percentOfCash}
-                            onChange={(e) => setPercentOfCash(Number(e.target.value))}
+                            onChange={onPercentOfCash}
                             className="w-16"
                         />
                         <Button onClick={() => setFixedOrDynamic("FIXED")} className="w-6" variant="muted">%</Button>
@@ -81,12 +84,12 @@ export const TradeInputs = () => {
             {/* Trade Fee */}
             <div className="flex items-center gap-2 justify-self-end">
                 <h1>Trade Fee:</h1>
-                <Input
-                    type="number"
-                    value={tradeFee}
-                    onChange={(e) => setTradeFee(Number(e.target.value))}
-                    className="w-16"
-                />
+                        <Input
+                            type="number"
+                            value={tradeFee}
+                            onChange={onTradeFee}
+                            className="w-16"
+                        />
             </div>
         </div>
     );

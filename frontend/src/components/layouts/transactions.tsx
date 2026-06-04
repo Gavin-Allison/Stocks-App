@@ -1,3 +1,4 @@
+import React from 'react';
 import { useAppStore } from "../../stores/appStore";
 
 import { TradeInputs } from "../transactions/tradeInputs";
@@ -12,36 +13,37 @@ import { Button, Panel } from "../common/ui";
 import type { Transaction } from "../../types/transactionType";
 
 export const Transactions = () => {
-    const { 
-        // Global state 
-        date, 
-        setDate, 
-        selectedStock, 
-        addTransaction, 
-        addTransactionBatch,
-        removeTransactionBatch,
-        commitTransactionBatch,
-        getLedger,
+    const date = useAppStore(s => s.date);
+    const setDate = useAppStore(s => s.setDate);
+    const selectedStock = useAppStore(s => s.selectedStock);
+    const addTransaction = useAppStore(s => s.addTransaction);
+    const addTransactionBatch = useAppStore(s => s.addTransactionBatch);
+    const removeTransactionBatch = useAppStore(s => s.removeTransactionBatch);
+    const commitTransactionBatch = useAppStore(s => s.commitTransactionBatch);
+    const getLedger = useAppStore(s => s.getLedger);
 
-        // Local UI state
-        tradeOrCash,
-        setTradeOrCash,
-        fixedOrDynamic,
-        numStocks,
-        percentOfCash,
-        tradeFee,
-        cashAmount,
-        cashFee,
-        repeatFrequency,
-        repeatIntervalDays,
-        repeatOccurrences,
-        draftBatchCount,
-        selectedBatchId,
-        selectedBatchCount,
-        currentPrice,
-        prompt,
-        getPromptResponse
-    } = useAppStore();
+    const tradeOrCash = useAppStore(s => s.tradeOrCash);
+    const setTradeOrCash = useAppStore(s => s.setTradeOrCash);
+    const fixedOrDynamic = useAppStore(s => s.fixedOrDynamic);
+    const numStocks = useAppStore(s => s.numStocks);
+    const percentOfCash = useAppStore(s => s.percentOfCash);
+    const tradeFee = useAppStore(s => s.tradeFee);
+    const cashAmount = useAppStore(s => s.cashAmount);
+    const cashFee = useAppStore(s => s.cashFee);
+    const repeatFrequency = useAppStore(s => s.repeatFrequency);
+    const repeatIntervalDays = useAppStore(s => s.repeatIntervalDays);
+    const repeatOccurrences = useAppStore(s => s.repeatOccurrences);
+    const draftBatchCount = useAppStore(s => s.draftBatchCount);
+    const selectedBatchId = useAppStore(s => s.selectedBatchId);
+    const selectedBatchCount = useAppStore(s => s.selectedBatchCount);
+    const currentPrice = useAppStore(s => s.currentPrice);
+    const prompt = useAppStore(s => s.prompt);
+    const getPromptResponse = useAppStore(s => s.getPromptResponse);
+
+    const transactions = useAppStore(s => s.transactions);
+    const priceData = useAppStore(s => s.priceData);
+
+    const ledger = React.useMemo(() => getLedger(), [transactions, priceData, getLedger]);
 
     const addMonths = (dateValue: Date, months: number) => {
         const result = new Date(dateValue);
@@ -102,7 +104,7 @@ export const Transactions = () => {
         }
     };
 
-    const ledger = getLedger();
+    
 
     return (
         <div className="flex flex-col w-full h-full p-4">

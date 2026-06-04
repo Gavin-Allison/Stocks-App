@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useAppStore } from '../../stores/appStore';
 import { Input } from '../common/ui';
 
@@ -14,25 +15,25 @@ const summarizeSchedule = (frequency: string, interval: number, occurrences: num
 };
 
 export const RepeatSchedule = () => {
-    const {
-        date,
-        repeatScheduleOpen,
-        repeatFrequency,
-        repeatIntervalDays,
-        repeatOccurrences,
-        setRepeatScheduleOpen,
-        setRepeatFrequency,
-        setRepeatIntervalDays,
-        setRepeatOccurrences,
-    } = useAppStore();
+    const date = useAppStore(s => s.date);
+    const repeatScheduleOpen = useAppStore(s => s.repeatScheduleOpen);
+    const repeatFrequency = useAppStore(s => s.repeatFrequency);
+    const repeatIntervalDays = useAppStore(s => s.repeatIntervalDays);
+    const repeatOccurrences = useAppStore(s => s.repeatOccurrences);
+    const setRepeatScheduleOpen = useAppStore(s => s.setRepeatScheduleOpen);
+    const setRepeatFrequency = useAppStore(s => s.setRepeatFrequency);
+    const setRepeatIntervalDays = useAppStore(s => s.setRepeatIntervalDays);
+    const setRepeatOccurrences = useAppStore(s => s.setRepeatOccurrences);
 
     const summary = summarizeSchedule(repeatFrequency, repeatIntervalDays, repeatOccurrences);
+
+    const toggleOpen = useCallback(() => setRepeatScheduleOpen(!repeatScheduleOpen), [setRepeatScheduleOpen, repeatScheduleOpen]);
 
     return (
         <div className="border-t border-gray-300 bg-gray-200 mt-3">
             <button
                 type="button"
-                onClick={() => setRepeatScheduleOpen(!repeatScheduleOpen)}
+                onClick={toggleOpen}
                 className="w-full flex items-center justify-between px-3 py-2 text-left text-sm font-semibold text-gray-800 hover:bg-gray-300"
             >
                 <span>Repeat schedule</span>

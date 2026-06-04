@@ -7,30 +7,31 @@ import { Panel, Button } from "../common/ui";
 const StockChart = memo(({
     symbol,
     priceData,
+    color,
+    onRemove,
 }: {
     symbol: string,
     priceData: any[],
+    color?: string,
+    onRemove: (s: string) => void,
 }) => {
-    const { stocks, removeStock } = useAppStore();
-    const currentStock = stocks.find(s => s.ticker === symbol);
-
     return (
         <Panel muted={false} className="mb-4 w-full">
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                    {currentStock && (
+                    {color && (
                         <div
                             className="w-3 h-3 rounded-full flex-shrink-0"
-                            style={{ backgroundColor: currentStock.color }}
+                            style={{ backgroundColor: color }}
                         />
                     )}
                     <h3 className="font-bold text-xl text-gray-900">{symbol}</h3>
                 </div>
-                <Button onClick={() => removeStock(symbol)} variant="danger" className="px-3">Remove</Button>
+                <Button onClick={() => onRemove(symbol)} variant="danger" className="px-3">Remove</Button>
             </div>
 
             <div className="h-[300px] w-full bg-white rounded border border-gray-400 relative [&_a]:hidden">
-                <ChartComponent data={priceData} symbol={symbol} lineColor={currentStock?.color} />
+                <ChartComponent data={priceData} symbol={symbol} lineColor={color} />
             </div>
         </Panel>
     );
@@ -38,7 +39,9 @@ const StockChart = memo(({
 
 // List of stock charts
 export const StockChartList = () => {
-    const { stocks, priceData } = useAppStore();
+    const stocks = useAppStore(s => s.stocks);
+    const priceData = useAppStore(s => s.priceData);
+    const removeStock = useAppStore(s => s.removeStock);
 
     return (
         <div className="flex flex-col w-full h-full overflow-y-auto pt-4">
@@ -55,6 +58,8 @@ export const StockChartList = () => {
                         key={stock.ticker} 
                         symbol={stock.ticker}
                         priceData={dataArray}
+                        color={stock.color}
+                        onRemove={removeStock}
                     />
                 );
             })}

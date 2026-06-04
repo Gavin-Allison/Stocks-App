@@ -11,7 +11,7 @@ export default function App() {
     const layout: React.CSSProperties & { [key: string]: any } = {
         "--layout-width": "1600px",
     }
-    const { initialize } = useAppStore();
+    const initialize = useAppStore(s => s.initialize);
 
     // Initialize portfolio data
     useEffect(() => {
