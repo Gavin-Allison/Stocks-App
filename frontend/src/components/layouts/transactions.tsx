@@ -39,6 +39,7 @@ export const Transactions = () => {
     const currentPrice = useAppStore(s => s.currentPrice);
     const prompt = useAppStore(s => s.prompt);
     const getPromptResponse = useAppStore(s => s.getPromptResponse);
+    const getStockPriceAtDate = useAppStore(s => s.getStockPriceAtDate);
 
     const transactions = useAppStore(s => s.transactions);
     const priceData = useAppStore(s => s.priceData);
@@ -82,10 +83,16 @@ export const Transactions = () => {
                 occurrence.setDate(startDate.getDate() + repeatIntervalDays * index);
             }
 
+            const occurrenceDate = occurrence.toISOString().split("T")[0];
+            const dateSpecificPrice = (details.type === 'FBUY' || details.type === 'FSELL')
+                ? getStockPriceAtDate(details.ticker, occurrenceDate) ?? details.pricePerUnit
+                : details.pricePerUnit;
+
             result.push({
                 ...details,
                 id: crypto.randomUUID(),
-                date: occurrence.toISOString().split("T")[0],
+                date: occurrenceDate,
+                pricePerUnit: dateSpecificPrice,
                 batchId: "Preview",
                 committed: false,
             });
