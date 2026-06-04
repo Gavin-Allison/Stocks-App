@@ -40,7 +40,7 @@ const Row = React.memo(function Row({ index, style, data }: ListChildComponentPr
 
     return (
         <div style={style} className="px-1">
-            <div className={`m-1 grid grid-cols-1 md:grid-cols-12 items-start md:items-center py-2 border-b border-gray-300 ${isDraft ? 'text-red-700 bg-red-50' : ''} ${isBatchHighlighted ? 'text-blue-700 bg-blue-50' : ''}`}>
+            <div className={`grid grid-cols-1 md:grid-cols-12 items-start md:items-center py-2 border-b border-gray-300 ${isDraft ? 'text-red-700 bg-red-50' : ''} ${isBatchHighlighted ? 'text-blue-700 bg-blue-50' : ''}`}>
                 <div className="flex flex-col gap-1 w-full md:col-span-8">
                     <div>
                         <span className={entry.transaction.date === data.date ? "text-green-600" : ""}>
@@ -123,7 +123,7 @@ export const LedgerList = ({ ledger }: { ledger: LedgerEntry[] }) => {
     return (
         <Panel muted className="h-full p-0">
             <FixedSizeList
-                height={Math.min(ROW_HEIGHT * ledger.length, 600)}
+                height={Math.min(ROW_HEIGHT * ledger.length, window.innerHeight - 500)}
                 itemCount={ledger.length}
                 itemSize={ROW_HEIGHT}
                 width="100%"

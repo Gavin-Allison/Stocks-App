@@ -172,7 +172,7 @@ export const Transactions = () => {
             <LedgerList ledger={ledger} />
 
             {/* Error Output */}
-            <div className="mt-4 text-red-600">{ledger.find(e => e.error)?.errorMessage || "No errors"}</div>
+            <div className="text-red-600">{ledger.find(e => e.error)?.errorMessage || "No errors"}</div>
         </div>    
     );
 };

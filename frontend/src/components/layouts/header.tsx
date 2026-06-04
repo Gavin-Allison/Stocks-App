@@ -21,7 +21,7 @@ export const Header = () => {
     }, [addStock, addableStock]);
 
     return (
-        <div className="max-w-[var(--layout-width)] h-full flex items-center mx-auto bg-gray-300 border-x border-gray-400 px-4 gap-2">
+        <div className="max-w-[var(--layout-width)] h-full flex items-center mx-auto bg-blue-100 border-x border-gray-400 px-4 gap-2">
             <h1 className="text-xl font-bold">Stocks App</h1>
 
             {/* Experiment menu and selection */}
@@ -99,7 +99,7 @@ export const Header = () => {
                 value={addableStock}
                 onChange={(e) => setAddableStock(e.target.value)}
                 placeholder="Ticker (e.g. AAPL)"
-                className="border border-gray-400 px-2 py-1 rounded"
+                className="text-sm bg-white border border-gray-400 px-2 py-1 rounded"
             />
             
             <Button onClick={handleAdd} className="px-3">Add Stock</Button>
