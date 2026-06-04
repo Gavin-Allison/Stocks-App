@@ -31,7 +31,7 @@ export default function App() {
                 <main className="max-w-[var(--layout-width)] w-full flex mx-auto">
 
                     {/* Left Column*/}
-                    <section className="flex-1 overflow-y-scroll bg-gray-100 border-r border-gray-400">
+                    <section className="flex-1 overflow-y-scroll bg-gray-200 border-r border-gray-400">
                         <StockChartList />
                     </section>
 

@@ -30,7 +30,7 @@ const StockChart = memo(({
                 <Button onClick={() => onRemove(symbol)} variant="danger" className="px-3">Remove</Button>
             </div>
 
-            <div className="h-[300px] w-full bg-white rounded border border-gray-400 relative [&_a]:hidden">
+            <div className="h-[300px] w-full bg-white relative [&_a]:hidden">
                 <ChartComponent data={priceData} symbol={symbol} lineColor={color} />
             </div>
         </Panel>

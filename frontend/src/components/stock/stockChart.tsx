@@ -19,10 +19,7 @@ export const ChartComponent = ({
         textColor?: string;
     };
 }) => {
-    const transactions = useAppStore(s => s.transactions);
-    const date = useAppStore(s => s.date);
-    const setDate = useAppStore(s => s.setDate);
-    const setSelectedStock = useAppStore(s => s.setSelectedStock);
+    const { transactions, date, setDate, setSelectedStock } = useAppStore();
     const [lineX, setLineX] = useState<number | null>(null);
     const [scrollPos, setScrollPos] = useState(0);
     const [visibleSize, setVisibleSize] = useState(0);
@@ -266,7 +263,7 @@ export const ChartComponent = ({
 
     // Render controls and chart container
     return (
-        <div className="relative w-full h-full">
+        <div className="relative bg-gray-200 w-full h-full rounded border border-gray-400 overflow-hidden">
             {maxScroll > 0 && (
                 <div className="absolute top-2 left-4 right-24 z-5 pointer-events-none">
                     <input
