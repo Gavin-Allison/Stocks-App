@@ -111,8 +111,6 @@ export const Transactions = () => {
         }
     };
 
-    
-
     return (
         <div className="flex flex-col w-full h-full p-4">
 
@@ -120,9 +118,9 @@ export const Transactions = () => {
                         <div className="flex items-center justify-between"> 
                                 <h1 className="text-xl font-bold">Transactions</h1>
                                 <div className="flex gap-2">
-                                    <Button onClick={() => setTradeOrCash("TRADE")} className="px-5">Trade</Button>
-                                    <Button onClick={() => setTradeOrCash("CASH")} className="px-5">Cash</Button>
-                                    <Button onClick={() => setTradeOrCash("AI")} className="px-5">AI</Button>
+                                    <Button onClick={() => setTradeOrCash("TRADE")} className="px-5" variant={tradeOrCash === "TRADE" ? "primary" : "muted"}>Trade</Button>
+                                    <Button onClick={() => setTradeOrCash("CASH")} className="px-5" variant={tradeOrCash === "CASH" ? "primary" : "muted"}>Cash</Button>
+                                    <Button onClick={() => setTradeOrCash("AI")} className="px-5" variant={tradeOrCash === "AI" ? "primary" : "muted"}>AI</Button>
                                 </div>
                                 <StockDatePicker className="w-38" date={date} onDateChange={setDate} />
                         </div>
@@ -142,7 +140,7 @@ export const Transactions = () => {
                 <div className="flex items-center justify-between p-2">
                     <div className="flex gap-2">
                         {tradeOrCash === "AI" ? (
-                            <Button onClick={() => getPromptResponse(prompt)} className="w-20">Submit</Button>
+                            <Button onClick={() => getPromptResponse(prompt)} className="w-42">Generate Transactions</Button>
                         ) : tradeOrCash === "CASH" ? (
                             <>
                                 <Button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "DEPOSIT", amount: cashAmount, fees: cashFee })} className="w-20">Deposit</Button>
