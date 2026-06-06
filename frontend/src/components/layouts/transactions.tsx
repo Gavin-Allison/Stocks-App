@@ -112,18 +112,21 @@ export const Transactions = () => {
     };
 
     return (
-        <div className="flex flex-col w-full h-full p-4">
+        <div className="@container flex flex-col w-full h-full p-4">
 
             {/* Header with date picker */}
-                        <div className="flex items-center justify-between"> 
-                                <h1 className="text-xl font-bold">Transactions</h1>
-                                <div className="flex gap-2">
-                                    <Button onClick={() => setTradeOrCash("TRADE")} className="px-5" variant={tradeOrCash === "TRADE" ? "primary" : "muted"}>Trade</Button>
-                                    <Button onClick={() => setTradeOrCash("CASH")} className="px-5" variant={tradeOrCash === "CASH" ? "primary" : "muted"}>Cash</Button>
-                                    <Button onClick={() => setTradeOrCash("AI")} className="px-5" variant={tradeOrCash === "AI" ? "primary" : "muted"}>AI</Button>
-                                </div>
-                                <StockDatePicker className="w-38" date={date} onDateChange={setDate} />
-                        </div>
+            <div className="flex items-center justify-between"> 
+                    <h1 className="text-xl font-bold">Transactions</h1>
+                    <div className="flex gap-2">
+                        <Button onClick={() => setTradeOrCash("TRADE")} className="px-5" variant={tradeOrCash === "TRADE" ? "primary" : "muted"}>Trade</Button>
+                        <Button onClick={() => setTradeOrCash("CASH")} className="px-5" variant={tradeOrCash === "CASH" ? "primary" : "muted"}>Cash</Button>
+                        <Button onClick={() => setTradeOrCash("AI")} className="px-5" variant={tradeOrCash === "AI" ? "primary" : "muted"}>AI</Button>
+                    </div>
+                    
+                    <div className="hidden @[494px]:block">
+                        <StockDatePicker className="w-38" date={date} onDateChange={setDate} />
+                    </div>
+            </div>
             
             <div className="flex flex-wrap gap-2 mb-4"></div>
 
