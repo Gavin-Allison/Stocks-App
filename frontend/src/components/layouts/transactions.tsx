@@ -156,9 +156,9 @@ export const Transactions = () => {
 
                 {/* Execution and Submission Management */}
                 <div className="flex items-center justify-between p-2">
-                    <div className="flex gap-2">
+                    <div className="flex flex-col @[494px]:flex-row gap-2">
                         {tradeOrCash === "AI" ? (
-                            <Button onClick={() => getPromptResponse(prompt)} className="w-42">Generate Transactions</Button>
+                            <Button onClick={() => getPromptResponse(prompt)} className="w-24 @[494px]:w-42">Generate Transactions</Button>
                         ) : tradeOrCash === "CASH" ? (
                             <>
                                 <Button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "DEPOSIT", amount: cashAmount, fees: cashFee })} className="w-20">Deposit</Button>
@@ -177,7 +177,7 @@ export const Transactions = () => {
                         )}                  
                     </div>
 
-                    <div className="flex gap-2">
+                    <div className="flex flex-col @[494px]:flex-row  gap-2">
                         <Button onClick={() => commitTransactionBatch("Preview")} className="px-2" disabled={draftBatchCount === 0} variant="success">Submit Pending ({draftBatchCount})</Button>
                         <Button onClick={() => removeTransactionBatch(selectedBatchId!)} className="px-2" disabled={selectedBatchCount === 0} variant="danger">Remove Batch ({selectedBatchCount})</Button>
                     </div>
