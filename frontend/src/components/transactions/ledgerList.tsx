@@ -1,11 +1,14 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo, useState, useEffect, useRef } from 'react';
+import { FixedSizeList, type ListChildComponentProps } from 'react-window';
 import { useAppStore } from '../../stores/appStore';
 import { Button, Panel } from '../common/ui';
 import { theme } from '../../styles/tokens';
 import type { LedgerEntry } from '../../types/ledgerEntry';
 
-type LedgerRowProps = {
-    entry: LedgerEntry;
+const ROW_HEIGHT = 88;
+
+type RowData = {
+    ledger: LedgerEntry[];
     date: string;
     selectedBatchId: string | null;
     onSelectBatch: (batchId: string | null) => void;
@@ -13,17 +16,9 @@ type LedgerRowProps = {
     onRemove: (t: any) => void;
 };
 
-/**
- * Memoized row renderer for the ledger list.
- */
-const LedgerRow = React.memo(function LedgerRow({ 
-    entry, 
-    date, 
-    selectedBatchId, 
-    onSelectBatch, 
-    onCommit, 
-    onRemove 
-}: LedgerRowProps) {
+const Row = React.memo(function Row({ index, style, data }: ListChildComponentProps<RowData>) {
+    const { ledger, date, selectedBatchId, onSelectBatch, onCommit, onRemove } = data;
+    const entry = ledger[index];
     const isDraft = !entry.transaction.committed;
     const isBatchHighlighted = !isDraft && selectedBatchId !== null && entry.transaction.batchId === selectedBatchId;
 
@@ -60,7 +55,7 @@ const LedgerRow = React.memo(function LedgerRow({
         : (entry.executionPrice ?? 0);
 
     return (
-        <div className="px-1">
+        <div style={style} className="px-1">
             <div className={`flex items-center gap-4 py-2 border-b border-gray-300 @container ${isDraft ? 'text-red-700 bg-red-50' : ''} ${isBatchHighlighted ? 'text-blue-700 bg-blue-50' : ''}`}>
                 
                 <div className="flex flex-col flex-grow min-w-0">
@@ -81,7 +76,7 @@ const LedgerRow = React.memo(function LedgerRow({
                     </div>
 
                     {/* Middle row: Cash + Transaction details (layout shifts based on container width) */}
-                    <div className="flex flex-col gap-1 @[400px]:flex-row whitespace-nowrap">
+                    <div className="flex flex-col  @[400px]:flex-row whitespace-nowrap">
                         <span className="hidden @[400px]:inline">
                             {`$${entry.currentCash.toFixed(2)}, ${formatTransaction(entry)}`}
                         </span>
@@ -135,9 +130,6 @@ const LedgerRow = React.memo(function LedgerRow({
     );
 });
 
-/**
- * Ledger list component that renders transaction history and batch actions.
- */
 export const LedgerList = ({ ledger }: { ledger: LedgerEntry[] }) => {
     const selectedBatchId = useAppStore(state => state.selectedBatchId);
     const setSelectedBatchId = useAppStore(state => state.setSelectedBatchId);
@@ -145,26 +137,45 @@ export const LedgerList = ({ ledger }: { ledger: LedgerEntry[] }) => {
     const commitTransaction = useAppStore(state => state.commitTransaction);
     const date = useAppStore(state => state.date);
 
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [height, setHeight] = useState(0);
+
+    useEffect(() => {
+        if (!containerRef.current) return;
+        const observer = new ResizeObserver((entries) => {
+            for (let entry of entries) {
+                setHeight(entry.contentRect.height);
+            }
+        });
+        observer.observe(containerRef.current);
+        return () => observer.disconnect();
+    }, []);
+
+    const itemData = useMemo<RowData>(() => ({ 
+        ledger, 
+        date,
+        selectedBatchId, 
+        onSelectBatch: setSelectedBatchId, 
+        onCommit: commitTransaction, 
+        onRemove: removeTransaction 
+    }), [ledger, date, selectedBatchId, setSelectedBatchId, commitTransaction, removeTransaction]);
+
     if (!ledger || ledger.length === 0) {
         return <Panel muted className="h-full p-2">No transactions</Panel>;
     }
 
     return (
-        <div className="flex-1 min-h-0 w-full @container flex flex-col">
+        <div className="flex-1 min-h-0 w-full @container flex flex-col" ref={containerRef}>
             <Panel muted className="flex flex-col flex-1 p-0 overflow-hidden">
-                <div className="flex-1 overflow-y-auto min-h-0">
-                    {ledger.map((entry, index) => (
-                        <LedgerRow 
-                            key={entry.transaction.id ?? index} 
-                            entry={entry}
-                            date={date}
-                            selectedBatchId={selectedBatchId}
-                            onSelectBatch={setSelectedBatchId}
-                            onCommit={commitTransaction}
-                            onRemove={removeTransaction}
-                        />
-                    ))}
-                </div>
+                <FixedSizeList
+                    height={height}
+                    itemCount={ledger.length}
+                    itemSize={ROW_HEIGHT}
+                    width="100%"
+                    itemData={itemData}
+                >
+                    {Row}
+                </FixedSizeList>
             </Panel>
         </div>
     );
