@@ -40,8 +40,8 @@ export const TradeInputs = () => {
 
     return (
         <div className={`grid grid-cols-2 gap-2 m-2 ${theme.text.secondary} w-full items-center`}>
-            {/* Row 1: Stock Selection and Price */}
-            <div className="flex items-center gap-2">
+            {/* Stock Selection and Price */}
+            <div className="flex items-center gap-2 whitespace-nowrap">
                 <h1>Select Stock:</h1>
                 <select 
                     value={selectedStock} 
@@ -60,11 +60,11 @@ export const TradeInputs = () => {
                 Share Price: ${currentPrice.toFixed(2)} 
             </h1>
 
-            {/* Row 2: Input Toggle and Trade Fee */}
+            {/* Input Toggle and Trade Fee */}
             <div className="flex items-center gap-2">
                 {fixedOrDynamic === "FIXED" ? (
                     <>
-                        <h1 className="min-w-[140px]">Number of Stocks:</h1>
+                        <h1 className="min-w-[80px] whitespace-nowrap"># of Stocks:</h1>
                         <Input
                             type="number"
                             value={numStocks}
@@ -75,7 +75,7 @@ export const TradeInputs = () => {
                     </>
                 ) : (
                     <>
-                        <h1 className="min-w-[140px]">Percentage of Cash:</h1>
+                        <h1 className="min-w-[81px] whitespace-nowrap">% of Cash:</h1>
                         <Input
                             type="number"
                             value={percentOfCash}
@@ -89,7 +89,7 @@ export const TradeInputs = () => {
 
             {/* Trade Fee */}
             <div className="flex items-center gap-2 justify-self-end">
-                <h1>Trade Fee:</h1>
+                <h1>Fee:</h1>
                         <Input
                             type="number"
                             value={tradeFee}
