@@ -174,7 +174,7 @@ export const Results = () => {
                         {/* Table head */}
                         <div className={`flex justify-between items-center font-semibold ${theme.text.secondary} px-4 pb-2 mt-2 border-b border-gray-400 flex-shrink-0`}>
                             <div className="flex-1 text-center">Asset</div>
-                            <div className="flex-1 text-center hidden @[400px]:flex justify-end">% of Assets</div>
+                            <div className="flex-1 text-center hidden @[400px]:flex justify-end whitespace-nowrap">% of Assets</div>
                             <div className="flex-1 text-center">Shares</div>
                             <div className="flex-1 text-center">Price</div>
                             <div className="flex-1 text-center whitespace-nowrap">Total Value</div>
