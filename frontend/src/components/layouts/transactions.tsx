@@ -112,7 +112,7 @@ export const Transactions = () => {
     };
 
     return (
-        <div className="@container flex flex-col w-full h-full p-4">
+        <div className="@container flex flex-col w-full h-full p-4 overflow-hidden">
 
             {/* Header with date picker */}
             <div className="flex items-center justify-between"> 
@@ -131,7 +131,7 @@ export const Transactions = () => {
             <div className="flex flex-wrap gap-2 mb-4"></div>
 
             {/* Input fields for transaction details */}
-            <Panel muted className="w-full">
+            <Panel muted className="w-full shrink-0">
                 
                 <>
                     {tradeOrCash === "TRADE" && <> <TradeInputs /> <RepeatSchedule /> </>}
@@ -170,8 +170,10 @@ export const Transactions = () => {
             </Panel>
 
             {/* Ledger */}
-            <LedgerList ledger={ledger} />
-
+            <div className="flex flex-col min-h-12">
+                <LedgerList ledger={ledger} />
+            </div>
+            
             {/* Error Output */}
             <div className="text-red-600">{ledger.find(e => e.error)?.errorMessage || "No errors"}</div>
         </div>    
