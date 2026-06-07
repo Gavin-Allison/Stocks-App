@@ -3,10 +3,14 @@ import type { Stock } from '../../types/stockType'
 
 export const StockPieChart = ({ 
     assets, 
-    stocks
+    stocks,
+    width = 200,
+    height = 200
 }: { 
     assets: Record<string, number>; 
     stocks: Stock[]
+    width?: number;
+    height?: number;
 }) => {
     const chartData = Object.entries(assets).map(([label, value]) => {
         const stockConfig = stocks.find((stock: Stock) => stock.ticker === label);
@@ -42,8 +46,8 @@ export const StockPieChart = ({
             ]}
             hideLegend={true}
             skipAnimation
-            width={200}
-            height={200}
+            width={width}
+            height={height}
         />
     );
 };
