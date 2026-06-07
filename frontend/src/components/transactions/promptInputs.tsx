@@ -1,6 +1,9 @@
 import { useCallback } from 'react';
 import { useAppStore } from '../../stores/appStore';
 
+/**
+ * AI prompt input area for generating draft transactions from natural language.
+ */
 export const PromptInputs = () => {
     const prompt = useAppStore(s => s.prompt);
     const setPrompt = useAppStore(s => s.setPrompt);

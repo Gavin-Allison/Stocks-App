@@ -3,6 +3,9 @@ import { useAppStore } from '../../stores/appStore';
 import { Input } from '../common/ui';
 import { theme } from '../../styles/tokens';
 
+/**
+ * Cash transaction input panel for deposit or withdrawal values.
+ */
 export const CashInputs = () => {
     const cashAmount = useAppStore(s => s.cashAmount);
     const setCashAmount = useAppStore(s => s.setCashAmount);

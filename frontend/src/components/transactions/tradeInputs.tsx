@@ -3,6 +3,9 @@ import { useAppStore } from '../../stores/appStore';
 import { Input, Button } from '../common/ui';
 import { theme } from '../../styles/tokens';
 
+/**
+ * Trade input fields for managed buy/sell values and stock selection.
+ */
 export const TradeInputs = () => {
     const stocks = useAppStore(s => s.stocks);
     const selectedStock = useAppStore(s => s.selectedStock);
@@ -20,7 +23,9 @@ export const TradeInputs = () => {
     const date = useAppStore(s => s.date);
     const getStockPriceAtDate = useAppStore(s => s.getStockPriceAtDate);
 
-    // Update current price when selected stock or date changes
+    /**
+     * Update the currently displayed stock price after stock or date changes.
+     */
     useEffect(() => {
         if (selectedStock && date) {
             const price = getStockPriceAtDate(selectedStock, date);

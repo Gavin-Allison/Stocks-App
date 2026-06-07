@@ -7,7 +7,10 @@ import { Header } from "./components/layouts/header";
 import { Report } from "./components/layouts/report";
 import { StockChartList } from "./components/stock/stockChartList";
 
-
+/**
+ * Top-level application shell that renders the header and main layout.
+ * It switches between the stock chart list and the report panel depending on screen size.
+ */
 export default function App() {
     const layout: React.CSSProperties & { [key: string]: any } = {
         "--layout-width": "1600px",

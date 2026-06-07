@@ -1,6 +1,9 @@
 import { PieChart } from '@mui/x-charts/PieChart';
 import type { Stock } from '../../types/stockType'
 
+/**
+ * Render a breakdown pie chart of current asset allocation.
+ */
 export const StockPieChart = ({ 
     assets, 
     stocks,

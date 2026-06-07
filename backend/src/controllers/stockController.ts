@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 import { stockRepository } from "../repositories/stockRepository";
 
 export class StockController {
+    /**
+     * Retrieve historical stock price data for the given symbol.
+     */
     async getStockHistory(req: Request, res: Response): Promise<void> {
         try {
             const { symbol } = req.query;

@@ -3,6 +3,10 @@ import { useEffect, useRef, useState } from 'react';
 import { useAppStore } from '../../stores/appStore';
 import { theme } from '../../styles/tokens';
 
+/**
+ * Renders a single lightweight stock chart with a transaction volume overlay.
+ * Applies selection, zoom, and date interactions to the chart.
+ */
 export const ChartComponent = ({
     data,
     symbol,

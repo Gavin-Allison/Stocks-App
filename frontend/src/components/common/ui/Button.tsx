@@ -13,6 +13,9 @@ const variantMap: Record<string, string> = {
   light: theme.button.light,
 }
 
+/**
+ * Reusable button component with theme-aware variants.
+ */
 export default function Button({ variant = 'primary', className = '', children, ...rest }: ButtonProps) {
   const base = 'rounded text-sm font-medium transition-colors'
   const v = variantMap[variant] || variantMap.primary

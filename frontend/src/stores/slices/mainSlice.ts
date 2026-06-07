@@ -26,6 +26,10 @@ export interface mainSlice {
     swapExperiment: (experiment: string) => Promise<void>; 
 }
 
+/**
+ * Main application slice for stock, experiment, and UI state.
+ * Includes actions for loading data, managing stocks, and swapping experiments.
+ */
 export const createMainSlice: StateCreator<mainSlice, [], [], mainSlice> = (set, get) => ({
     stocks: JSON.parse(localStorage.getItem("stockList") || JSON.stringify([])),
     priceData: [],
@@ -36,6 +40,9 @@ export const createMainSlice: StateCreator<mainSlice, [], [], mainSlice> = (set,
     currentExperiment: "Default",
     experiments: ["Default"],
 
+    /**
+     * Initialize the app state by loading saved stocks and experiment data.
+     */
     initialize: async () => {
         const email = localStorage.getItem('userEmail');
         let initialExperiment = get().currentExperiment;
@@ -94,6 +101,9 @@ export const createMainSlice: StateCreator<mainSlice, [], [], mainSlice> = (set,
         set({ priceData: data, selectedStock: newSelectedStock });
     },
 
+    /**
+     * Add a new stock to the current experiment and fetch its price history.
+     */
     addStock: async (ticker: string) => {
         const cleanTicker = ticker.toUpperCase().trim();
         const { stocks, currentExperiment } = get();
@@ -120,6 +130,9 @@ export const createMainSlice: StateCreator<mainSlice, [], [], mainSlice> = (set,
         });
     },
 
+    /**
+     * Remove a stock from the current experiment and update persisted state.
+     */
     removeStock: async (symbol: string) => {
         const email = localStorage.getItem('userEmail');
         const { currentExperiment } = get();
@@ -147,6 +160,9 @@ export const createMainSlice: StateCreator<mainSlice, [], [], mainSlice> = (set,
         });
     },
 
+    /**
+     * Switch to a different experiment and reload its associated stocks and transactions.
+     */
     swapExperiment: async (experiment: string) => {
         set({ currentExperiment: experiment });
 
@@ -189,8 +205,17 @@ export const createMainSlice: StateCreator<mainSlice, [], [], mainSlice> = (set,
         }
     },
 
+    /**
+     * Update the active report tab in the UI.
+     */
     setReportTab: (tab) => set({ reportTab: tab }),
+    /**
+     * Set the current selected date.
+     */
     setDate: (date) => set({ date }),
+    /**
+     * Set the currently selected stock symbol.
+     */
     setSelectedStock: (stock) => set({ selectedStock: stock }),
     
     getStockPriceAtDate: (ticker: string, date: string) => {

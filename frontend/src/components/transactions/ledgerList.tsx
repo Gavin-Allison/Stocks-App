@@ -13,6 +13,9 @@ type LedgerRowProps = {
     onRemove: (t: any) => void;
 };
 
+/**
+ * Memoized row renderer for the ledger list.
+ */
 const LedgerRow = React.memo(function LedgerRow({ 
     entry, 
     date, 
@@ -132,6 +135,9 @@ const LedgerRow = React.memo(function LedgerRow({
     );
 });
 
+/**
+ * Ledger list component that renders transaction history and batch actions.
+ */
 export const LedgerList = ({ ledger }: { ledger: LedgerEntry[] }) => {
     const selectedBatchId = useAppStore(state => state.selectedBatchId);
     const setSelectedBatchId = useAppStore(state => state.setSelectedBatchId);

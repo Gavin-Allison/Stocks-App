@@ -8,6 +8,8 @@ import { stockController } from './controllers/stockController';
 import { aiController } from './controllers/aiController';
 import { loggingMiddleware, errorMiddleware } from './middleware/errorMiddleware';
 
+// Express application bootstrap
+// Configures CORS, JSON body parsing, request logging, API routes, and error handling.
 const app = express();
 
 // Middleware

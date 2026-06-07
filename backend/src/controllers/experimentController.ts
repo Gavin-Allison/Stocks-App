@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 import { experimentRepository } from "../repositories/experimentRepository";
 
 export class ExperimentController {
+    /**
+     * Fetch experiment-level data including active stocks, transactions, and available tabs.
+     */
     async getExperimentData(req: Request, res: Response): Promise<void> {
         try {
             const { experiment_name } = req.params;
@@ -30,6 +33,9 @@ export class ExperimentController {
         }
     }
 
+    /**
+     * Add a stock to the user's experiment tab, creating the experiment if needed.
+     */
     async addStock(req: Request, res: Response): Promise<void> {
         try {
             const { user_email, experiment_name, ticker } = req.body;
@@ -44,6 +50,9 @@ export class ExperimentController {
         }
     }
 
+    /**
+     * Remove a stock link from the user's experiment tab.
+     */
     async removeStock(req: Request, res: Response): Promise<void> {
         try {
             const { user_email, experiment_name, ticker } = req.body;

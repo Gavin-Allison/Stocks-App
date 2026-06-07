@@ -4,7 +4,9 @@ import { ChartComponent } from "./stockChart";
 import { Panel, Button } from "../common/ui";
 import { theme } from "../../styles/tokens";
 
-// Stock chart item using fetched data
+/**
+ * Individual stock chart card used inside the stock chart list.
+ */
 const StockChart = memo(({
     symbol,
     priceData,

@@ -7,6 +7,9 @@ export interface ExperimentData {
 }
 
 export class ExperimentRepository {
+    /**
+     * Load experiment data including transactions, tracked stocks, and experiment list.
+     */
     async getExperimentData(userEmail: string, experimentName: string): Promise<ExperimentData> {
         const txQuery = `
             SELECT t.id, t.ticker, t.transaction_date, t.type, t.details, t.batch_id
@@ -45,6 +48,9 @@ export class ExperimentRepository {
         };
     }
 
+    /**
+     * Add a stock to an experiment tab, creating the experiment and stock record if needed.
+     */
     async addStockToExperiment(
         userEmail: string,
         experimentName: string,
@@ -73,6 +79,9 @@ export class ExperimentRepository {
         await pool.query(query, [userEmail, experimentName, ticker]);
     }
 
+    /**
+     * Remove a stock association from the specified experiment.
+     */
     async removeStockFromExperiment(
         userEmail: string,
         experimentName: string,

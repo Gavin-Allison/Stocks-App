@@ -56,6 +56,9 @@ export interface transactionSlice {
     commitTransactionBatch: (batchId: string) => Promise<void>;
 }
 
+/**
+ * Persist only committed transactions to local storage when operating offline.
+ */
 const saveTransactions = (transactions: Transaction[], email: string | null) => {
     if (!email) {
         const commitedTransactions = transactions.filter((t) => t.committed === true);
@@ -63,6 +66,10 @@ const saveTransactions = (transactions: Transaction[], email: string | null) => 
     }
 };
 
+/**
+ * Transaction state slice for creating, updating, committing, removing,
+ * and generating transactions, including AI transactions and repeat scheduling.
+ */
 export const createTransactionSlice: StateCreator<transactionSlice & MainSliceDependencies, [], [], transactionSlice> = (set, get) => ({
     transactions: (() => {
         const saved = JSON.parse(localStorage.getItem("transactions") || "[]") as Transaction[];
@@ -111,6 +118,9 @@ export const createTransactionSlice: StateCreator<transactionSlice & MainSliceDe
     setRepeatIntervalDays: (value: number) => set({ repeatIntervalDays: value }),
     setRepeatOccurrences: (value: number) => set({ repeatOccurrences: value }),
 
+    /**
+     * Insert a single transaction into the ledger, preserving chronological order.
+     */
     addTransaction: (transaction: Transaction) => {
         set((state) => {
             const index = state.transactions.findIndex(t => t.date > transaction.date);
@@ -128,6 +138,9 @@ export const createTransactionSlice: StateCreator<transactionSlice & MainSliceDe
         });
     },
 
+    /**
+     * Insert a batch of transactions into the ledger and sort by date.
+     */
     addTransactionBatch: (transactions: Transaction[]) => {
         set((state) => {
             const newTransactions = [...state.transactions, ...transactions].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -138,6 +151,9 @@ export const createTransactionSlice: StateCreator<transactionSlice & MainSliceDe
         });
     },
 
+    /**
+     * Remove an individual transaction and keep local or server state in sync.
+     */
     removeTransaction: async (transaction: Transaction) => {
         const email = localStorage.getItem("userEmail");
 
@@ -176,6 +192,9 @@ export const createTransactionSlice: StateCreator<transactionSlice & MainSliceDe
         });
     },
 
+    /**
+     * Remove all transactions in a batch, handling both local and remote deletion.
+     */
     removeTransactionBatch: async (batchId: string) => {
         const email = localStorage.getItem("userEmail");
         const toRemove = get().transactions.filter(t => t.batchId === batchId);
@@ -219,6 +238,9 @@ export const createTransactionSlice: StateCreator<transactionSlice & MainSliceDe
 
 
     setPrompt: (newPrompt: string) => set({ prompt: newPrompt}),
+    /**
+     * Send the prompt to the AI backend and add the resulting draft transactions.
+     */
     getPromptResponse: async (prompt: string) => {
         try {
             const { 
@@ -264,6 +286,9 @@ export const createTransactionSlice: StateCreator<transactionSlice & MainSliceDe
         }
     },
 
+    /**
+     * Commit a draft transaction to the backend database and mark it committed.
+     */
     commitTransaction: async (transaction: Transaction) => {
         const email = localStorage.getItem("userEmail");
         const currentExperiment = (get() as any).currentExperiment || "Default";
@@ -301,6 +326,9 @@ export const createTransactionSlice: StateCreator<transactionSlice & MainSliceDe
         }
     },
 
+    /**
+     * Commit an entire draft batch of transactions to the backend and mark them committed.
+     */
     commitTransactionBatch: async (batchId: string) => {
         const email = localStorage.getItem("userEmail");
         const currentExperiment = (get() as any).currentExperiment || "Default";

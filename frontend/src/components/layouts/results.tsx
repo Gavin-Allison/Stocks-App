@@ -5,6 +5,9 @@ import { StockPieChart } from "../common/pieChart";
 import { Panel } from "../common/ui";
 import { theme } from "../../styles/tokens";
 
+/**
+ * Results view that summarizes portfolio value, asset allocation, and holdings.
+ */
 export const Results = () => {
     const date = useAppStore(s => s.date);
     const setDate = useAppStore(s => s.setDate);

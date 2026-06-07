@@ -4,6 +4,9 @@ import Login from "../common/login";
 import { Button } from "../common/ui";
 import { theme } from "../../styles/tokens";
 
+/**
+ * Application header with experiment controls, stock input, report tab navigation, and login.
+ */
 export const Header = () => {
     const [addableStock, setAddableStock] = useState("");
     const [newExpName, setNewExpName] = useState("");

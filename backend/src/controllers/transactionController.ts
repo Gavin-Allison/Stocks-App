@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 import { transactionRepository } from "../repositories/transactionRepository";
 
 export class TransactionController {
+    /**
+     * Create a new transaction record for the current user experiment.
+     */
     async createTransaction(req: Request, res: Response): Promise<void> {
         try {
             const { user_email, id, batch_id, ticker, experiment_name, transaction_date, type, details } = req.body;
@@ -25,6 +28,9 @@ export class TransactionController {
         }
     }
 
+    /**
+     * Delete a transaction by its ID and return a success flag.
+     */
     async deleteTransaction(req: Request, res: Response): Promise<void> {
         try {
             const { id } = req.params;

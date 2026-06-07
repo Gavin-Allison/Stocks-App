@@ -3,6 +3,9 @@ import { useAppStore } from '../../stores/appStore';
 import { Input } from '../common/ui';
 import { theme } from '../../styles/tokens';
 
+/**
+ * Summary formatter for the repeat schedule controls.
+ */
 const summarizeSchedule = (frequency: string, interval: number, occurrences: number) => {
     if (frequency === 'NONE' || occurrences === 1) {
         return 'No repeat';
@@ -15,8 +18,10 @@ const summarizeSchedule = (frequency: string, interval: number, occurrences: num
     return `${frequency.charAt(0) + frequency.slice(1).toLowerCase()} for ${occurrences} occurrences`;
 };
 
+/**
+ * Repeat schedule panel used by transaction inputs to configure recurring execution.
+ */
 export const RepeatSchedule = () => {
-    const date = useAppStore(s => s.date);
     const repeatScheduleOpen = useAppStore(s => s.repeatScheduleOpen);
     const repeatFrequency = useAppStore(s => s.repeatFrequency);
     const repeatIntervalDays = useAppStore(s => s.repeatIntervalDays);

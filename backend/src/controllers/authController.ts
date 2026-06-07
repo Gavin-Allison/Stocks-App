@@ -2,6 +2,10 @@ import { Request, Response } from "express";
 import { userRepository } from "../repositories/userRepository";
 
 export class AuthController {
+    /**
+     * Authenticate the user by email and return the user record.
+     * If the email does not exist, this will create a new user.
+     */
     async login(req: Request, res: Response): Promise<void> {
         try {
             const { email } = req.body;

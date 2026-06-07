@@ -13,6 +13,9 @@ interface GoogleJwtPayload {
     sub: string;
 }
 
+/**
+ * Google OAuth login component that stores the authenticated user profile.
+ */
 export default function Login() {
     const [userProfile, setUserProfile] = useState<GoogleJwtPayload | null>(null);
 

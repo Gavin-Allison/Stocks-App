@@ -8,6 +8,9 @@ import type { ledgerSlice } from './slices/ledgerSlice';
 
 interface AppState extends mainSlice, transactionSlice, ledgerSlice {}
 
+/**
+ * Global Zustand app store combining main, transaction, and ledger slices.
+ */
 export const useAppStore = create<AppState>()((...a) => ({
   ...createMainSlice(...a),
   ...createTransactionSlice(...a),

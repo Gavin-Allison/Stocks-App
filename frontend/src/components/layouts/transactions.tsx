@@ -12,6 +12,9 @@ import { Button, Panel } from "../common/ui";
 
 import type { Transaction } from "../../types/transactionType";
 
+/**
+ * Transactions page containing trade, cash, AI input panels and the ledger view.
+ */
 export const Transactions = () => {
     const date = useAppStore(s => s.date);
     const setDate = useAppStore(s => s.setDate);
@@ -46,6 +49,9 @@ export const Transactions = () => {
 
     const ledger = React.useMemo(() => getLedger(), [transactions, priceData, getLedger]);
 
+    /**
+     * Add a number of months to a date while keeping the day-of-month valid.
+     */
     const addMonths = (dateValue: Date, months: number) => {
         const result = new Date(dateValue);
         const day = result.getDate();
@@ -56,6 +62,9 @@ export const Transactions = () => {
         return result;
     };
 
+    /**
+     * Add a number of years to a date while preserving the day-of-month.
+     */
     const addYears = (dateValue: Date, years: number) => {
         const result = new Date(dateValue);
         const day = result.getDate();
@@ -66,6 +75,9 @@ export const Transactions = () => {
         return result;
     };
 
+    /**
+     * Build a series of scheduled transactions based on repeat settings.
+     */
     const buildScheduledTransactions = (details: any) => {
         const occurrences = repeatFrequency === "NONE" ? 1 : Math.max(1, repeatOccurrences);
         const startDate = new Date(date);
@@ -101,6 +113,9 @@ export const Transactions = () => {
         return result;
     };
 
+    /**
+     * Add a transaction or batch of scheduled transactions to the ledger.
+     */
     const handleAddTransaction = (details: any) => {
         const scheduledTransactions = buildScheduledTransactions(details);
 

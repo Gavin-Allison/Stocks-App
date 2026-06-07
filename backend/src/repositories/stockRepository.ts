@@ -1,12 +1,18 @@
 import YahooFinance from "yahoo-finance2";
 
 export class StockRepository {
+    /**
+     * Fetches historical pricing data from Yahoo Finance.
+     */
     private yahooFinance: InstanceType<typeof YahooFinance>;
 
     constructor() {
         this.yahooFinance = new YahooFinance();
     }
 
+    /**
+     * Retrieve daily price history for the given symbol over a multi-year window.
+     */
     async getStockHistory(symbol: string, years: number = 5): Promise<Record<string, number>> {
         // Calculate the date range for the specified number of years
         const fiveYearsAgo = Math.floor(Date.now() / 1000) - years * 365 * 24 * 60 * 60;

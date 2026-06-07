@@ -3,6 +3,9 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 
+/**
+ * Reusable date picker component bound to the app date state.
+ */
 export const StockDatePicker = ({ className, date, onDateChange }: { className?: string; date: string; onDateChange: (date: string) => void }) => {
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>

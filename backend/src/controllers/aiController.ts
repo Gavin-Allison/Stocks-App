@@ -16,6 +16,10 @@ interface ParseTransactionPayload {
     transactionDate?: string;
 }
 
+/**
+ * Send the user prompt to Gemini, validate the returned JSON schema,
+ * and normalize transaction results for the app.
+ */
 const parseTransactionPrompt = async (payload: ParseTransactionPayload): Promise<Transaction[]> => {
     const { promptText, selectedStock, priceData, transactionDate } = payload;
 
@@ -83,6 +87,9 @@ const parseTransactionPrompt = async (payload: ParseTransactionPayload): Promise
 };
 
 export class AiController {
+    /**
+     * Handle AI prompt requests from the frontend and return parsed transactions.
+     */
     async parseTransactionPrompt(req: Request, res: Response): Promise<void> {
         try {
             const { prompt, selectedStock, priceData, date } = req.body;

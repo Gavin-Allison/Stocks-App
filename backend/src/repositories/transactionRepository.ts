@@ -11,6 +11,9 @@ export interface TransactionRecord {
 }
 
 export class TransactionRepository {
+    /**
+     * Persist a new transaction to the user's experiment ledger.
+     */
     async createTransaction(
         id: string,
         batchId: string,
@@ -48,12 +51,18 @@ export class TransactionRepository {
         return result.rows[0];
     }
 
+    /**
+     * Delete a transaction by its unique identifier.
+     */
     async deleteTransaction(id: string): Promise<boolean> {
         const query = `DELETE FROM transactions WHERE id = $1 RETURNING id;`;
         const result = await pool.query(query, [id]);
         return result.rowCount ? result.rowCount > 0 : false;
     }
 
+    /**
+     * Load all transactions for a given user experiment, ordered by date.
+     */
     async getTransactionsByExperiment(
         userEmail: string,
         experimentName: string

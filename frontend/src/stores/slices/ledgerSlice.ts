@@ -4,6 +4,10 @@ import type { Transaction } from '../../types/transactionType';
 import type { mainSlice } from './mainSlice';
 import type { transactionSlice } from './transactionSlice';
 
+/**
+ * Validate transaction history and build ledger entries with running cash asset state.
+ * Detects errors such as insufficient cash or shares and marks ignored entries.
+ */
 const validateLedger = (transactions: Transaction[], priceData: {symbol: string, data: Record<string, number>}[]): LedgerEntry[] => {
     let cash = 0;
     const assets: Record<string, number> = {};
@@ -134,6 +138,9 @@ export interface ledgerSlice {
     getLedger: () => LedgerEntry[];
 }
 
+/**
+ * Ledger slice that exposes a memoized ledger computation for the transaction history.
+ */
 export const createLedgerSlice: StateCreator<mainSlice & transactionSlice & ledgerSlice, [], [], ledgerSlice> = (_set, get) => ({
     getLedger: (() => {
         let lastTransactions: Transaction[] | null = null;

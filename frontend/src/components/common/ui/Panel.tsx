@@ -5,6 +5,9 @@ type PanelProps = React.HTMLAttributes<HTMLDivElement> & {
   muted?: boolean
 }
 
+/**
+ * Card panel wrapper used across the app for boxed sections.
+ */
 export default function Panel({ muted = true, className = '', children, ...rest }: PanelProps) {
   const base = `flex flex-col mb-4 w-full ${theme.panel.border} rounded p-4`
   const bg = muted ? theme.panel.muted : theme.panel.regular

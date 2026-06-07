@@ -11,6 +11,9 @@ const sizeMap: Record<string, string> = {
   lg: 'px-3 py-1 text-base',
 }
 
+/**
+ * Reusable styled input component that supports size variants.
+ */
 export default function Input({ inputSize = 'md', className = '', ...rest }: InputProps) {
   return <input className={[theme.input.base, sizeMap[inputSize], className].filter(Boolean).join(' ')} {...rest} />
 }
