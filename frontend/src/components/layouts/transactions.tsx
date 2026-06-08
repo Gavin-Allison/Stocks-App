@@ -95,6 +95,12 @@ export const Transactions = () => {
                 occurrence.setDate(startDate.getDate() + repeatIntervalDays * index);
             }
 
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            if (occurrence > today) {
+                break; // Don't schedule transactions in the future
+            }
+
             const occurrenceDate = occurrence.toISOString().split("T")[0];
             const dateSpecificPrice = (details.type === 'FBUY' || details.type === 'FSELL')
                 ? getStockPriceAtDate(details.ticker, occurrenceDate) ?? details.pricePerUnit
