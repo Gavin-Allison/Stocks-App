@@ -85,6 +85,13 @@ export const ChartComponent = ({
             },
         });
 
+        chart.priceScale('right').applyOptions({
+            scaleMargins: {
+                top: 0.1,
+                bottom: 0.2,
+            },
+        });
+
         chartRef.current = chart;
         seriesRef.current = series;
         volumeSeriesRef.current = volumeSeries;
