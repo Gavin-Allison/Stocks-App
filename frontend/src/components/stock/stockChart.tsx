@@ -34,6 +34,11 @@ export const ChartComponent = ({
     const seriesRef = useRef<any>(null);
     const volumeSeriesRef = useRef<any>(null);
     const isAdjustingRef = useRef(false);
+    
+    const dataRef = useRef(data);
+    useEffect(() => {
+        dataRef.current = data;
+    }, [data]);
 
     // Chart initialization and primary effects
     useEffect(() => {
@@ -117,10 +122,11 @@ export const ChartComponent = ({
         });
 
         const handleResetZoom = () => {
-            if (data && data.length > 630) {
+            const currentData = dataRef.current;
+            if (currentData && currentData.length > 630) {
                 chart.timeScale().setVisibleLogicalRange({
-                    from: (data.length - 630) as any,
-                    to: data.length as any
+                    from: (currentData.length - 630) as any,
+                    to: currentData.length as any
                 });
             } else {
                 chart.timeScale().fitContent();
@@ -159,36 +165,36 @@ export const ChartComponent = ({
             }
         };
 
-        if (data && data.length > 0) {
-            series.setData(data);
-            if (data.length > 630) {
-                chart.timeScale().setVisibleLogicalRange({
-                    from: (data.length - 630) as any,
-                    to: data.length as any
-                });
-            } else {
-                chart.timeScale().fitContent();
-            }
-        }
-        
         resizeObserver.observe(chartContainerRef.current);
-        window.addEventListener('dblclick', handleResetZoom);
-        
         const container = chartContainerRef.current;
+        container.addEventListener('dblclick', handleResetZoom);
         container.addEventListener('wheel', handleWheelZoom, { passive: false });
 
         return () => {
             resizeObserver.disconnect();
-            window.removeEventListener('dblclick', handleResetZoom);
+            container.removeEventListener('dblclick', handleResetZoom);
             container.removeEventListener('wheel', handleWheelZoom);
             chart.remove();
         };
-    }, [setDate, setSelectedStock, symbol, data, backgroundColor, lineColor, textColor]);
+    }, [setDate, setSelectedStock, symbol, backgroundColor, lineColor, textColor]);
 
     // Update series and volume when data or transactions change
+    const initialZoomDoneRef = useRef(false);
     useEffect(() => {
         if (seriesRef.current && data && data.length > 0) {
             seriesRef.current.setData(data);
+
+            if (!initialZoomDoneRef.current && chartRef.current) {
+                if (data.length > 630) {
+                    chartRef.current.timeScale().setVisibleLogicalRange({
+                        from: (data.length - 630) as any,
+                        to: data.length as any
+                    });
+                } else {
+                    chartRef.current.timeScale().fitContent();
+                }
+                initialZoomDoneRef.current = true;
+            }
             
             if (volumeSeriesRef.current && transactions) {
                 const volumeMap = new Map<string, { volume: number, net: number }>();
