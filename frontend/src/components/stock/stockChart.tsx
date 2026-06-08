@@ -294,7 +294,7 @@ export const ChartComponent = ({
                 </div>
             )}
             <div ref={chartContainerRef} className="w-full h-full" />
-            {lineX !== null && lineX >= 0 && chartContainerRef.current && lineX <= chartContainerRef.current.clientWidth && (
+            {lineX !== null && lineX >= 0 && chartRef.current && lineX <= chartRef.current.timeScale().width() && (
                 <div
                     className="absolute top-0 pointer-events-none"
                     style={{
