@@ -42,3 +42,27 @@ export const FetchStockData = async (symbol: string): Promise<Record<string, num
     return {};
   }
 };
+
+
+/**
+ * Verifies if a given stock symbol exists in the backend database.
+ */
+export const VerifyStockExists = async (symbol: string): Promise<boolean> => {
+    try {
+        const response = await fetch(`http://localhost:3002/api/stock_exists?symbol=${symbol}`);
+
+        if (!response.ok) {
+            if (response.status === 404) {
+                return false;
+            }
+            throw new Error(`HTTP error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data.exists === true; 
+
+    } catch (err) {
+        console.error(`VerifyStockExists failed for ${symbol}:`, err);
+        return false; 
+    }
+  };

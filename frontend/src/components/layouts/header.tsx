@@ -1,8 +1,9 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useAppStore } from "../../stores/appStore";
 import Login from "../common/login";
 import { Button } from "../common/ui";
 import { theme } from "../../styles/tokens";
+import { VerifyStockExists } from "../../services/getStockData"; 
 
 /**
  * Application header with experiment controls, stock input, report tab navigation, and login.
@@ -10,6 +11,11 @@ import { theme } from "../../styles/tokens";
 export const Header = () => {
     const [addableStock, setAddableStock] = useState("");
     const [newExpName, setNewExpName] = useState("");
+    
+    // Validation states
+    const [isValidating, setIsValidating] = useState(false);
+    const [stockExists, setStockExists] = useState<boolean | null>(null);
+
     const experiments = useAppStore(s => s.experiments);
     const currentExperiment = useAppStore(s => s.currentExperiment);
     const addExperiment = useAppStore(s => s.addExperiment);
@@ -18,6 +24,28 @@ export const Header = () => {
     const addStock = useAppStore(s => s.addStock);
     const setReportTab = useAppStore(s => s.setReportTab);
     const reportTab = useAppStore(s => s.reportTab);
+
+    // Stock validation
+    useEffect(() => {
+        const ticker = addableStock.trim().toUpperCase();
+        
+        if (!ticker) {
+            setStockExists(null);
+            setIsValidating(false);
+            return;
+        }
+
+        setIsValidating(true);
+        setStockExists(null);
+
+        const timer = setTimeout(async () => {
+            const exists = await VerifyStockExists(ticker);
+            setStockExists(exists);
+            setIsValidating(false);
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [addableStock]);
 
     const handleAdd = useCallback(() => {
         addStock(addableStock);
@@ -102,24 +130,29 @@ export const Header = () => {
                     </div>
                 </div>
 
-                <div className="flex flex-row gap-2 items-center shrink min-w-0">
-                    {/* Add stock input */}
-                    <input
-                        type="text"
-                        value={addableStock}
-                        onChange={(e) => setAddableStock(e.target.value)}
-                        placeholder="Ticker (e.g. AAPL)"
-                        className={`${theme.input.base} text-sm px-2 py-1 w-[200px] shrink min-w-[60px]`}
-                    />
-                    
-                    <Button 
-                        onClick={handleAdd} 
-                        disabled={!addableStock.trim()} 
-                        className="px-3 shrink-0" 
-                        variant="primary"
-                    >
-                        Add Stock
-                    </Button>
+                {/* Add stock container */}
+                <div className="flex flex-col justify-center shrink min-w-0">
+                    <div className="flex flex-row gap-2 items-center">
+                        {/* Add stock input */}
+                        <input
+                            type="text"
+                            value={addableStock}
+                            onChange={(e) => setAddableStock(e.target.value)}
+                            placeholder="Ticker (e.g. AAPL)"
+                            className={`${theme.input.base} text-sm px-2 py-1 w-[200px] shrink min-w-[60px] ${
+                                stockExists === false ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
+                            }`}
+                        />
+                        
+                        <Button 
+                            onClick={handleAdd} 
+                            disabled={!addableStock.trim() || isValidating || stockExists === false} 
+                            className="px-3 shrink-0" 
+                            variant="primary"
+                        >
+                            {isValidating ? 'Checking...' : 'Add Stock'}
+                        </Button>
+                    </div>
                 </div>
             </div>
 

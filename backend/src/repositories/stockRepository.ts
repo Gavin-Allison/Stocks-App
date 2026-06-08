@@ -37,6 +37,23 @@ export class StockRepository {
 
         return formattedData;
     }
+
+    /**
+     * Verifies if a stock symbol exists on Yahoo Finance.
+     */
+    async checkStockExists(symbol: string): Promise<boolean> {
+        try {
+            // Fetching a basic quote is the fastest way to validate a symbol
+            const quote = await this.yahooFinance.quote(symbol);
+            
+            // If Yahoo Finance returns an object with a matching symbol, it is valid
+            return quote !== null && quote !== undefined && quote.symbol !== undefined;
+        } catch (error) {
+            // Yahoo Finance throws an error when a symbol is completely invalid or not found
+            console.warn(`Stock verification failed for ${symbol}:`, (error as Error).message);
+            return false;
+        }
+    }
 }
 
 export const stockRepository = new StockRepository();

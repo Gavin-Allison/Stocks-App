@@ -22,6 +22,7 @@ app.post('/api/users', (req, res) => authController.login(req, res));
 
 // Stock Routes
 app.get('/api/stock_history', (req, res) => stockController.getStockHistory(req, res));
+app.get('/api/stock_exists', (req, res) => stockController.checkStockExists(req, res));
 
 // AI Routes
 app.post('/api/ai', (req, res) => aiController.parseTransactionPrompt(req, res));
