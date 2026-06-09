@@ -1,5 +1,5 @@
+import React, { useEffect, useRef, useState } from 'react';
 import { AreaSeries, HistogramSeries, createChart, ColorType } from 'lightweight-charts';
-import { useEffect, useRef, useState } from 'react';
 import { useAppStore } from '../../stores/appStore';
 import { theme } from '../../styles/tokens';
 
@@ -7,7 +7,7 @@ import { theme } from '../../styles/tokens';
  * Renders a single lightweight stock chart with a transaction volume overlay.
  * Applies selection, zoom, and date interactions to the chart.
  */
-export const ChartComponent = ({
+export const ChartComponent = React.memo(({
     data,
     symbol,
     lineColor,
@@ -24,7 +24,11 @@ export const ChartComponent = ({
         textColor?: string;
     };
 }) => {
-    const { transactions, date, setDate, setSelectedStock } = useAppStore();
+    const setDate = useAppStore(state => state.setDate);
+    const setSelectedStock = useAppStore(state => state.setSelectedStock);
+    const transactions = useAppStore(state => state.transactions);
+    const date = useAppStore(state => state.date);
+
     const [lineX, setLineX] = useState<number | null>(null);
     const [scrollPos, setScrollPos] = useState(0);
     const [visibleSize, setVisibleSize] = useState(0);
@@ -34,13 +38,15 @@ export const ChartComponent = ({
     const seriesRef = useRef<any>(null);
     const volumeSeriesRef = useRef<any>(null);
     const isAdjustingRef = useRef(false);
-    
-    const dataRef = useRef(data);
-    useEffect(() => {
-        dataRef.current = data;
-    }, [data]);
+    const initialZoomDoneRef = useRef(false);
 
-    // Chart initialization and primary effects
+    // Refs for stable access in effects/listeners
+    const dataRef = useRef(data);
+    useEffect(() => { dataRef.current = data; }, [data]);
+    const symbolRef = useRef(symbol);
+    useEffect(() => { symbolRef.current = symbol; }, [symbol]);
+
+    // Chart initialization
     useEffect(() => {
         if (!chartContainerRef.current) return;
 
@@ -49,24 +55,9 @@ export const ChartComponent = ({
                 background: { type: ColorType.Solid, color: backgroundColor },
                 textColor,
             },
-            handleScroll: {
-                mouseWheel: true,
-                pressedMouseMove: false,
-                horzTouchDrag: true,
-                vertTouchDrag: false,
-            },
-            handleScale: {
-                mouseWheel: false,
-                pinch: true,
-                axisPressedMouseMove: {
-                    time: true,
-                    price: false,
-                },
-            },
-            timeScale: {
-                fixLeftEdge: true,
-                fixRightEdge: true,
-            },
+            handleScroll: { mouseWheel: true, pressedMouseMove: false, horzTouchDrag: true, vertTouchDrag: false },
+            handleScale: { mouseWheel: false, pinch: true, axisPressedMouseMove: { time: true, price: false } },
+            timeScale: { fixLeftEdge: true, fixRightEdge: true },
             width: chartContainerRef.current.clientWidth,
             height: 300,
         });
@@ -83,51 +74,31 @@ export const ChartComponent = ({
             priceLineVisible: false,
         });
 
-        chart.priceScale('').applyOptions({
-            scaleMargins: {
-                top: 0.85,
-                bottom: 0,
-            },
-        });
-
-        chart.priceScale('right').applyOptions({
-            scaleMargins: {
-                top: 0.1,
-                bottom: 0.2,
-            },
-        });
+        chart.priceScale('').applyOptions({ scaleMargins: { top: 0.85, bottom: 0 } });
+        chart.priceScale('right').applyOptions({ scaleMargins: { top: 0.1, bottom: 0.2 } });
 
         chartRef.current = chart;
         seriesRef.current = series;
         volumeSeriesRef.current = volumeSeries;
 
         chart.subscribeClick((param) => {
-            if (param.time) {
-                let timestamp;
-                if (typeof param.time === 'string') {
-                    timestamp = Date.parse(param.time);
-                } else {
-                    timestamp = Number(param.time) * 1000;
-                }
-                const dateStr = new Date(timestamp).toISOString().split('T')[0];
-                setDate(dateStr);
-                setSelectedStock(symbol);
-            }
+            const t = param.time || (param.point ? chart.timeScale().coordinateToTime(param.point.x) : null);
+            if (!t) return;
+            const dateStr = typeof t === 'string' ? t 
+                : typeof t === 'object' && t !== null && 'year' in t ? `${t.year}-${String(t.month).padStart(2, '0')}-${String(t.day).padStart(2, '0')}`
+                : new Date(Number(t) * 1000).toISOString().split('T')[0];
+            setDate(dateStr);
+            setSelectedStock(symbolRef.current);
         });
     
         const resizeObserver = new ResizeObserver(entries => {
-            if (entries[0].contentRect) {
-                chart.applyOptions({ width: entries[0].contentRect.width });
-            }
+            if (entries[0].contentRect) chart.applyOptions({ width: entries[0].contentRect.width });
         });
 
         const handleResetZoom = () => {
-            const currentData = dataRef.current;
-            if (currentData && currentData.length > 630) {
-                chart.timeScale().setVisibleLogicalRange({
-                    from: (currentData.length - 630) as any,
-                    to: currentData.length as any
-                });
+            const d = dataRef.current;
+            if (d?.length > 630) {
+                chart.timeScale().setVisibleLogicalRange({ from: (d.length - 630) as any, to: d.length as any });
             } else {
                 chart.timeScale().fitContent();
             }
@@ -135,19 +106,13 @@ export const ChartComponent = ({
 
         chart.timeScale().subscribeVisibleLogicalRangeChange((newRange) => {
             if (!newRange || isAdjustingRef.current) return;
-
             const size = newRange.to - newRange.from;
-
             if (size > 630) {
                 isAdjustingRef.current = true;
-                chart.timeScale().setVisibleLogicalRange({
-                    from: (newRange.to - 630) as any,
-                    to: newRange.to as any
-                });
+                chart.timeScale().setVisibleLogicalRange({ from: (newRange.to - 630) as any, to: newRange.to as any });
                 setTimeout(() => { isAdjustingRef.current = false; }, 0);
                 return;
             }
-
             setScrollPos(newRange.from);
             setVisibleSize(size);
         });
@@ -155,170 +120,83 @@ export const ChartComponent = ({
         const handleWheelZoom = (e: WheelEvent) => {
             if (e.shiftKey) {
                 e.preventDefault();
-                chart.applyOptions({
-                    handleScale: { mouseWheel: true }
-                });
+                chart.applyOptions({ handleScale: { mouseWheel: true } });
             } else {
-                chart.applyOptions({
-                    handleScale: { mouseWheel: false }
-                });
+                chart.applyOptions({ handleScale: { mouseWheel: false } });
             }
         };
 
         resizeObserver.observe(chartContainerRef.current);
-        const container = chartContainerRef.current;
-        container.addEventListener('dblclick', handleResetZoom);
-        container.addEventListener('wheel', handleWheelZoom, { passive: false });
+        chartContainerRef.current.addEventListener('dblclick', handleResetZoom);
+        chartContainerRef.current.addEventListener('wheel', handleWheelZoom, { passive: false });
 
         return () => {
             resizeObserver.disconnect();
-            container.removeEventListener('dblclick', handleResetZoom);
-            container.removeEventListener('wheel', handleWheelZoom);
             chart.remove();
         };
-    }, [setDate, setSelectedStock, symbol, backgroundColor, lineColor, textColor]);
+    // Dependencies are now primitives or stable references
+    }, [backgroundColor, lineColor, textColor]);
 
-    // Update series and volume when data or transactions change
-    const initialZoomDoneRef = useRef(false);
+    // Update series/volume
     useEffect(() => {
-        if (seriesRef.current && data && data.length > 0) {
-            seriesRef.current.setData(data);
+        if (!seriesRef.current || !data?.length) return;
+        seriesRef.current.setData(data);
 
-            if (!initialZoomDoneRef.current && chartRef.current) {
-                if (data.length > 630) {
-                    chartRef.current.timeScale().setVisibleLogicalRange({
-                        from: (data.length - 630) as any,
-                        to: data.length as any
-                    });
-                } else {
-                    chartRef.current.timeScale().fitContent();
-                }
-                initialZoomDoneRef.current = true;
-            }
-            
-            if (volumeSeriesRef.current && transactions) {
-                const volumeMap = new Map<string, { volume: number, net: number }>();
-                
-                transactions.forEach((tx: any) => {
-                    if (!('ticker' in tx) || tx.ticker !== symbol) return;
-                    
-                    let amount = 0;
-                    let isBuy = true;
-                    
-                    if (tx.type === 'FBUY') { amount = tx.amount; }
-                    else if (tx.type === 'FSELL') { amount = tx.amount; isBuy = false; }
-                    else if (tx.type === 'DBUY') { amount = tx.value; }
-                    else if (tx.type === 'DSELL') { amount = tx.value; isBuy = false; }
-                    else return;
+        if (!initialZoomDoneRef.current) {
+            if (data.length > 630) chartRef.current.timeScale().setVisibleLogicalRange({ from: (data.length - 630) as any, to: data.length as any });
+            else chartRef.current.timeScale().fitContent();
+            initialZoomDoneRef.current = true;
+        }
+        
+        if (volumeSeriesRef.current && transactions) {
+            const volumeMap = new Map<string, { volume: number, net: number }>();
+            transactions.forEach((tx: any) => {
+                if (tx.ticker !== symbol) return;
+                const amount = tx.type.startsWith('F') ? tx.amount : tx.value;
+                const isBuy = tx.type === 'FBUY' || tx.type === 'DBUY';
+                const entry = volumeMap.get(tx.date) || { volume: 0, net: 0 };
+                entry.volume += amount;
+                entry.net += isBuy ? amount : -amount;
+                volumeMap.set(tx.date, entry);
+            });
 
-                    if (!volumeMap.has(tx.date)) {
-                        volumeMap.set(tx.date, { volume: 0, net: 0 });
-                    }
-                    
-                    const dayData = volumeMap.get(tx.date)!;
-                    dayData.volume += amount;
-                    dayData.net += isBuy ? amount : -amount;
-                });
-
-                const volumeData: any[] = [];
-                let lastVol = -1;
-                let lastIsBuy = false;
-                let alt = false;
-
-                Array.from(volumeMap.keys()).sort().forEach(dateStr => {
-                    const dayData = volumeMap.get(dateStr)!;
-                    if (dayData.volume > 0) {
-                        const isBuy = dayData.net >= 0;
-                        
-                        if (dayData.volume === lastVol && isBuy === lastIsBuy) {
-                            alt = !alt;
-                        } else {
-                            alt = false;
-                        }
-                        
-                        lastVol = dayData.volume;
-                        lastIsBuy = isBuy;
-
-                        volumeData.push({
-                            time: dateStr,
-                            value: dayData.volume,
-                            color: isBuy ? (alt ? '#4db6ac' : '#26a69a') : (alt ? '#e57373' : '#ef5350'),
-                        });
-                    }
-                });
-
-                volumeSeriesRef.current.setData(volumeData);
-            }
+            const volumeData = Array.from(volumeMap.keys()).sort().map(dateStr => {
+                const day = volumeMap.get(dateStr)!;
+                return { time: dateStr, value: day.volume, color: day.net >= 0 ? '#26a69a' : '#ef5350' };
+            });
+            volumeSeriesRef.current.setData(volumeData);
         }
     }, [data, transactions, symbol]);
 
-    // Track and render vertical line for selected date
+    // Date line sync
     useEffect(() => {
-        if (!chartRef.current || !date) {
-            setLineX(null);
-            return;
-        }
-
-        const updateLinePosition = () => {
-            const x = chartRef.current.timeScale().timeToCoordinate(date);
-            setLineX(x);
-        };
-
+        if (!chartRef.current || !date) { setLineX(null); return; }
+        const updateLinePosition = () => setLineX(chartRef.current.timeScale().timeToCoordinate(date));
         updateLinePosition();
-
         chartRef.current.timeScale().subscribeVisibleTimeRangeChange(updateLinePosition);
         chartRef.current.timeScale().subscribeVisibleLogicalRangeChange(updateLinePosition);
-
         return () => {
-            if (chartRef.current) {
-                chartRef.current.timeScale().unsubscribeVisibleTimeRangeChange(updateLinePosition);
-                chartRef.current.timeScale().unsubscribeVisibleLogicalRangeChange(updateLinePosition);
-            }
+            chartRef.current?.timeScale().unsubscribeVisibleTimeRangeChange(updateLinePosition);
+            chartRef.current?.timeScale().unsubscribeVisibleLogicalRangeChange(updateLinePosition);
         };
     }, [date, data]);
 
     const maxScroll = Math.max(0, (data?.length || 0) - visibleSize);
 
-    // Render controls and chart container
     return (
         <div className={`relative ${theme.panel.muted} w-full h-full rounded ${theme.panel.border} overflow-hidden`}>
             {maxScroll > 0 && (
                 <div className="absolute top-2 left-4 right-24 z-5 pointer-events-none">
-                    <input
-                        type="range"
-                        className="w-full h-1.5 bg-gray-300 rounded-lg appearance-none cursor-pointer pointer-events-auto"
-                        min={0}
-                        max={maxScroll}
-                        step="any"
-                        value={Math.min(scrollPos, maxScroll)}
-                        onChange={(e) => {
-                            const newFrom = Number(e.target.value);
-                            const newTo = newFrom + visibleSize;
-                            setScrollPos(newFrom);
-                            if (chartRef.current) {
-                                chartRef.current.timeScale().setVisibleLogicalRange({
-                                    from: newFrom as any,
-                                    to: newTo as any
-                                });
-                            }
-                        }}
-                        style={{ accentColor: lineColor || '#2196F3' }}
-                    />
+                    <input type="range" className="w-full h-1.5 bg-gray-300 rounded-lg appearance-none cursor-pointer pointer-events-auto"
+                        min={0} max={maxScroll} step="any" value={Math.min(scrollPos, maxScroll)}
+                        onChange={(e) => chartRef.current?.timeScale().setVisibleLogicalRange({ from: Number(e.target.value) as any, to: (Number(e.target.value) + visibleSize) as any })}
+                        style={{ accentColor: lineColor || '#2196F3' }} />
                 </div>
             )}
             <div ref={chartContainerRef} className="w-full h-full" />
-            {lineX !== null && lineX >= 0 && chartRef.current && lineX <= chartRef.current.timeScale().width() && (
-                <div
-                    className="absolute top-0 pointer-events-none"
-                    style={{
-                        left: `${lineX}px`,
-                        height: '260px',
-                        borderLeft: `2px dashed ${lineColor || '#2196F3'}`,
-                        transform: 'translateX(-50%)',
-                        zIndex: 5,
-                    }}
-                />
+            {lineX !== null && (
+                <div className="absolute top-0 pointer-events-none" style={{ left: `${lineX}px`, height: '260px', borderLeft: `2px dashed ${lineColor || '#2196F3'}`, transform: 'translateX(-50%)', zIndex: 5 }} />
             )}
         </div>
     );
-}
+}, (prev, next) => prev.data === next.data && prev.symbol === next.symbol);
