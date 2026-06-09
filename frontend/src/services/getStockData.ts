@@ -35,7 +35,7 @@ export const FetchStockData = async (symbol: string): Promise<Record<string, num
       
       current.setUTCDate(current.getUTCDate() + 1);
     }
-    console.log(filledData)
+
     return filledData;
   } catch (err) {
     console.error("FetchStockData failed:", err);

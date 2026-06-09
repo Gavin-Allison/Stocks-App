@@ -9,7 +9,7 @@ import { Results } from "./results"
 export const Report = () => {
     const reportTab = useAppStore(s => s.reportTab);
 
-    if (reportTab === "Transactions") {
+    if (reportTab === "TRANSACTIONS") {
         return <Transactions />
     } else {
         return <Results />;

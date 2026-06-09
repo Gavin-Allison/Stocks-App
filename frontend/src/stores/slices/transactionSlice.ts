@@ -60,10 +60,8 @@ export interface transactionSlice {
  * Persist only committed transactions to local storage when operating offline.
  */
 const saveTransactions = (transactions: Transaction[], email: string | null) => {
-    if (!email) {
-        const commitedTransactions = transactions.filter((t) => t.committed === true);
-        localStorage.setItem("transactions", JSON.stringify(commitedTransactions));
-    }
+    const commitedTransactions = transactions.filter((t) => t.committed === true);
+    localStorage.setItem("transactions", JSON.stringify(commitedTransactions));
 };
 
 /**

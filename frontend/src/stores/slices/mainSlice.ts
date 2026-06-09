@@ -9,7 +9,7 @@ export interface mainSlice {
     stocks: Stock[];
     priceData: { symbol: string; data: Record<string, number> }[];
     transactions: Transaction[]; 
-    reportTab: string;
+    reportTab: "CHARTS" | "TRANSACTIONS" | "RESULTS";
     date: string;
     selectedStock: string;
     currentExperiment: string;
@@ -17,7 +17,7 @@ export interface mainSlice {
     initialize: () => Promise<void>;
     addStock: (symbol: string) => Promise<void>;
     removeStock: (symbol: string) => Promise<void>; 
-    setReportTab: (tab: string) => void;
+    setReportTab: (tab: "CHARTS" | "TRANSACTIONS" | "RESULTS") => void;
     setDate: (date: string) => void;
     setSelectedStock: (stock: string) => void;
     getStockPriceAtDate: (ticker: string, date: string) => number | null;
@@ -33,8 +33,8 @@ export interface mainSlice {
 export const createMainSlice: StateCreator<mainSlice, [], [], mainSlice> = (set, get) => ({
     stocks: JSON.parse(localStorage.getItem("stockList") || JSON.stringify([])),
     priceData: [],
-    transactions: [],
-    reportTab: 'Tutorial',
+    transactions: JSON.parse(localStorage.getItem("transactions") || "[]"),
+    reportTab: 'TRANSACTIONS',
     date: new Date().toISOString().split('T')[0],
     selectedStock: '',
     currentExperiment: "Default",

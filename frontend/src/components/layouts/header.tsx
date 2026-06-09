@@ -163,23 +163,23 @@ export const Header = () => {
                 {/* Navigation buttons */}
                 <div className="flex gap-2">
                     <Button 
-                        onClick={() => setReportTab("Charts")} 
-                        className="px-2 @2xl:hidden" 
-                        variant={reportTab === "Charts" ? "primary" : "light"}
+                        onClick={() => setReportTab("CHARTS")} 
+                        className={`px-2 ${reportTab === "CHARTS" ? "" : "@2xl:hidden"}`}
+                        variant={reportTab === "CHARTS" ? "primary" : "light"}
                     >
                         Charts
                     </Button>
                     <Button 
-                        onClick={() => setReportTab("Transactions")} 
+                        onClick={() => setReportTab("TRANSACTIONS")} 
                         className="px-2" 
-                        variant={reportTab === "Transactions" ? "primary" : "light"}
+                        variant={reportTab === "TRANSACTIONS" ? "primary" : "light"}
                     >
                         Transactions
                     </Button>
                     <Button 
-                        onClick={() => setReportTab("Results")} 
+                        onClick={() => setReportTab("RESULTS")} 
                         className="px-2" 
-                        variant={reportTab === "Results" ? "primary" : "light"}
+                        variant={reportTab === "RESULTS" ? "primary" : "light"}
                     >
                         Results
                     </Button>
