@@ -31,6 +31,7 @@ export interface transactionSlice {
     errorMessage?: string;
     prompt: string;
     promptResponse: string;
+    promptLoading: boolean;
 
     setNumStocks: (value: number) => void;
     setRepeatScheduleOpen: (open: boolean) => void;
@@ -45,6 +46,7 @@ export interface transactionSlice {
     setRepeatFrequency: (frequency: "NONE" | "YEARLY" | "MONTHLY" | "EVERY_X_DAYS") => void;
     setRepeatIntervalDays: (value: number) => void;
     setRepeatOccurrences: (value: number) => void;
+    setPromptLoading: (value: boolean) => void;
 
     addTransaction: (transaction: Transaction) => void;
     addTransactionBatch: (transactions: Transaction[]) => void;
@@ -92,6 +94,7 @@ export const createTransactionSlice: StateCreator<transactionSlice & MainSliceDe
     errorMessage: undefined,
     prompt: "",
     promptResponse: "",
+    promptLoading: false,
 
     setNumStocks: (value: number) => set({ numStocks: value }),
     setPercentOfCash: (value: number) => set({ percentOfCash: value }),
@@ -115,6 +118,7 @@ export const createTransactionSlice: StateCreator<transactionSlice & MainSliceDe
     setRepeatFrequency: (frequency) => set({ repeatFrequency: frequency }),
     setRepeatIntervalDays: (value: number) => set({ repeatIntervalDays: value }),
     setRepeatOccurrences: (value: number) => set({ repeatOccurrences: value }),
+    setPromptLoading: (value: boolean) => set({ promptLoading: value }),
 
     /**
      * Insert a single transaction into the ledger, preserving chronological order.
@@ -248,6 +252,8 @@ export const createTransactionSlice: StateCreator<transactionSlice & MainSliceDe
                 addTransaction, 
                 addTransactionBatch 
             } = get();
+
+            set({ promptLoading: true, promptResponse: "" });
             
             const stockData = priceData.find((p) => p.symbol === selectedStock)?.data ?? {};
             const response = await fetchPromptResponse({
@@ -266,7 +272,7 @@ export const createTransactionSlice: StateCreator<transactionSlice & MainSliceDe
 
             const normalizedTransactions = response.map((t) => ({
                 ...t,
-                id: t.id ?? crypto.randomUUID(),
+                id: crypto.randomUUID(),
                 batchId: t.batchId ?? "Preview",
                 committed: false,
             }));
@@ -281,6 +287,8 @@ export const createTransactionSlice: StateCreator<transactionSlice & MainSliceDe
         } catch (err) {
             console.error("Failed to fetch AI transactions:", err);
             set({ promptResponse: err instanceof Error ? err.message : String(err) });
+        } finally {
+            set({ promptLoading: false });
         }
     },
 

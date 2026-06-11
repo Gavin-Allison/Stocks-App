@@ -42,6 +42,7 @@ export const Transactions = () => {
     const currentPrice = useAppStore(s => s.currentPrice);
     const prompt = useAppStore(s => s.prompt);
     const getPromptResponse = useAppStore(s => s.getPromptResponse);
+    const promptLoading = useAppStore(s => s.promptLoading);
     const getStockPriceAtDate = useAppStore(s => s.getStockPriceAtDate);
 
     const transactions = useAppStore(s => s.transactions);
@@ -164,7 +165,7 @@ export const Transactions = () => {
                 <div className="flex items-center justify-between p-2">
                     <div className="flex flex-col @[494px]:flex-row gap-2">
                         {tradeOrCash === "AI" ? (
-                            <Button onClick={() => getPromptResponse(prompt)} className="w-24 @[494px]:w-42">Generate Transactions</Button>
+                            <Button onClick={() => getPromptResponse(prompt)} disabled={promptLoading} className="w-24 @[494px]:w-42">Generate Transactions</Button>
                         ) : tradeOrCash === "CASH" ? (
                             <>
                                 <Button onClick={() => handleAddTransaction({ id: crypto.randomUUID(), type: "DEPOSIT", amount: cashAmount, fees: cashFee })} className="w-20">Deposit</Button>
