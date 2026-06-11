@@ -8,6 +8,7 @@ export const PromptInputs = () => {
     const prompt = useAppStore(s => s.prompt);
     const setPrompt = useAppStore(s => s.setPrompt);
     const promptResponse = useAppStore(s => s.promptResponse);
+    const promptLoading = useAppStore(s => s.promptLoading); 
 
     const onChange = useCallback((e: any) => setPrompt(String(e.target.value)), [setPrompt]);
 
@@ -16,11 +17,19 @@ export const PromptInputs = () => {
             <textarea
                 value={prompt}
                 onChange={onChange}
-                placeholder={"Enter a prompt to generate transactions,\ne.g. 'From 2024 to 2025 on the 1st every month, spend 20% of my current cash on AAPL. Sell at the end of every month.'"}
-                className="w-full flex-1 p-2 text-sm bg-white border border-gray-400 rounded resize-none focus:outline-none JSON"
+                disabled={promptLoading}
+                placeholder={"Enter a prompt to generate transactions,\ne.g. 'From 2024 to 2025 on the 1st every month, spend 20% of my current cash on AAPL. Sell at the end of every month.' (WIP)"}
+                className={`w-full flex-1 p-2 text-sm bg-white border border-gray-400 rounded resize-none focus:outline-none JSON ${
+                    promptLoading ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
             />
-            <div className="mt-1">
-                {promptResponse}
+            <div className="mt-1 min-h-[1.5rem]">
+                {promptLoading ? (
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                        Generating...
+                    </div>
+                ) : promptResponse}
+
             </div>
         </div>
     );

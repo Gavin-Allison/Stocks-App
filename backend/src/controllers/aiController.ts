@@ -31,6 +31,8 @@ const parseTransactionPrompt = async (payload: ParseTransactionPayload): Promise
         ? `If the prompt does not specify an explicit date, use ${transactionDate} as the transaction date.`
         : "";
 
+    const today = new Date().toISOString().split("T")[0];
+
     const response = await model.generateContent({
         model: "gemini-2.5-flash",
         contents: `${promptText}${priceDataContext}\n${defaultDateContext}`,
@@ -39,7 +41,7 @@ const parseTransactionPrompt = async (payload: ParseTransactionPayload): Promise
             responseJsonSchema: transactionListSchema.toJSONSchema() as any,
             temperature: 0,
             systemInstruction:
-                "You are an intelligent financial ledger assistant. Extract ALL financial transactions from the user prompt and return only valid JSON. Output a JSON array of transaction objects that exactly match the schema. Do not include any markdown, explanation, or text outside the JSON array. Use uppercase ticker symbols. Set committed to false and batchId to \"Preview\" when possible. Use YYYY-MM-DD date format. For DBUY and DSELL, use value as a decimal (for example 0.2 for 20%). If DBUY/DSELL is returned, choose a date from provided price data if available. Only use the confirmed fields required by each transaction type.",
+                "You are an intelligent financial ledger assistant. Extract ALL financial transactions from the user prompt and return only valid JSON. Output a JSON array of transaction objects that exactly match the schema. Do not include any markdown, explanation, or text outside the JSON array. Use uppercase ticker symbols. Set committed to false and batchId to \"Preview\" when possible. Use YYYY-MM-DD date format. Today's date is ${today}. Use this date as the reference point for all relative time calculations. For DBUY and DSELL, use value as a decimal (for example 0.2 for 20%). If DBUY/DSELL is returned, choose a date from provided price data if available. Only use the confirmed fields required by each transaction type.",
         },
     });
 

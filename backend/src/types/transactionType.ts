@@ -1,9 +1,8 @@
 import { z } from "zod";
 
 const baseSchema = {
-    // ID should be id: crypto.randomUUID()
-    id: z.uuid().describe("Unique identifier for the transaction. Should be generated as a completely random UUID string."),
-    date: z.string().describe("ISO timestamp or date string"),
+    id: z.literal(1).describe("Unique identifier for the transaction. Leave this as the number 1, the frontend will replace it."),
+    date: z.string().describe("ISO timestamp or date string. Do not create transactions that are dated before 5 years ago or in the future. If the prompt asks for transactions in that date range, do not return transactions for those out-of-range dates. Still return the transactions that are within the acceptable date range."),
     batchId: z.literal("Preview").describe("The batch ID group. 'Preview' indicates uncommitted transactions"),
     committed: z.literal(false).describe("Indicates if the transaction is finalized and committed to the ledger"),
 };
