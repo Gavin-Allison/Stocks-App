@@ -8,8 +8,7 @@
     "backend": {
       "root": "backend",
       "routePrefix": "/_/backend",
-      "framework": "express",
-      "runtime": "nodejs24.x" 
+      "framework": "express"
     }
   }
 }
