@@ -61,7 +61,7 @@ export interface transactionSlice {
 /**
  * Persist only committed transactions to local storage when operating offline.
  */
-const saveTransactions = (transactions: Transaction[], email: string | null) => {
+const saveTransactions = (transactions: Transaction[]) => {
     const commitedTransactions = transactions.filter((t) => t.committed === true);
     localStorage.setItem("transactions", JSON.stringify(commitedTransactions));
 };
@@ -169,7 +169,7 @@ export const createTransactionSlice: StateCreator<transactionSlice & MainSliceDe
 
         set((state) => {
             const newTransactions = state.transactions.filter((t) => t.id !== transaction.id);
-            saveTransactions(newTransactions, email);
+            saveTransactions(newTransactions);
             
             let nextDraftBatchCount = state.draftBatchCount;
             if (transaction.batchId === "Preview") {
@@ -215,7 +215,7 @@ export const createTransactionSlice: StateCreator<transactionSlice & MainSliceDe
 
         set((state) => {
             const newTransactions = state.transactions.filter((t) => t.batchId !== batchId);
-            saveTransactions(newTransactions, email);
+            saveTransactions(newTransactions);
             
             let nextDraftBatchCount = state.draftBatchCount;
             if (batchId === "Preview") {
@@ -318,7 +318,7 @@ export const createTransactionSlice: StateCreator<transactionSlice & MainSliceDe
                         t.id === transaction.id ? { ...t, batchId: newBatchId, committed: true } : t
                     );
                     
-                    saveTransactions(newTransactions, email);
+                    saveTransactions(newTransactions);
                     
                     return { 
                         transactions: newTransactions,
@@ -367,7 +367,7 @@ export const createTransactionSlice: StateCreator<transactionSlice & MainSliceDe
                     : t
             );
             
-            saveTransactions(newTransactions, email);
+            saveTransactions(newTransactions);
             
             return { transactions: newTransactions, draftBatchCount: 0 };
         });

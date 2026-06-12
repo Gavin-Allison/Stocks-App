@@ -42,7 +42,7 @@ export default function App() {
 
                     {/* Right Column */}
                     <section className={`w-full @2xl:w-96 @5xl:w-140 flex-none ${theme.layout.panelBg} border-r ${theme.layout.sectionBorder}`}>
-                        {reportTab === "Charts" ? (
+                        {reportTab === "CHARTS" ? (
                             <>
                                 <div className="block @2xl:hidden h-full">
                                     <StockChartList />
