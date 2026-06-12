@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:3002/api"
+const API_BASE = "/api"
 
 export interface PromptRequest {
     prompt: string;
