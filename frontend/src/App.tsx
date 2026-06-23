@@ -27,7 +27,7 @@ export default function App() {
         <div className="flex h-screen w-full flex-col @container" style={layout}>
 
             {/* Header */}
-            <div className={`h-24 @5xl:h-16 w-full flex-none border-b ${theme.layout.headerBorder}`}>
+            <div className={`h-24 @5xl:h-16 w-full flex-none border-b ${theme.layout.headerBg} ${theme.layout.headerBorder}`}>
                 <Header />
             </div>
 
@@ -36,7 +36,7 @@ export default function App() {
                 <main className="max-w-[var(--layout-width)] w-full flex mx-auto">
 
                     {/* Left Column*/}
-                    <section className={`hidden @2xl:block flex-1 overflow-y-scroll ${theme.layout.sectionBg} border-r ${theme.layout.sectionBorder}`}>
+                    <section className={`hidden @2xl:block flex-1 overflow-y-scroll ${theme.layout.sectionBg} border-r border-l ${theme.layout.sectionBorder}`}>
                         <StockChartList />
                     </section>
 

@@ -53,7 +53,7 @@ export const Header = () => {
     }, [addStock, addableStock]);
 
     return (
-        <div className={`max-w-[var(--layout-width)] h-full flex items-center mx-auto ${theme.layout.headerBg} border-x ${theme.layout.headerBorder} px-4 gap-2`}>
+        <div className={`max-w-[var(--layout-width)] h-full flex items-center mx-auto px-4 gap-2`}>
             <div className="flex flex-col @5xl:flex-row gap-3 shrink min-w-0">
                 <div className="flex flex-row gap-2 items-center shrink-0">
                     <h1 className={`text-xl font-bold mr-5.5 whitespace-nowrap ${theme.text.secondary}`}>Backtesting App</h1>
